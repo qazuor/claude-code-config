@@ -1,0 +1,110 @@
+{
+  "category": "commands",
+  "modules": [
+    {
+      "id": "quality-check",
+      "name": "Quality Check",
+      "description": "Run comprehensive quality checks on the codebase",
+      "file": "quality-check.md",
+      "tags": ["core", "quality"]
+    },
+    {
+      "id": "code-check",
+      "name": "Code Check",
+      "description": "Run code analysis and linting",
+      "file": "code-check.md",
+      "tags": ["core", "linting"]
+    },
+    {
+      "id": "run-tests",
+      "name": "Run Tests",
+      "description": "Execute test suites",
+      "file": "run-tests.md",
+      "tags": ["core", "testing"]
+    },
+    {
+      "id": "start-feature-plan",
+      "name": "Start Feature Plan",
+      "description": "Initialize a new feature planning session",
+      "file": "start-feature-plan.md",
+      "tags": ["planning", "features"]
+    },
+    {
+      "id": "start-refactor-plan",
+      "name": "Start Refactor Plan",
+      "description": "Initialize a refactoring planning session",
+      "file": "start-refactor-plan.md",
+      "tags": ["planning", "refactoring"]
+    },
+    {
+      "id": "sync-planning",
+      "name": "Sync Planning",
+      "description": "Synchronize planning documents",
+      "file": "sync-planning.md",
+      "tags": ["planning", "sync"]
+    },
+    {
+      "id": "add-new-entity",
+      "name": "Add New Entity",
+      "description": "Create a new entity with full CRUD setup",
+      "file": "add-new-entity.md",
+      "tags": ["development", "entities"]
+    },
+    {
+      "id": "update-docs",
+      "name": "Update Docs",
+      "description": "Update project documentation",
+      "file": "update-docs.md",
+      "tags": ["development", "documentation"]
+    },
+    {
+      "id": "five-why",
+      "name": "Five Why Analysis",
+      "description": "Root cause analysis using the Five Why method",
+      "file": "five-why.md",
+      "tags": ["development", "analysis"]
+    },
+    {
+      "id": "commit",
+      "name": "Commit",
+      "description": "Create atomic git commits with proper messages",
+      "file": "git/commit.md",
+      "tags": ["git", "commits"]
+    },
+    {
+      "id": "review-code",
+      "name": "Review Code",
+      "description": "Perform code review",
+      "file": "audit/review-code.md",
+      "tags": ["audit", "review"]
+    },
+    {
+      "id": "review-security",
+      "name": "Review Security",
+      "description": "Security-focused code review",
+      "file": "audit/review-security.md",
+      "tags": ["audit", "security"]
+    },
+    {
+      "id": "review-performance",
+      "name": "Review Performance",
+      "description": "Performance-focused code review",
+      "file": "audit/review-performance.md",
+      "tags": ["audit", "performance"]
+    },
+    {
+      "id": "help",
+      "name": "Help",
+      "description": "Show available commands and documentation",
+      "file": "meta/help.md",
+      "tags": ["meta", "help"]
+    },
+    {
+      "id": "markdown-format",
+      "name": "Markdown Format",
+      "description": "Format markdown files",
+      "file": "formatting/markdown-format.md",
+      "tags": ["formatting", "markdown"]
+    }
+  ]
+}

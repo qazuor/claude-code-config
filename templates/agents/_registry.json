@@ -1,0 +1,103 @@
+{
+  "category": "agents",
+  "modules": [
+    {
+      "id": "tech-lead",
+      "name": "Tech Lead",
+      "description": "Principal Software Architect - coordinates all agents, architectural decisions, code review",
+      "file": "engineering/tech-lead.md",
+      "tags": ["core", "leadership", "architecture"]
+    },
+    {
+      "id": "product-functional",
+      "name": "Product Functional",
+      "description": "Creates PDR (Product Definition Reports) with user requirements and functional specs",
+      "file": "product/product-functional.md",
+      "tags": ["product", "requirements", "pdr"]
+    },
+    {
+      "id": "product-technical",
+      "name": "Product Technical",
+      "description": "Technical analysis, architecture design, task breakdown from PDR",
+      "file": "product/product-technical.md",
+      "tags": ["product", "architecture", "planning"]
+    },
+    {
+      "id": "hono-engineer",
+      "name": "Hono Engineer",
+      "description": "Backend API development with Hono framework",
+      "file": "engineering/hono-engineer.md",
+      "tags": ["backend", "api", "hono"]
+    },
+    {
+      "id": "db-drizzle-engineer",
+      "name": "DB Drizzle Engineer",
+      "description": "Database design and development with Drizzle ORM",
+      "file": "engineering/db-drizzle-engineer.md",
+      "tags": ["backend", "database", "drizzle"]
+    },
+    {
+      "id": "node-typescript-engineer",
+      "name": "Node TypeScript Engineer",
+      "description": "Shared packages and Node.js TypeScript development",
+      "file": "engineering/node-typescript-engineer.md",
+      "tags": ["backend", "shared", "typescript"]
+    },
+    {
+      "id": "astro-engineer",
+      "name": "Astro Engineer",
+      "description": "Astro framework development for static/SSR sites",
+      "file": "engineering/astro-engineer.md",
+      "tags": ["frontend", "astro", "ssr"]
+    },
+    {
+      "id": "tanstack-start-engineer",
+      "name": "TanStack Start Engineer",
+      "description": "TanStack Start/Router development for admin dashboards",
+      "file": "engineering/tanstack-start-engineer.md",
+      "tags": ["frontend", "tanstack", "admin"]
+    },
+    {
+      "id": "react-senior-dev",
+      "name": "React Senior Dev",
+      "description": "React component development and UI architecture",
+      "file": "engineering/react-senior-dev.md",
+      "tags": ["frontend", "react", "components"]
+    },
+    {
+      "id": "ux-ui-designer",
+      "name": "UX/UI Designer",
+      "description": "User experience and interface design",
+      "file": "design/ux-ui-designer.md",
+      "tags": ["design", "ux", "ui"]
+    },
+    {
+      "id": "qa-engineer",
+      "name": "QA Engineer",
+      "description": "Quality assurance, testing strategy, test automation",
+      "file": "quality/qa-engineer.md",
+      "tags": ["quality", "testing", "qa"]
+    },
+    {
+      "id": "debugger",
+      "name": "Debugger",
+      "description": "Bug investigation, root cause analysis, debugging",
+      "file": "quality/debugger.md",
+      "tags": ["quality", "debugging", "bugs"]
+    },
+    {
+      "id": "tech-writer",
+      "name": "Tech Writer",
+      "description": "Technical documentation, API docs, user guides",
+      "file": "specialized/tech-writer.md",
+      "tags": ["specialized", "documentation", "writing"]
+    },
+    {
+      "id": "seo-ai-specialist",
+      "name": "SEO AI Specialist",
+      "description": "SEO optimization, content strategy, AI-assisted content",
+      "file": "specialized/seo-ai-specialist.md",
+      "tags": ["specialized", "seo", "content"]
+    }
+  ]
+}

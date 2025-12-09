@@ -1,0 +1,138 @@
+{
+  "category": "skills",
+  "modules": [
+    {
+      "id": "tdd-methodology",
+      "name": "TDD Methodology",
+      "description": "Test-Driven Development methodology and practices",
+      "file": "testing/tdd-methodology.md",
+      "tags": ["testing", "tdd", "methodology"]
+    },
+    {
+      "id": "web-app-testing",
+      "name": "Web App Testing",
+      "description": "Web application testing strategies and patterns",
+      "file": "testing/web-app-testing.md",
+      "tags": ["testing", "web", "e2e"]
+    },
+    {
+      "id": "api-app-testing",
+      "name": "API Testing",
+      "description": "API testing strategies and patterns",
+      "file": "testing/api-app-testing.md",
+      "tags": ["testing", "api", "integration"]
+    },
+    {
+      "id": "performance-testing",
+      "name": "Performance Testing",
+      "description": "Performance testing and optimization",
+      "file": "testing/performance-testing.md",
+      "tags": ["testing", "performance", "optimization"]
+    },
+    {
+      "id": "security-testing",
+      "name": "Security Testing",
+      "description": "Security testing and vulnerability assessment",
+      "file": "testing/security-testing.md",
+      "tags": ["testing", "security", "audit"]
+    },
+    {
+      "id": "security-audit",
+      "name": "Security Audit",
+      "description": "Comprehensive security audit procedures",
+      "file": "audit/security-audit.md",
+      "tags": ["audit", "security"]
+    },
+    {
+      "id": "performance-audit",
+      "name": "Performance Audit",
+      "description": "Performance audit and optimization recommendations",
+      "file": "audit/performance-audit.md",
+      "tags": ["audit", "performance"]
+    },
+    {
+      "id": "accessibility-audit",
+      "name": "Accessibility Audit",
+      "description": "Accessibility audit and WCAG compliance",
+      "file": "audit/accessibility-audit.md",
+      "tags": ["audit", "accessibility", "a11y"]
+    },
+    {
+      "id": "error-handling-patterns",
+      "name": "Error Handling Patterns",
+      "description": "Error handling best practices and patterns",
+      "file": "patterns/error-handling-patterns.md",
+      "tags": ["patterns", "errors", "best-practices"]
+    },
+    {
+      "id": "git-commit-helper",
+      "name": "Git Commit Helper",
+      "description": "Git commit message formatting and conventions",
+      "file": "git/git-commit-helper.md",
+      "tags": ["git", "commits", "conventions"]
+    },
+    {
+      "id": "documentation-writer",
+      "name": "Documentation Writer",
+      "description": "Technical documentation writing guidelines",
+      "file": "documentation/documentation-writer.md",
+      "tags": ["documentation", "writing", "docs"]
+    },
+    {
+      "id": "add-memory",
+      "name": "Add Memory",
+      "description": "Learning and memory management for AI agents",
+      "file": "utils/add-memory.md",
+      "tags": ["utils", "memory", "learning"]
+    },
+    {
+      "id": "pdf-creator-editor",
+      "name": "PDF Creator/Editor",
+      "description": "PDF document creation and editing",
+      "file": "utils/pdf-creator-editor.md",
+      "tags": ["utils", "pdf", "documents"]
+    },
+    {
+      "id": "json-data-auditor",
+      "name": "JSON Data Auditor",
+      "description": "JSON data validation and auditing",
+      "file": "utils/json-data-auditor.md",
+      "tags": ["utils", "json", "validation"]
+    },
+    {
+      "id": "brand-guidelines",
+      "name": "Brand Guidelines",
+      "description": "Brand and design system guidelines",
+      "file": "brand-guidelines.md",
+      "tags": ["design", "brand", "guidelines"]
+    },
+    {
+      "id": "qa-criteria-validator",
+      "name": "QA Criteria Validator",
+      "description": "Quality assurance criteria validation",
+      "file": "qa/qa-criteria-validator.md",
+      "tags": ["qa", "validation", "criteria"]
+    },
+    {
+      "id": "vercel-specialist",
+      "name": "Vercel Specialist",
+      "description": "Vercel deployment and configuration",
+      "file": "tech/vercel-specialist.md",
+      "tags": ["tech", "vercel", "deployment"]
+    },
+    {
+      "id": "shadcn-specialist",
+      "name": "Shadcn Specialist",
+      "description": "Shadcn UI component library usage",
+      "file": "tech/shadcn-specialist.md",
+      "tags": ["tech", "shadcn", "ui"]
+    },
+    {
+      "id": "mermaid-diagram-specialist",
+      "name": "Mermaid Diagram Specialist",
+      "description": "Mermaid diagram creation and formatting",
+      "file": "tech/mermaid-diagram-specialist.md",
+      "tags": ["tech", "mermaid", "diagrams"]
+    }
+  ]
+}

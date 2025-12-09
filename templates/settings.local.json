@@ -1,0 +1,138 @@
+{
+  "includeCoAuthoredBy": false,
+  "permissions": {
+    "allow": [
+      "Bash(npx markdownlint-cli2:*)",
+      "Bash(pnpm format:md:claude:*)",
+      "mcp__serena__list_dir",
+      "Bash(cat:*)",
+      "Bash(pnpm lint:*)",
+      "Bash(pnpm typecheck:*)",
+      "Bash(pnpm test:*)",
+      "Bash(mkdir:*)",
+      "Bash(pnpm audit:*)",
+      "Bash(pnpm test:coverage:*)",
+      "Bash(find:*)",
+      "Bash(pnpm planning:sync:*)",
+      "Bash(test:*)",
+      "mcp__serena__find_symbol",
+      "Edit",
+      "Read",
+      "Bash(git log:*)",
+      "LS",
+      "Grep",
+      "Glob",
+      "Bash(pnpm run cleanup:issues:*)",
+      "Bash(pnpm run planning:cleanup:*)",
+      "Bash(tsx src/scripts/cleanup-issues.ts:*)",
+      "Bash(npx tsx:*)",
+      "Bash(node --loader tsx src/scripts/cleanup-issues.ts:*)",
+      "Bash(pnpm exec tsx:*)",
+      "Bash(pnpm run planning:create:*)",
+      "Bash(pnpm run planning:sync:*)",
+      "WebFetch(domain:www.reddit.com)",
+      "WebFetch(domain:docs.github.com)",
+      "mcp__serena__search_for_pattern",
+      "Bash(tsx src/scripts/planning-sync.ts:*)",
+      "Bash(pnpm run lint)",
+      "Bash(pnpm run test)",
+      "Bash(pnpm run typecheck:*)",
+      "Bash(pnpm run test:coverage)",
+      "Bash(pnpm exec biome:*)",
+      "Bash(pnpm exec vitest:*)",
+      "Bash(pnpm run lint:*)",
+      "Bash(pnpm run test:*)",
+      "Bash(pnpm --filter=@repo/db run typecheck:*)",
+      "mcp__serena__get_symbols_overview",
+      "Bash(./.claude/scripts/validate-registry.sh:*)",
+      "Bash(./sync-registry.sh:*)",
+      "Bash(./.claude/scripts/validate-docs.sh:*)",
+      "Bash(./.claude/scripts/health-check.sh:*)",
+      "WebSearch",
+      "Bash(pnpm build:*)",
+      "Bash(pnpm vitest run:*)",
+      "Bash(pnpm format:*)",
+      "Bash(pnpm check:*)",
+      "Bash(pnpm test:file:*)",
+      "Bash(pnpm biome check:*)",
+      "Bash(pnpm run test:coverage:*)",
+      "Bash(pnpm --filter=@repo/github-workflow test:coverage:*)",
+      "Bash(pnpm lint:md:*)",
+      "Bash(pnpm markdownlint-cli2:*)",
+      "Bash(pnpm biome lint:*)",
+      "Bash(pnpm --filter=@repo/db biome check:*)",
+      "Bash(pnpm lint:md:docs:*)",
+      "Bash(tee:*)",
+      "Bash(pnpm --filter=@repo/schemas run typecheck:*)",
+      "Bash(pnpm --filter=@repo/db run test -- pricingPlan)",
+      "Bash(pnpm --filter=@repo/service-core run lint:*)",
+      "Bash(pnpm --filter=@repo/service-core run typecheck:*)",
+      "Bash(pnpm --filter=@repo/service-core run test -- pricingPlan)",
+      "Bash(pnpm --filter=@repo/service-core run test -- \"pricingPlan|pricingTier|purchase\")",
+      "Bash(pnpm --filter=@repo/service-core run test:*)",
+      "Bash(pnpm --filter=@repo/db run test:*)",
+      "Bash(pnpm --filter=@repo/schemas run test:*)",
+      "Bash(pnpm --filter @repo/service-core test:*)",
+      "Bash(pnpm --filter @repo/schemas run lint)",
+      "Bash(pnpm --filter @repo/db run lint:*)",
+      "Bash(pnpm --filter @repo/service-core run lint:*)",
+      "Bash(pnpm --filter @repo/schemas run typecheck:*)",
+      "Bash(pnpm --filter @repo/db run typecheck:*)",
+      "Bash(pnpm --filter @repo/service-core run typecheck:*)",
+      "mcp__serena__find_file",
+      "Bash(pnpm test:e2e:*)",
+      "Bash(pnpm --filter=api test test/e2e/flows/campaign/scenario-1-complete-flow.test.ts)",
+      "Bash(pnpm --filter=@hospeda/api test:e2e test/e2e/flows/campaign/scenario-1-complete-flow.test.ts)",
+      "Bash(pnpm --filter @repo/api test:e2e:*)",
+      "Bash(pnpm --filter hospeda-api test:e2e:*)",
+      "Bash(pnpm --filter @hospeda/api test:e2e:*)",
+      "Bash(pnpm --filter hospeda-api test test/e2e/flows/professional-service/debug.test.ts)",
+      "Bash(pnpm --filter=hospeda-api test:e2e test/e2e/flows/professional-service/scenario-1-complete-flow.test.ts)",
+      "Bash(pnpm --filter=@hospeda/api test:*)",
+      "Bash(pnpm --filter=api test test/e2e/flows/professional-service/scenario-1-complete-flow.test.ts)",
+      "Bash(pnpm --filter=@hospeda/api run typecheck)",
+      "Bash(pnpm --filter=hospeda-api test:e2e:*)",
+      "Bash(pnpm run test:e2e:*)",
+      "Bash(pnpm --filter=@hospeda/api test:e2e:*)",
+      "Bash(pnpm --filter=hospeda-api test:*)",
+      "mcp__filesystem__list_directory"
+    ],
+    "deny": [],
+    "ask": []
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo -ne '\\007'",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo -ne '\\007'",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/on-notification.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

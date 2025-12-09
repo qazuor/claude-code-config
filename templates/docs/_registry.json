@@ -1,0 +1,131 @@
+{
+  "category": "docs",
+  "modules": [
+    {
+      "id": "quick-start",
+      "name": "Quick Start",
+      "description": "Quick start guide for new users",
+      "file": "quick-start.md",
+      "tags": ["workflows", "onboarding"]
+    },
+    {
+      "id": "decision-tree",
+      "name": "Decision Tree",
+      "description": "Workflow decision tree for choosing the right approach",
+      "file": "workflows/decision-tree.md",
+      "tags": ["workflows", "decisions"]
+    },
+    {
+      "id": "quick-fix-protocol",
+      "name": "Quick Fix Protocol",
+      "description": "Protocol for quick fixes and small changes",
+      "file": "workflows/quick-fix-protocol.md",
+      "tags": ["workflows", "quick-fix"]
+    },
+    {
+      "id": "atomic-task-protocol",
+      "name": "Atomic Task Protocol",
+      "description": "Protocol for atomic tasks",
+      "file": "workflows/atomic-task-protocol.md",
+      "tags": ["workflows", "atomic"]
+    },
+    {
+      "id": "phase-1-planning",
+      "name": "Phase 1 Planning",
+      "description": "Feature planning phase documentation",
+      "file": "workflows/phase-1-planning.md",
+      "tags": ["workflows", "planning"]
+    },
+    {
+      "id": "phase-2-implementation",
+      "name": "Phase 2 Implementation",
+      "description": "Implementation phase documentation",
+      "file": "workflows/phase-2-implementation.md",
+      "tags": ["workflows", "implementation"]
+    },
+    {
+      "id": "phase-3-validation",
+      "name": "Phase 3 Validation",
+      "description": "Validation phase documentation",
+      "file": "workflows/phase-3-validation.md",
+      "tags": ["workflows", "validation"]
+    },
+    {
+      "id": "phase-4-finalization",
+      "name": "Phase 4 Finalization",
+      "description": "Finalization phase documentation",
+      "file": "workflows/phase-4-finalization.md",
+      "tags": ["workflows", "finalization"]
+    },
+    {
+      "id": "code-standards",
+      "name": "Code Standards",
+      "description": "Coding standards and conventions",
+      "file": "standards/code-standards.md",
+      "tags": ["standards", "code"]
+    },
+    {
+      "id": "testing-standards",
+      "name": "Testing Standards",
+      "description": "Testing standards and practices",
+      "file": "standards/testing-standards.md",
+      "tags": ["standards", "testing"]
+    },
+    {
+      "id": "documentation-standards",
+      "name": "Documentation Standards",
+      "description": "Documentation standards and templates",
+      "file": "standards/documentation-standards.md",
+      "tags": ["standards", "documentation"]
+    },
+    {
+      "id": "architecture-patterns",
+      "name": "Architecture Patterns",
+      "description": "Architecture patterns and best practices",
+      "file": "standards/architecture-patterns.md",
+      "tags": ["standards", "architecture"]
+    },
+    {
+      "id": "pdr-template",
+      "name": "PDR Template",
+      "description": "Product Definition Report template",
+      "file": "templates/PDR-template.md",
+      "tags": ["templates", "pdr"]
+    },
+    {
+      "id": "tech-analysis-template",
+      "name": "Tech Analysis Template",
+      "description": "Technical analysis document template",
+      "file": "templates/tech-analysis-template.md",
+      "tags": ["templates", "analysis"]
+    },
+    {
+      "id": "todos-template",
+      "name": "TODOs Template",
+      "description": "Task breakdown template",
+      "file": "templates/TODOs-template.md",
+      "tags": ["templates", "todos"]
+    },
+    {
+      "id": "workflow-diagrams",
+      "name": "Workflow Diagrams",
+      "description": "Mermaid diagrams for workflows",
+      "file": "diagrams/README.md",
+      "tags": ["diagrams", "mermaid"]
+    },
+    {
+      "id": "glossary",
+      "name": "Glossary",
+      "description": "Project terminology and definitions",
+      "file": "glossary.md",
+      "tags": ["guides", "reference"]
+    },
+    {
+      "id": "mcp-servers",
+      "name": "MCP Servers",
+      "description": "MCP server documentation",
+      "file": "mcp-servers.md",
+      "tags": ["guides", "mcp"]
+    }
+  ]
+}
