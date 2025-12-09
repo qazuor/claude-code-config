@@ -3,8 +3,8 @@
  */
 
 import { Command } from 'commander';
-import { PRESETS, getPreset } from '../../constants/presets.js';
-import { createDefaultConfig, writeConfig } from '../../lib/config/index.js';
+import { getPreset } from '../../constants/presets.js';
+import { writeConfig } from '../../lib/config/index.js';
 import {
   checkFeatureDependencies,
   formatDependencyReport,
@@ -12,7 +12,7 @@ import {
 } from '../../lib/dependencies/index.js';
 import { installHooks } from '../../lib/hooks/index.js';
 import { installMcpServers } from '../../lib/mcp/index.js';
-import { filterModules, loadRegistry, resolveAllModules } from '../../lib/modules/index.js';
+import { filterModules, loadRegistry } from '../../lib/modules/index.js';
 import { installAllModules, installExtras } from '../../lib/modules/installer.js';
 import { installPermissions, setCoAuthorSetting } from '../../lib/permissions/index.js';
 import { replacePlaceholders, showReplacementReport } from '../../lib/placeholders/index.js';
@@ -23,7 +23,7 @@ import {
   getProjectName,
   hasExistingClaudeConfig,
 } from '../../lib/scaffold/index.js';
-import { joinPath, pathExists, resolvePath } from '../../lib/utils/fs.js';
+import { joinPath, resolvePath } from '../../lib/utils/fs.js';
 import { colors, logger } from '../../lib/utils/logger.js';
 import { spinner, withSpinner } from '../../lib/utils/spinner.js';
 import type { ClaudeConfig } from '../../types/config.js';
@@ -292,7 +292,7 @@ async function buildInteractiveConfig(
   });
 
   // MCP configuration
-  let mcpConfig = { level: 'project' as const, servers: [] as ClaudeConfig['mcp']['servers'] };
+  let mcpConfig: ClaudeConfig['mcp'] = { level: 'project', servers: [] };
   if (!options.noMcp) {
     mcpConfig = await promptMcpConfig();
   }
@@ -414,7 +414,7 @@ async function executeInstallation(
   };
 
   // Install modules
-  const installResults = await installAllModules(modulesByCategory, {
+  await installAllModules(modulesByCategory, {
     templatesPath,
     targetPath: projectPath,
     overwrite: options.force,
@@ -495,12 +495,6 @@ function showConfigSummary(config: ClaudeConfig): void {
  * Get templates path (bundled with package)
  */
 function getTemplatesPath(): string {
-  // In development, templates are in the project root
-  // In production, they're bundled with the package
-  const devPath = resolvePath(__dirname, '..', '..', '..', 'templates');
-  const prodPath = resolvePath(__dirname, '..', 'templates');
-
-  // Check which one exists
-  // For now, use the dev path relative to the project
+  // For now, use the path relative to the project
   return resolvePath(process.cwd(), 'templates');
 }

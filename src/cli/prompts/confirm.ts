@@ -3,7 +3,6 @@
  */
 
 import { confirm, input, select } from '@inquirer/prompts';
-import { PRESETS } from '../../constants/presets.js';
 import { colors, logger } from '../../lib/utils/logger.js';
 import type { ClaudeConfig } from '../../types/config.js';
 

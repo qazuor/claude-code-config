@@ -3,8 +3,7 @@
  */
 
 import { type SimpleGit, type SimpleGitOptions, simpleGit } from 'simple-git';
-import { isDirectory, pathExists } from './fs.js';
-import { joinPath } from './fs.js';
+import { pathExists } from './fs.js';
 
 /**
  * Create a git instance for a directory

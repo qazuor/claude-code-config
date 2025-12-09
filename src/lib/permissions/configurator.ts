@@ -10,7 +10,6 @@ import {
 } from '../../constants/permissions.js';
 import type { PermissionsConfig } from '../../types/permissions.js';
 import { ensureDir, joinPath, pathExists, readJson, writeJson } from '../utils/fs.js';
-import { logger } from '../utils/logger.js';
 
 const PROJECT_SETTINGS_FILE = '.claude/settings.local.json';
 const USER_SETTINGS_FILE = '.claude/settings.json';

@@ -4,10 +4,9 @@
 
 import * as os from 'node:os';
 import { MCP_SERVERS, getMcpServer } from '../../constants/mcp-servers.js';
-import type { McpConfig, McpInstallation } from '../../types/config.js';
-import type { McpServerDefinition } from '../../types/mcp.js';
+import type { McpConfig } from '../../types/config.js';
+import type { McpInstallation, McpServerDefinition } from '../../types/mcp.js';
 import { ensureDir, joinPath, pathExists, readJson, writeJson } from '../utils/fs.js';
-import { logger } from '../utils/logger.js';
 
 const PROJECT_SETTINGS_FILE = '.claude/settings.local.json';
 const USER_SETTINGS_FILE = '.claude/settings.json';

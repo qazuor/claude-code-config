@@ -81,7 +81,7 @@ export async function checkAllDependencies(): Promise<DependencyReport> {
   const platform = getCurrentPlatform();
   const checked: DependencyCheckResult[] = [];
   const missing: DependencyInfo[] = [];
-  const instructions = new Map<string, DependencyInfo['platforms'][Platform]>();
+  const instructions = new Map<string, NonNullable<DependencyInfo['platforms'][Platform]>>();
 
   for (const dep of DEPENDENCIES) {
     const result = await checkDependency(dep);
@@ -111,7 +111,7 @@ export async function checkFeatureDependencies(features: string[]): Promise<Depe
   const platform = getCurrentPlatform();
   const checked: DependencyCheckResult[] = [];
   const missing: DependencyInfo[] = [];
-  const instructions = new Map<string, DependencyInfo['platforms'][Platform]>();
+  const instructions = new Map<string, NonNullable<DependencyInfo['platforms'][Platform]>>();
 
   // Get unique dependencies for all features
   const deps = new Set<DependencyInfo>();
@@ -161,8 +161,6 @@ export function getInstallInstructions(dep: DependencyInfo, platform?: Platform)
  * Format dependency report for display
  */
 export function formatDependencyReport(report: DependencyReport): void {
-  const platform = getCurrentPlatform();
-
   if (report.missing.length === 0) {
     logger.success('All dependencies are installed');
     return;

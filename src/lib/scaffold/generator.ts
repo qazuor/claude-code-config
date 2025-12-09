@@ -10,7 +10,6 @@ import type {
 } from '../../types/scaffold.js';
 import { ensureDir, joinPath, pathExists, writeFile, writeJson } from '../utils/fs.js';
 import { initRepo } from '../utils/git.js';
-import { logger } from '../utils/logger.js';
 import { withSpinner } from '../utils/spinner.js';
 
 /**
@@ -357,7 +356,7 @@ MIT
 /**
  * Generate .gitignore content
  */
-function generateGitignore(projectType?: ProjectType): string {
+function generateGitignore(_projectType?: ProjectType): string {
   const common = `# Dependencies
 node_modules/
 

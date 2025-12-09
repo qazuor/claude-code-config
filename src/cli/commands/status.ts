@@ -3,7 +3,7 @@
  */
 
 import { Command } from 'commander';
-import { hasClaudeDir, hasConfig, readConfig } from '../../lib/config/index.js';
+import { hasClaudeDir, readConfig } from '../../lib/config/index.js';
 import { getHooksStatus } from '../../lib/hooks/index.js';
 import { getInstalledMcpServers } from '../../lib/mcp/index.js';
 import { getCurrentPermissions } from '../../lib/permissions/index.js';

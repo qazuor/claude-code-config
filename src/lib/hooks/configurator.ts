@@ -4,7 +4,6 @@
 
 import type { HookConfig } from '../../types/config.js';
 import { ensureDir, joinPath, makeExecutable, pathExists, writeFile } from '../utils/fs.js';
-import { logger } from '../utils/logger.js';
 
 const HOOKS_DIR = '.claude/hooks';
 

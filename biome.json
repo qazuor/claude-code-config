@@ -29,6 +29,6 @@
     }
   },
   "files": {
-    "ignore": ["node_modules", "dist", "templates", "*.md", "*.json"]
+    "ignore": ["node_modules", "dist", "templates", "coverage", "*.md", "*.json"]
   }
 }

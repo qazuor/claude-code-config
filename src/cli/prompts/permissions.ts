@@ -2,7 +2,7 @@
  * Permission configuration prompts
  */
 
-import { checkbox, confirm, input, select } from '@inquirer/prompts';
+import { confirm, input, select } from '@inquirer/prompts';
 import {
   PERMISSION_PRESETS,
   PRESET_DESCRIPTIONS,

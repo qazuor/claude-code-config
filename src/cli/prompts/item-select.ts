@@ -9,11 +9,6 @@ import type { ModuleCategory, ModuleDefinition } from '../../types/modules.js';
 export type ItemAction = 'install' | 'skip';
 export type BatchAction = 'all' | 'none' | 'preset' | 'continue';
 
-interface ItemSelectionResult {
-  itemId: string;
-  action: ItemAction;
-}
-
 interface CategorySelectionResult {
   category: ModuleCategory;
   selectedItems: string[];
@@ -52,20 +47,20 @@ export async function promptBatchAction(
   totalItems: number,
   hasPreset?: boolean
 ): Promise<BatchAction> {
-  const choices = [
+  const choices: Array<{ name: string; value: BatchAction; description: string }> = [
     {
       name: 'Select one by one',
-      value: 'continue' as const,
+      value: 'continue',
       description: `Review each of the ${totalItems} items`,
     },
     {
       name: 'Install all',
-      value: 'all' as const,
+      value: 'all',
       description: `Install all ${totalItems} ${category}`,
     },
     {
       name: 'Skip all',
-      value: 'none' as const,
+      value: 'none',
       description: `Skip all ${category}`,
     },
   ];
@@ -73,12 +68,12 @@ export async function promptBatchAction(
   if (hasPreset) {
     choices.push({
       name: 'Use preset for this category',
-      value: 'preset' as const,
+      value: 'preset',
       description: 'Use the preset selection for this category',
     });
   }
 
-  return select({
+  return select<BatchAction>({
     message: `${capitalize(category)} selection (${totalItems} available):`,
     choices,
     default: 'continue',
@@ -209,25 +204,25 @@ async function promptItemWithShortcuts(
     remainingCount: number;
   }
 ): Promise<ItemActionExtended> {
-  const choices = [
-    { name: 'Yes, install', value: 'install' as const },
-    { name: 'No, skip', value: 'skip' as const },
+  const choices: Array<{ name: string; value: ItemActionExtended }> = [
+    { name: 'Yes, install', value: 'install' },
+    { name: 'No, skip', value: 'skip' },
   ];
 
   if (options.remainingCount > 0) {
     choices.push(
       {
         name: `Install all remaining (${options.remainingCount + 1} items)`,
-        value: 'install-rest' as const,
+        value: 'install-rest',
       },
       {
         name: `Skip all remaining (${options.remainingCount + 1} items)`,
-        value: 'skip-rest' as const,
+        value: 'skip-rest',
       }
     );
   }
 
-  return select({
+  return select<ItemActionExtended>({
     message: `Install ${item.name}?`,
     choices,
     default: options.defaultInstall ? 'install' : 'skip',

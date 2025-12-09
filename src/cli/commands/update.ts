@@ -10,9 +10,9 @@ import { filterModules, getModule, loadRegistry } from '../../lib/modules/index.
 import { getInstalledModules, installModules } from '../../lib/modules/installer.js';
 import { installPermissions } from '../../lib/permissions/index.js';
 import { replacePlaceholders } from '../../lib/placeholders/index.js';
-import { backup, resolvePath } from '../../lib/utils/fs.js';
-import { colors, logger } from '../../lib/utils/logger.js';
-import type { ModuleCategory, ModuleDefinition } from '../../types/modules.js';
+import { resolvePath } from '../../lib/utils/fs.js';
+import { logger } from '../../lib/utils/logger.js';
+import type { ModuleCategory } from '../../types/modules.js';
 import {
   promptHookConfig,
   promptMcpConfig,
@@ -21,8 +21,6 @@ import {
 } from '../prompts/index.js';
 import {
   type ModuleUpdate,
-  confirmUpdate,
-  promptBackup,
   promptConflictResolution,
   promptNewModules,
   promptReconfigureOptions,
@@ -165,8 +163,7 @@ async function detectUpdates(
 
     // Find updated/deprecated (would need version tracking)
     // For now, just check if files exist
-    const installedFiles = await getInstalledModules(category, projectPath);
-    const installedFilesSet = new Set(installedFiles);
+    await getInstalledModules(category, projectPath);
 
     for (const id of installed) {
       const mod = available.find((m) => m.id === id);
@@ -280,7 +277,7 @@ async function handleModuleUpdates(
 async function handleConfigUpdates(
   projectPath: string,
   config: NonNullable<Awaited<ReturnType<typeof readConfig>>>,
-  options: UpdateOptions
+  _options: UpdateOptions
 ): Promise<void> {
   const reconfigureOptions = await promptReconfigureOptions();
 

@@ -6,7 +6,7 @@ import { confirm } from '@inquirer/prompts';
 import { Command } from 'commander';
 import { addModulesToConfig, readConfig, updateConfig } from '../../lib/config/index.js';
 import { getModule, loadRegistry, resolveModules } from '../../lib/modules/index.js';
-import { installModules, isModuleInstalled } from '../../lib/modules/installer.js';
+import { installModules } from '../../lib/modules/installer.js';
 import { replacePlaceholders } from '../../lib/placeholders/index.js';
 import { joinPath, resolvePath } from '../../lib/utils/fs.js';
 import { colors, logger } from '../../lib/utils/logger.js';
