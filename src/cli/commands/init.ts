@@ -1,0 +1,506 @@
+/**
+ * Init command - initialize Claude configuration
+ */
+
+import { Command } from 'commander';
+import { PRESETS, getPreset } from '../../constants/presets.js';
+import { createDefaultConfig, writeConfig } from '../../lib/config/index.js';
+import {
+  checkFeatureDependencies,
+  formatDependencyReport,
+  getRequiredFeatures,
+} from '../../lib/dependencies/index.js';
+import { installHooks } from '../../lib/hooks/index.js';
+import { installMcpServers } from '../../lib/mcp/index.js';
+import { filterModules, loadRegistry, resolveAllModules } from '../../lib/modules/index.js';
+import { installAllModules, installExtras } from '../../lib/modules/installer.js';
+import { installPermissions, setCoAuthorSetting } from '../../lib/permissions/index.js';
+import { replacePlaceholders, showReplacementReport } from '../../lib/placeholders/index.js';
+import {
+  detectProject,
+  generateScaffoldWithProgress,
+  getProjectDescription,
+  getProjectName,
+  hasExistingClaudeConfig,
+} from '../../lib/scaffold/index.js';
+import { joinPath, pathExists, resolvePath } from '../../lib/utils/fs.js';
+import { colors, logger } from '../../lib/utils/logger.js';
+import { spinner, withSpinner } from '../../lib/utils/spinner.js';
+import type { ClaudeConfig } from '../../types/config.js';
+import type { ModuleCategory, ModuleDefinition, ModuleRegistry } from '../../types/modules.js';
+import type { PresetName } from '../../types/presets.js';
+import {
+  confirmFinalConfiguration,
+  confirmProjectInfo,
+  promptExistingProjectAction,
+  promptHookConfig,
+  promptMcpConfig,
+  promptModuleSelectionMode,
+  promptPermissionsConfig,
+  promptPreferences,
+  promptProjectInfo,
+  promptScaffoldOptions,
+  selectItemsFromCategory,
+  showPostInstallInstructions,
+} from '../prompts/index.js';
+
+// Package version (will be replaced at build time or read from package.json)
+const VERSION = '0.1.0';
+
+interface InitOptions {
+  preset?: PresetName;
+  template?: string;
+  branch?: string;
+  yes?: boolean;
+  force?: boolean;
+  dryRun?: boolean;
+  claudeOnly?: boolean;
+  noPlaceholders?: boolean;
+  noMcp?: boolean;
+  verbose?: boolean;
+}
+
+/**
+ * Create init command
+ */
+export function createInitCommand(): Command {
+  const cmd = new Command('init')
+    .description('Initialize Claude configuration in a project')
+    .argument('[path]', 'Project path (default: current directory)')
+    .option(
+      '-p, --preset <name>',
+      'Use preset (fullstack|frontend|backend|minimal|api-only|documentation|quality-focused)'
+    )
+    .option('-t, --template <url>', 'Remote git repo for templates')
+    .option('-b, --branch <name>', 'Branch/tag for remote template')
+    .option('-y, --yes', 'Accept defaults, skip prompts')
+    .option('-f, --force', 'Overwrite existing .claude/')
+    .option('--dry-run', 'Show what would happen without making changes')
+    .option('--claude-only', 'Only Claude config, no project scaffold')
+    .option('--no-placeholders', 'Skip placeholder replacement')
+    .option('--no-mcp', 'Skip MCP configuration')
+    .option('-v, --verbose', 'Detailed output')
+    .action(runInit);
+
+  return cmd;
+}
+
+/**
+ * Run init command
+ */
+async function runInit(path: string | undefined, options: InitOptions): Promise<void> {
+  const projectPath = resolvePath(path || '.');
+
+  logger.configure({ verbose: options.verbose, silent: false });
+
+  logger.title('@qazuor/claude-code-config');
+  logger.info(`Initializing Claude configuration in ${colors.primary(projectPath)}`);
+
+  try {
+    // Check for existing configuration
+    if (await hasExistingClaudeConfig(projectPath)) {
+      if (!options.force) {
+        const action = await promptExistingProjectAction();
+        if (action === 'skip') {
+          logger.info('Keeping existing configuration');
+          return;
+        }
+        if (action !== 'overwrite' && action !== 'merge') {
+          return;
+        }
+      }
+    }
+
+    // Detect project
+    const detection = await detectProject(projectPath);
+    if (detection.detected) {
+      logger.newline();
+      logger.success(`Detected ${detection.projectType || 'Node.js'} project`);
+      if (detection.suggestedPreset) {
+        logger.info(`Suggested preset: ${colors.primary(detection.suggestedPreset)}`);
+      }
+    }
+
+    // Get templates path (bundled with package)
+    const templatesPath = getTemplatesPath();
+
+    // Load module registry
+    const registry = await withSpinner(
+      'Loading module registry...',
+      () => loadRegistry(templatesPath),
+      { silent: options.dryRun }
+    );
+
+    // Collect configuration through prompts or defaults
+    const config = options.yes
+      ? await buildDefaultConfig(projectPath, detection, options)
+      : await buildInteractiveConfig(projectPath, detection, registry, options);
+
+    if (!config) {
+      logger.warn('Configuration cancelled');
+      return;
+    }
+
+    // Show final summary and confirm
+    if (!options.yes && !options.dryRun) {
+      const confirmed = await confirmFinalConfiguration(config);
+      if (!confirmed) {
+        logger.warn('Configuration cancelled');
+        return;
+      }
+    }
+
+    if (options.dryRun) {
+      logger.newline();
+      logger.title('Dry Run - No changes made');
+      showConfigSummary(config);
+      return;
+    }
+
+    // Execute installation
+    await executeInstallation(projectPath, config, registry, templatesPath, options);
+
+    // Check dependencies
+    const features = getRequiredFeatures({
+      hooks: config.extras.hooks,
+      mcp: config.mcp,
+    });
+
+    if (features.length > 0) {
+      const depReport = await checkFeatureDependencies(features);
+      if (depReport.missing.length > 0) {
+        logger.newline();
+        formatDependencyReport(depReport);
+      }
+    }
+
+    // Show post-install instructions
+    showPostInstallInstructions(config);
+  } catch (error) {
+    spinner.fail();
+    logger.error(`Initialization failed: ${error instanceof Error ? error.message : error}`);
+    process.exit(1);
+  }
+}
+
+/**
+ * Build configuration with defaults (for --yes flag)
+ */
+async function buildDefaultConfig(
+  projectPath: string,
+  detection: Awaited<ReturnType<typeof detectProject>>,
+  options: InitOptions
+): Promise<ClaudeConfig> {
+  const presetName = options.preset || detection.suggestedPreset || 'minimal';
+  const preset = getPreset(presetName);
+
+  const projectName = (await getProjectName(projectPath)) || 'my-project';
+  const projectDesc = (await getProjectDescription(projectPath)) || 'My project';
+
+  return {
+    version: VERSION,
+    templateSource: {
+      type: 'local',
+      installedAt: new Date().toISOString(),
+    },
+    project: {
+      name: projectName,
+      description: projectDesc,
+      org: 'my-org',
+      repo: projectName.toLowerCase().replace(/\s+/g, '-'),
+      entityType: 'item',
+      entityTypePlural: 'items',
+    },
+    preferences: {
+      language: 'en',
+      responseLanguage: 'en',
+      includeCoAuthor: true,
+    },
+    mcp: {
+      level: 'project',
+      servers: [],
+    },
+    modules: {
+      agents: { selected: preset.modules.agents, excluded: [] },
+      skills: { selected: preset.modules.skills, excluded: [] },
+      commands: { selected: preset.modules.commands, excluded: [] },
+      docs: { selected: preset.modules.docs, excluded: [] },
+    },
+    extras: {
+      schemas: preset.extras.schemas,
+      scripts: preset.extras.scripts,
+      hooks: { enabled: preset.extras.hooks },
+      sessions: preset.extras.sessions,
+    },
+    scaffold: {
+      type: options.claudeOnly ? 'claude-only' : 'claude-only',
+      createdStructure: [],
+    },
+    customizations: {
+      placeholdersReplaced: false,
+      lastUpdated: new Date().toISOString(),
+      customFiles: [],
+    },
+  };
+}
+
+/**
+ * Build configuration interactively
+ */
+async function buildInteractiveConfig(
+  projectPath: string,
+  detection: Awaited<ReturnType<typeof detectProject>>,
+  registry: ModuleRegistry,
+  options: InitOptions
+): Promise<ClaudeConfig | null> {
+  // Project info
+  const projectName = await getProjectName(projectPath);
+  const projectDesc = await getProjectDescription(projectPath);
+
+  const projectInfo = await promptProjectInfo({
+    defaults: {
+      name: projectName,
+      description: projectDesc || '',
+    },
+  });
+
+  const confirmed = await confirmProjectInfo(projectInfo);
+  if (!confirmed) {
+    return buildInteractiveConfig(projectPath, detection, registry, options);
+  }
+
+  // Preferences
+  const preferences = await promptPreferences();
+
+  // Scaffold options
+  const scaffoldOptions = await promptScaffoldOptions({
+    existingProject: detection.detected,
+    detectedType: detection.projectType,
+    detectedPackageManager: detection.packageManager,
+  });
+
+  // Module selection
+  const moduleSelection = await promptModuleSelectionMode();
+  const modules = await selectModules(registry, moduleSelection, detection.suggestedPreset);
+
+  // Extras
+  const preset = moduleSelection.preset ? getPreset(moduleSelection.preset) : null;
+
+  // Hook configuration
+  const hookConfig = await promptHookConfig({
+    defaults: preset?.extras.hooks ? { enabled: true } : undefined,
+  });
+
+  // MCP configuration
+  let mcpConfig = { level: 'project' as const, servers: [] as ClaudeConfig['mcp']['servers'] };
+  if (!options.noMcp) {
+    mcpConfig = await promptMcpConfig();
+  }
+
+  // Permissions configuration
+  const permissionsConfig = await promptPermissionsConfig();
+
+  return {
+    version: VERSION,
+    templateSource: {
+      type: 'local',
+      installedAt: new Date().toISOString(),
+    },
+    project: projectInfo,
+    preferences,
+    mcp: mcpConfig,
+    modules: {
+      agents: { selected: modules.agents, excluded: [] },
+      skills: { selected: modules.skills, excluded: [] },
+      commands: { selected: modules.commands, excluded: [] },
+      docs: { selected: modules.docs, excluded: [] },
+    },
+    extras: {
+      schemas: preset?.extras.schemas ?? false,
+      scripts: preset?.extras.scripts ?? false,
+      hooks: hookConfig,
+      sessions: preset?.extras.sessions ?? false,
+    },
+    scaffold: {
+      type: scaffoldOptions.type,
+      createdStructure: [],
+    },
+    customizations: {
+      placeholdersReplaced: false,
+      lastUpdated: new Date().toISOString(),
+      customFiles: [],
+      permissions: permissionsConfig,
+    },
+  };
+}
+
+/**
+ * Select modules based on mode (preset or custom)
+ */
+async function selectModules(
+  registry: ModuleRegistry,
+  selection: Awaited<ReturnType<typeof promptModuleSelectionMode>>,
+  suggestedPreset?: PresetName
+): Promise<Record<ModuleCategory, string[]>> {
+  const categories: ModuleCategory[] = ['agents', 'skills', 'commands', 'docs'];
+  const result: Record<ModuleCategory, string[]> = {
+    agents: [],
+    skills: [],
+    commands: [],
+    docs: [],
+  };
+
+  if (selection.mode === 'preset' && selection.preset) {
+    const preset = getPreset(selection.preset);
+
+    for (const category of categories) {
+      result[category] = preset.modules[category] || [];
+    }
+
+    // Adjust if requested
+    if (selection.adjustAfterPreset) {
+      for (const category of categories) {
+        const categoryResult = await selectItemsFromCategory(category, registry[category], {
+          preselected: result[category],
+          showDescriptions: true,
+        });
+        result[category] = categoryResult.selectedItems;
+      }
+    }
+  } else {
+    // Custom selection - one by one
+    for (const category of categories) {
+      const categoryResult = await selectItemsFromCategory(category, registry[category], {
+        preselected: suggestedPreset ? getPreset(suggestedPreset).modules[category] : [],
+        showDescriptions: true,
+      });
+      result[category] = categoryResult.selectedItems;
+    }
+  }
+
+  return result;
+}
+
+/**
+ * Execute the installation
+ */
+async function executeInstallation(
+  projectPath: string,
+  config: ClaudeConfig,
+  registry: ModuleRegistry,
+  templatesPath: string,
+  options: InitOptions
+): Promise<void> {
+  logger.newline();
+  logger.title('Installing Configuration');
+
+  // Generate scaffold if needed
+  if (config.scaffold.type === 'full-project') {
+    const scaffoldResult = await generateScaffoldWithProgress(projectPath, {
+      type: config.scaffold.type,
+    });
+    config.scaffold.createdStructure = [
+      ...scaffoldResult.createdDirs,
+      ...scaffoldResult.createdFiles,
+    ];
+  }
+
+  // Resolve modules
+  const modulesByCategory: Record<ModuleCategory, ModuleDefinition[]> = {
+    agents: filterModules(registry, 'agents', config.modules.agents.selected),
+    skills: filterModules(registry, 'skills', config.modules.skills.selected),
+    commands: filterModules(registry, 'commands', config.modules.commands.selected),
+    docs: filterModules(registry, 'docs', config.modules.docs.selected),
+  };
+
+  // Install modules
+  const installResults = await installAllModules(modulesByCategory, {
+    templatesPath,
+    targetPath: projectPath,
+    overwrite: options.force,
+  });
+
+  // Install extras
+  await installExtras(
+    {
+      schemas: config.extras.schemas,
+      scripts: config.extras.scripts,
+      hooks: config.extras.hooks.enabled,
+      sessions: config.extras.sessions,
+    },
+    {
+      templatesPath,
+      targetPath: projectPath,
+      overwrite: options.force,
+    }
+  );
+
+  // Replace placeholders
+  if (!options.noPlaceholders) {
+    const claudePath = joinPath(projectPath, '.claude');
+    const report = await replacePlaceholders(claudePath, config.project);
+    config.customizations.placeholdersReplaced = true;
+
+    if (options.verbose) {
+      showReplacementReport(report);
+    }
+  }
+
+  // Install hooks
+  if (config.extras.hooks.enabled) {
+    const hookResult = await installHooks(projectPath, config.extras.hooks);
+    if (hookResult.errors.length > 0) {
+      logger.warn(`Hook installation warnings: ${hookResult.errors.join(', ')}`);
+    }
+  }
+
+  // Install MCP servers
+  if (config.mcp.servers.length > 0) {
+    const mcpResult = await installMcpServers(projectPath, config.mcp);
+    if (!mcpResult.success) {
+      logger.warn(`MCP installation warnings: ${mcpResult.errors.join(', ')}`);
+    }
+  }
+
+  // Install permissions
+  const permissions = config.customizations.permissions;
+  if (permissions) {
+    await installPermissions(projectPath, permissions, 'project');
+  }
+
+  // Set co-author setting
+  await setCoAuthorSetting(projectPath, config.preferences.includeCoAuthor, 'project');
+
+  // Write config
+  await writeConfig(projectPath, config);
+
+  logger.newline();
+  logger.success('Configuration installed successfully!');
+}
+
+/**
+ * Show config summary
+ */
+function showConfigSummary(config: ClaudeConfig): void {
+  logger.subtitle('Configuration');
+  logger.keyValue('Project', config.project.name);
+  logger.keyValue('Preset', 'custom');
+  logger.keyValue('Agents', String(config.modules.agents.selected.length));
+  logger.keyValue('Skills', String(config.modules.skills.selected.length));
+  logger.keyValue('Commands', String(config.modules.commands.selected.length));
+  logger.keyValue('Docs', String(config.modules.docs.selected.length));
+}
+
+/**
+ * Get templates path (bundled with package)
+ */
+function getTemplatesPath(): string {
+  // In development, templates are in the project root
+  // In production, they're bundled with the package
+  const devPath = resolvePath(__dirname, '..', '..', '..', 'templates');
+  const prodPath = resolvePath(__dirname, '..', 'templates');
+
+  // Check which one exists
+  // For now, use the dev path relative to the project
+  return resolvePath(process.cwd(), 'templates');
+}
