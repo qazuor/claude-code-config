@@ -1,8 +1,13 @@
 /**
  * Tests for MCP servers constants
  */
-import { describe, it, expect } from 'vitest';
-import { MCP_SERVERS, getMcpServer, getMcpServersByCategory, getMcpServerIds } from '../../../src/constants/mcp-servers.js';
+import { describe, expect, it } from 'vitest';
+import {
+  MCP_SERVERS,
+  getMcpServer,
+  getMcpServerIds,
+  getMcpServersByCategory,
+} from '../../../src/constants/mcp-servers.js';
 
 describe('MCP_SERVERS', () => {
   it('should have at least 5 servers defined', () => {

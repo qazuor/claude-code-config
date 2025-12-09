@@ -1,7 +1,7 @@
 /**
  * Tests for dependencies constants
  */
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { DEPENDENCIES, getDependenciesForFeature } from '../../../src/constants/dependencies.js';
 
 describe('DEPENDENCIES', () => {

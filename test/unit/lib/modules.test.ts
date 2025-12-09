@@ -1,28 +1,28 @@
+import os from 'node:os';
+import path from 'node:path';
+import fse from 'fs-extra';
 /**
  * Tests for modules lib
  */
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {
-  loadRegistry,
-  getModule,
-  getAllModules,
-  getModulesByTag,
   filterModules,
+  getAllModules,
+  getModule,
   getModuleIds,
+  getModulesByTag,
+  loadRegistry,
   validateModuleIds,
 } from '../../../src/lib/modules/registry.js';
 import {
+  checkRemovalImpact,
+  getDependents,
+  getSuggestedModules,
+  resolveAllModules,
   resolveModules,
   sortByDependencies,
-  getDependents,
-  resolveAllModules,
-  checkRemovalImpact,
-  getSuggestedModules,
 } from '../../../src/lib/modules/resolver.js';
-import fse from 'fs-extra';
-import path from 'node:path';
-import os from 'node:os';
-import type { ModuleRegistry, ModuleDefinition } from '../../../src/types/modules.js';
+import type { ModuleDefinition, ModuleRegistry } from '../../../src/types/modules.js';
 
 describe('modules lib', () => {
   let testDir: string;
@@ -52,7 +52,12 @@ describe('modules lib', () => {
       const registryData = {
         category: 'agents',
         modules: [
-          { id: 'test-agent', name: 'Test Agent', description: 'A test agent', file: 'test-agent.md' },
+          {
+            id: 'test-agent',
+            name: 'Test Agent',
+            description: 'A test agent',
+            file: 'test-agent.md',
+          },
         ],
       };
       await fse.writeJson(path.join(agentsDir, '_registry.json'), registryData);
@@ -93,7 +98,9 @@ describe('modules lib', () => {
       await fse.ensureDir(agentsDir);
       await fse.writeJson(path.join(agentsDir, '_registry.json'), {
         category: 'agents',
-        modules: [{ id: 'tagged-agent', name: 'Tagged', file: 'tagged.md', tags: ['engineering', 'core'] }],
+        modules: [
+          { id: 'tagged-agent', name: 'Tagged', file: 'tagged.md', tags: ['engineering', 'core'] },
+        ],
       });
       await fse.writeFile(path.join(agentsDir, 'tagged.md'), '# Tagged');
 
@@ -112,7 +119,9 @@ describe('modules lib', () => {
           { id: 'agent1', name: 'Agent 1', description: '', category: 'agents', file: 'agent1.md' },
           { id: 'agent2', name: 'Agent 2', description: '', category: 'agents', file: 'agent2.md' },
         ],
-        skills: [{ id: 'skill1', name: 'Skill 1', description: '', category: 'skills', file: 'skill1.md' }],
+        skills: [
+          { id: 'skill1', name: 'Skill 1', description: '', category: 'skills', file: 'skill1.md' },
+        ],
         commands: [],
         docs: [],
       };
@@ -169,9 +178,30 @@ describe('modules lib', () => {
     beforeEach(() => {
       registry = {
         agents: [
-          { id: 'a1', name: 'A1', description: '', category: 'agents', file: 'a1.md', tags: ['core', 'engineering'] },
-          { id: 'a2', name: 'A2', description: '', category: 'agents', file: 'a2.md', tags: ['quality'] },
-          { id: 'a3', name: 'A3', description: '', category: 'agents', file: 'a3.md', tags: ['engineering'] },
+          {
+            id: 'a1',
+            name: 'A1',
+            description: '',
+            category: 'agents',
+            file: 'a1.md',
+            tags: ['core', 'engineering'],
+          },
+          {
+            id: 'a2',
+            name: 'A2',
+            description: '',
+            category: 'agents',
+            file: 'a2.md',
+            tags: ['quality'],
+          },
+          {
+            id: 'a3',
+            name: 'A3',
+            description: '',
+            category: 'agents',
+            file: 'a3.md',
+            tags: ['engineering'],
+          },
         ],
         skills: [],
         commands: [],
@@ -283,9 +313,23 @@ describe('modules lib', () => {
     beforeEach(() => {
       registry = {
         agents: [
-          { id: 'a1', name: 'A1', description: '', category: 'agents', file: 'a1.md', dependencies: ['a2'] },
+          {
+            id: 'a1',
+            name: 'A1',
+            description: '',
+            category: 'agents',
+            file: 'a1.md',
+            dependencies: ['a2'],
+          },
           { id: 'a2', name: 'A2', description: '', category: 'agents', file: 'a2.md' },
-          { id: 'a3', name: 'A3', description: '', category: 'agents', file: 'a3.md', dependencies: ['a1'] },
+          {
+            id: 'a3',
+            name: 'A3',
+            description: '',
+            category: 'agents',
+            file: 'a3.md',
+            dependencies: ['a1'],
+          },
         ],
         skills: [{ id: 's1', name: 'S1', description: '', category: 'skills', file: 's1.md' }],
         commands: [],
@@ -296,8 +340,8 @@ describe('modules lib', () => {
     it('should resolve selected modules', () => {
       const result = resolveModules(registry, 'agents', ['a1']);
       expect(result.resolved.length).toBe(2); // a1 and its dependency a2
-      expect(result.resolved.map(m => m.id)).toContain('a1');
-      expect(result.resolved.map(m => m.id)).toContain('a2');
+      expect(result.resolved.map((m) => m.id)).toContain('a1');
+      expect(result.resolved.map((m) => m.id)).toContain('a2');
     });
 
     it('should report unresolved modules', () => {
@@ -308,14 +352,14 @@ describe('modules lib', () => {
     it('should handle transitive dependencies', () => {
       const result = resolveModules(registry, 'agents', ['a3']);
       // a3 depends on a1, which depends on a2
-      expect(result.resolved.map(m => m.id)).toContain('a3');
-      expect(result.resolved.map(m => m.id)).toContain('a1');
-      expect(result.resolved.map(m => m.id)).toContain('a2');
+      expect(result.resolved.map((m) => m.id)).toContain('a3');
+      expect(result.resolved.map((m) => m.id)).toContain('a1');
+      expect(result.resolved.map((m) => m.id)).toContain('a2');
     });
 
     it('should not duplicate modules', () => {
       const result = resolveModules(registry, 'agents', ['a1', 'a2']);
-      const ids = result.resolved.map(m => m.id);
+      const ids = result.resolved.map((m) => m.id);
       const uniqueIds = [...new Set(ids)];
       expect(ids.length).toBe(uniqueIds.length);
     });
@@ -327,9 +371,23 @@ describe('modules lib', () => {
     beforeEach(() => {
       registry = {
         agents: [
-          { id: 'a1', name: 'A1', description: '', category: 'agents', file: 'a1.md', dependencies: ['a2'] },
+          {
+            id: 'a1',
+            name: 'A1',
+            description: '',
+            category: 'agents',
+            file: 'a1.md',
+            dependencies: ['a2'],
+          },
           { id: 'a2', name: 'A2', description: '', category: 'agents', file: 'a2.md' },
-          { id: 'a3', name: 'A3', description: '', category: 'agents', file: 'a3.md', dependencies: ['a2'] },
+          {
+            id: 'a3',
+            name: 'A3',
+            description: '',
+            category: 'agents',
+            file: 'a3.md',
+            dependencies: ['a2'],
+          },
         ],
         skills: [],
         commands: [],
@@ -340,8 +398,8 @@ describe('modules lib', () => {
     it('should find modules that depend on a given module', () => {
       const dependents = getDependents(registry, 'agents', 'a2');
       expect(dependents.length).toBe(2);
-      expect(dependents.map(m => m.id)).toContain('a1');
-      expect(dependents.map(m => m.id)).toContain('a3');
+      expect(dependents.map((m) => m.id)).toContain('a1');
+      expect(dependents.map((m) => m.id)).toContain('a3');
     });
 
     it('should return empty array when no dependents', () => {
@@ -353,13 +411,20 @@ describe('modules lib', () => {
   describe('sortByDependencies', () => {
     it('should sort modules with dependencies first', () => {
       const modules: ModuleDefinition[] = [
-        { id: 'a1', name: 'A1', description: '', category: 'agents', file: 'a1.md', dependencies: ['a2'] },
+        {
+          id: 'a1',
+          name: 'A1',
+          description: '',
+          category: 'agents',
+          file: 'a1.md',
+          dependencies: ['a2'],
+        },
         { id: 'a2', name: 'A2', description: '', category: 'agents', file: 'a2.md' },
       ];
 
       const sorted = sortByDependencies(modules);
-      const a1Index = sorted.findIndex(m => m.id === 'a1');
-      const a2Index = sorted.findIndex(m => m.id === 'a2');
+      const a1Index = sorted.findIndex((m) => m.id === 'a1');
+      const a2Index = sorted.findIndex((m) => m.id === 'a2');
 
       // a2 should come before a1 since a1 depends on a2
       expect(a2Index).toBeLessThan(a1Index);
@@ -377,15 +442,29 @@ describe('modules lib', () => {
 
     it('should handle chain of dependencies', () => {
       const modules: ModuleDefinition[] = [
-        { id: 'a3', name: 'A3', description: '', category: 'agents', file: 'a3.md', dependencies: ['a2'] },
+        {
+          id: 'a3',
+          name: 'A3',
+          description: '',
+          category: 'agents',
+          file: 'a3.md',
+          dependencies: ['a2'],
+        },
         { id: 'a1', name: 'A1', description: '', category: 'agents', file: 'a1.md' },
-        { id: 'a2', name: 'A2', description: '', category: 'agents', file: 'a2.md', dependencies: ['a1'] },
+        {
+          id: 'a2',
+          name: 'A2',
+          description: '',
+          category: 'agents',
+          file: 'a2.md',
+          dependencies: ['a1'],
+        },
       ];
 
       const sorted = sortByDependencies(modules);
-      const a1Index = sorted.findIndex(m => m.id === 'a1');
-      const a2Index = sorted.findIndex(m => m.id === 'a2');
-      const a3Index = sorted.findIndex(m => m.id === 'a3');
+      const a1Index = sorted.findIndex((m) => m.id === 'a1');
+      const a2Index = sorted.findIndex((m) => m.id === 'a2');
+      const a3Index = sorted.findIndex((m) => m.id === 'a3');
 
       // a1 should come first, then a2, then a3
       expect(a1Index).toBeLessThan(a2Index);
@@ -394,7 +473,14 @@ describe('modules lib', () => {
 
     it('should handle missing dependency in modules list', () => {
       const modules: ModuleDefinition[] = [
-        { id: 'a1', name: 'A1', description: '', category: 'agents', file: 'a1.md', dependencies: ['missing'] },
+        {
+          id: 'a1',
+          name: 'A1',
+          description: '',
+          category: 'agents',
+          file: 'a1.md',
+          dependencies: ['missing'],
+        },
       ];
 
       const sorted = sortByDependencies(modules);
@@ -412,15 +498,9 @@ describe('modules lib', () => {
           { id: 'a1', name: 'A1', description: '', category: 'agents', file: 'a1.md' },
           { id: 'a2', name: 'A2', description: '', category: 'agents', file: 'a2.md' },
         ],
-        skills: [
-          { id: 's1', name: 'S1', description: '', category: 'skills', file: 's1.md' },
-        ],
-        commands: [
-          { id: 'c1', name: 'C1', description: '', category: 'commands', file: 'c1.md' },
-        ],
-        docs: [
-          { id: 'd1', name: 'D1', description: '', category: 'docs', file: 'd1.md' },
-        ],
+        skills: [{ id: 's1', name: 'S1', description: '', category: 'skills', file: 's1.md' }],
+        commands: [{ id: 'c1', name: 'C1', description: '', category: 'commands', file: 'c1.md' }],
+        docs: [{ id: 'd1', name: 'D1', description: '', category: 'docs', file: 'd1.md' }],
       };
     });
 
@@ -432,10 +512,10 @@ describe('modules lib', () => {
         docs: ['d1'],
       });
 
-      expect(results.agents.resolved.map(m => m.id)).toContain('a1');
-      expect(results.skills.resolved.map(m => m.id)).toContain('s1');
-      expect(results.commands.resolved.map(m => m.id)).toContain('c1');
-      expect(results.docs.resolved.map(m => m.id)).toContain('d1');
+      expect(results.agents.resolved.map((m) => m.id)).toContain('a1');
+      expect(results.skills.resolved.map((m) => m.id)).toContain('s1');
+      expect(results.commands.resolved.map((m) => m.id)).toContain('c1');
+      expect(results.docs.resolved.map((m) => m.id)).toContain('d1');
     });
 
     it('should handle empty selection', () => {
@@ -471,9 +551,23 @@ describe('modules lib', () => {
     beforeEach(() => {
       registry = {
         agents: [
-          { id: 'a1', name: 'A1', description: '', category: 'agents', file: 'a1.md', dependencies: ['a2'] },
+          {
+            id: 'a1',
+            name: 'A1',
+            description: '',
+            category: 'agents',
+            file: 'a1.md',
+            dependencies: ['a2'],
+          },
           { id: 'a2', name: 'A2', description: '', category: 'agents', file: 'a2.md' },
-          { id: 'a3', name: 'A3', description: '', category: 'agents', file: 'a3.md', dependencies: ['a2'] },
+          {
+            id: 'a3',
+            name: 'A3',
+            description: '',
+            category: 'agents',
+            file: 'a3.md',
+            dependencies: ['a2'],
+          },
         ],
         skills: [],
         commands: [],
@@ -510,12 +604,40 @@ describe('modules lib', () => {
     beforeEach(() => {
       registry = {
         agents: [
-          { id: 'a1', name: 'A1', description: '', category: 'agents', file: 'a1.md', tags: ['engineering'] },
-          { id: 'a2', name: 'A2', description: '', category: 'agents', file: 'a2.md', tags: ['engineering'] },
-          { id: 'a3', name: 'A3', description: '', category: 'agents', file: 'a3.md', tags: ['quality'] },
+          {
+            id: 'a1',
+            name: 'A1',
+            description: '',
+            category: 'agents',
+            file: 'a1.md',
+            tags: ['engineering'],
+          },
+          {
+            id: 'a2',
+            name: 'A2',
+            description: '',
+            category: 'agents',
+            file: 'a2.md',
+            tags: ['engineering'],
+          },
+          {
+            id: 'a3',
+            name: 'A3',
+            description: '',
+            category: 'agents',
+            file: 'a3.md',
+            tags: ['quality'],
+          },
         ],
         skills: [
-          { id: 's1', name: 'S1', description: '', category: 'skills', file: 's1.md', tags: ['engineering'] },
+          {
+            id: 's1',
+            name: 'S1',
+            description: '',
+            category: 'skills',
+            file: 's1.md',
+            tags: ['engineering'],
+          },
         ],
         commands: [],
         docs: [],
@@ -531,7 +653,7 @@ describe('modules lib', () => {
       });
 
       // Should suggest a2 (same tag 'engineering') and s1 (same tag 'engineering')
-      const ids = suggestions.map(m => m.id);
+      const ids = suggestions.map((m) => m.id);
       expect(ids).toContain('a2');
       expect(ids).toContain('s1');
     });
@@ -544,7 +666,7 @@ describe('modules lib', () => {
         docs: [],
       });
 
-      const ids = suggestions.map(m => m.id);
+      const ids = suggestions.map((m) => m.id);
       expect(ids).not.toContain('a1');
       expect(ids).not.toContain('a2');
       expect(ids).not.toContain('s1');
@@ -619,7 +741,7 @@ describe('modules lib', () => {
       const registry = await loadRegistry(testDir);
 
       // Should not include modules from _internal
-      const secretModule = registry.agents.find(m => m.id === 'secret');
+      const secretModule = registry.agents.find((m) => m.id === 'secret');
       expect(secretModule).toBeUndefined();
     });
 
@@ -633,7 +755,7 @@ describe('modules lib', () => {
       const registry = await loadRegistry(testDir);
 
       // Should find the root level module
-      const rootModule = registry.agents.find(m => m.id === 'root-agent');
+      const rootModule = registry.agents.find((m) => m.id === 'root-agent');
       expect(rootModule).toBeDefined();
       if (rootModule) {
         expect(rootModule.name).toBe('Root Agent');
@@ -649,7 +771,7 @@ describe('modules lib', () => {
 
       const registry = await loadRegistry(testDir);
 
-      const readmeModule = registry.agents.find(m => m.id === 'README');
+      const readmeModule = registry.agents.find((m) => m.id === 'README');
       expect(readmeModule).toBeUndefined();
     });
   });
@@ -658,8 +780,22 @@ describe('modules lib', () => {
     it('should detect circular dependencies', () => {
       const registry: ModuleRegistry = {
         agents: [
-          { id: 'a1', name: 'A1', description: '', category: 'agents', file: 'a1.md', dependencies: ['a2'] },
-          { id: 'a2', name: 'A2', description: '', category: 'agents', file: 'a2.md', dependencies: ['a1'] },
+          {
+            id: 'a1',
+            name: 'A1',
+            description: '',
+            category: 'agents',
+            file: 'a1.md',
+            dependencies: ['a2'],
+          },
+          {
+            id: 'a2',
+            name: 'A2',
+            description: '',
+            category: 'agents',
+            file: 'a2.md',
+            dependencies: ['a1'],
+          },
         ],
         skills: [],
         commands: [],
@@ -675,7 +811,14 @@ describe('modules lib', () => {
     it('should handle self-referential dependency', () => {
       const registry: ModuleRegistry = {
         agents: [
-          { id: 'a1', name: 'A1', description: '', category: 'agents', file: 'a1.md', dependencies: ['a1'] },
+          {
+            id: 'a1',
+            name: 'A1',
+            description: '',
+            category: 'agents',
+            file: 'a1.md',
+            dependencies: ['a1'],
+          },
         ],
         skills: [],
         commands: [],

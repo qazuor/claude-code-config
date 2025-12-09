@@ -1,37 +1,40 @@
+import os from 'node:os';
+import path from 'node:path';
+import fse from 'fs-extra';
 /**
  * Tests for git utility
  */
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import fse from 'fs-extra';
-import path from 'node:path';
-import os from 'node:os';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Import functions to test
 import {
-  createGit,
-  isGitRepo,
-  isGitInstalled,
-  initRepo,
-  getCurrentBranch,
-  getRemoteUrl,
-  getLatestCommit,
-  getChangedFiles,
-  hasUncommittedChanges,
-  parseGitUrl,
-  getRepoInfo,
-  getRemoteBranches,
-  getTags,
-  fetch,
   checkout,
   cloneOrUpdateRepo,
+  createGit,
+  fetch,
+  getChangedFiles,
+  getCurrentBranch,
+  getLatestCommit,
+  getRemoteBranches,
+  getRemoteUrl,
+  getRepoInfo,
+  getTags,
+  hasUncommittedChanges,
+  initRepo,
+  isGitInstalled,
+  isGitRepo,
   isValidRemoteUrl,
+  parseGitUrl,
 } from '../../../src/lib/utils/git.js';
 
 describe('git utilities', () => {
   let testDir: string;
 
   beforeEach(async () => {
-    testDir = path.join(os.tmpdir(), `claude-config-git-test-${Date.now()}-${Math.random().toString(36).substring(7)}`);
+    testDir = path.join(
+      os.tmpdir(),
+      `claude-config-git-test-${Date.now()}-${Math.random().toString(36).substring(7)}`
+    );
     await fse.ensureDir(testDir);
   });
 
@@ -394,7 +397,9 @@ describe('git utilities', () => {
   describe('isValidRemoteUrl', () => {
     it('should return boolean for any URL', async () => {
       // The function may return true or false depending on network/git config
-      const result = await isValidRemoteUrl('https://github.com/nonexistent-org-12345/nonexistent-repo-67890.git');
+      const result = await isValidRemoteUrl(
+        'https://github.com/nonexistent-org-12345/nonexistent-repo-67890.git'
+      );
       expect(typeof result).toBe('boolean');
     });
 
@@ -447,7 +452,9 @@ describe('git utilities', () => {
       try {
         // This will fail because the remote doesn't exist
         // but it tests that the forceUpdate path is exercised
-        await cloneOrUpdateRepo('https://github.com/test/repo.git', existingRepo, { forceUpdate: true });
+        await cloneOrUpdateRepo('https://github.com/test/repo.git', existingRepo, {
+          forceUpdate: true,
+        });
       } catch {
         // Expected - remote doesn't exist
         expect(true).toBe(true);

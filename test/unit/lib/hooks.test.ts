@@ -1,18 +1,21 @@
+import os from 'node:os';
+import path from 'node:path';
+import fse from 'fs-extra';
 /**
  * Tests for hooks configurator
  */
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import fse from 'fs-extra';
-import path from 'node:path';
-import os from 'node:os';
-import { installHooks, getHooksStatus } from '../../../src/lib/hooks/configurator.js';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { getHooksStatus, installHooks } from '../../../src/lib/hooks/configurator.js';
 import type { HookConfig } from '../../../src/types/config.js';
 
 describe('hooks configurator', () => {
   let testDir: string;
 
   beforeEach(async () => {
-    testDir = path.join(os.tmpdir(), `claude-config-hooks-test-${Date.now()}-${Math.random().toString(36).substring(7)}`);
+    testDir = path.join(
+      os.tmpdir(),
+      `claude-config-hooks-test-${Date.now()}-${Math.random().toString(36).substring(7)}`
+    );
     await fse.ensureDir(testDir);
   });
 

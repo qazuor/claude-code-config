@@ -1,13 +1,13 @@
+import os from 'node:os';
+import path from 'node:path';
+import fse from 'fs-extra';
 /**
  * Tests for placeholders replacer
  */
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import fse from 'fs-extra';
-import path from 'node:path';
-import os from 'node:os';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
-  replaceInFile,
   replaceInDirectory,
+  replaceInFile,
   replacePlaceholders,
   showReplacementReport,
 } from '../../../src/lib/placeholders/replacer.js';
@@ -18,7 +18,10 @@ describe('placeholders replacer', () => {
   let testDir: string;
 
   beforeEach(async () => {
-    testDir = path.join(os.tmpdir(), `claude-config-placeholders-test-${Date.now()}-${Math.random().toString(36).substring(7)}`);
+    testDir = path.join(
+      os.tmpdir(),
+      `claude-config-placeholders-test-${Date.now()}-${Math.random().toString(36).substring(7)}`
+    );
     await fse.ensureDir(testDir);
   });
 

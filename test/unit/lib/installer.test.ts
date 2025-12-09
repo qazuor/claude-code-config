@@ -1,17 +1,17 @@
+import os from 'node:os';
+import path from 'node:path';
+import fse from 'fs-extra';
 /**
  * Tests for module installer
  */
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import fse from 'fs-extra';
-import path from 'node:path';
-import os from 'node:os';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {
-  installModules,
-  installAllModules,
-  uninstallModule,
-  isModuleInstalled,
   getInstalledModules,
+  installAllModules,
   installExtras,
+  installModules,
+  isModuleInstalled,
+  uninstallModule,
 } from '../../../src/lib/modules/installer.js';
 import type { ModuleDefinition } from '../../../src/types/modules.js';
 
@@ -21,7 +21,10 @@ describe('module installer', () => {
   let targetDir: string;
 
   beforeEach(async () => {
-    testDir = path.join(os.tmpdir(), `claude-config-installer-test-${Date.now()}-${Math.random().toString(36).substring(7)}`);
+    testDir = path.join(
+      os.tmpdir(),
+      `claude-config-installer-test-${Date.now()}-${Math.random().toString(36).substring(7)}`
+    );
     templatesDir = path.join(testDir, 'templates');
     targetDir = path.join(testDir, 'target');
 
@@ -39,7 +42,10 @@ describe('module installer', () => {
     // Create sample module files
     await fse.writeFile(path.join(templatesDir, 'agents', 'tech-lead.md'), '# Tech Lead Agent');
     await fse.writeFile(path.join(templatesDir, 'agents', 'qa-engineer.md'), '# QA Engineer Agent');
-    await fse.writeFile(path.join(templatesDir, 'skills', 'tdd-methodology.md'), '# TDD Methodology');
+    await fse.writeFile(
+      path.join(templatesDir, 'skills', 'tdd-methodology.md'),
+      '# TDD Methodology'
+    );
     await fse.writeFile(path.join(templatesDir, 'commands', 'commit.md'), '# Commit Command');
     await fse.writeFile(path.join(templatesDir, 'docs', 'quick-start.md'), '# Quick Start');
     await fse.writeFile(path.join(templatesDir, 'schemas', 'config.schema.json'), '{}');
@@ -57,7 +63,13 @@ describe('module installer', () => {
   describe('installModules', () => {
     it('should install modules from templates', async () => {
       const modules: ModuleDefinition[] = [
-        { id: 'tech-lead', name: 'Tech Lead', description: '', category: 'agents', file: 'tech-lead.md' },
+        {
+          id: 'tech-lead',
+          name: 'Tech Lead',
+          description: '',
+          category: 'agents',
+          file: 'tech-lead.md',
+        },
       ];
 
       const result = await installModules('agents', modules, {
@@ -74,8 +86,20 @@ describe('module installer', () => {
 
     it('should install multiple modules', async () => {
       const modules: ModuleDefinition[] = [
-        { id: 'tech-lead', name: 'Tech Lead', description: '', category: 'agents', file: 'tech-lead.md' },
-        { id: 'qa-engineer', name: 'QA Engineer', description: '', category: 'agents', file: 'qa-engineer.md' },
+        {
+          id: 'tech-lead',
+          name: 'Tech Lead',
+          description: '',
+          category: 'agents',
+          file: 'tech-lead.md',
+        },
+        {
+          id: 'qa-engineer',
+          name: 'QA Engineer',
+          description: '',
+          category: 'agents',
+          file: 'qa-engineer.md',
+        },
       ];
 
       const result = await installModules('agents', modules, {
@@ -89,7 +113,13 @@ describe('module installer', () => {
 
     it('should skip existing modules when overwrite is false', async () => {
       const modules: ModuleDefinition[] = [
-        { id: 'tech-lead', name: 'Tech Lead', description: '', category: 'agents', file: 'tech-lead.md' },
+        {
+          id: 'tech-lead',
+          name: 'Tech Lead',
+          description: '',
+          category: 'agents',
+          file: 'tech-lead.md',
+        },
       ];
 
       // Pre-install
@@ -111,7 +141,13 @@ describe('module installer', () => {
 
     it('should overwrite when overwrite is true', async () => {
       const modules: ModuleDefinition[] = [
-        { id: 'tech-lead', name: 'Tech Lead', description: '', category: 'agents', file: 'tech-lead.md' },
+        {
+          id: 'tech-lead',
+          name: 'Tech Lead',
+          description: '',
+          category: 'agents',
+          file: 'tech-lead.md',
+        },
       ];
 
       // Pre-install
@@ -133,7 +169,13 @@ describe('module installer', () => {
 
     it('should fail for non-existent source files', async () => {
       const modules: ModuleDefinition[] = [
-        { id: 'nonexistent', name: 'Nonexistent', description: '', category: 'agents', file: 'nonexistent.md' },
+        {
+          id: 'nonexistent',
+          name: 'Nonexistent',
+          description: '',
+          category: 'agents',
+          file: 'nonexistent.md',
+        },
       ];
 
       const result = await installModules('agents', modules, {
@@ -148,7 +190,13 @@ describe('module installer', () => {
 
     it('should support dry run mode', async () => {
       const modules: ModuleDefinition[] = [
-        { id: 'tech-lead', name: 'Tech Lead', description: '', category: 'agents', file: 'tech-lead.md' },
+        {
+          id: 'tech-lead',
+          name: 'Tech Lead',
+          description: '',
+          category: 'agents',
+          file: 'tech-lead.md',
+        },
       ];
 
       const result = await installModules('agents', modules, {
@@ -169,16 +217,40 @@ describe('module installer', () => {
     it('should install modules for all categories', async () => {
       const modulesByCategory = {
         agents: [
-          { id: 'tech-lead', name: 'Tech Lead', description: '', category: 'agents' as const, file: 'tech-lead.md' },
+          {
+            id: 'tech-lead',
+            name: 'Tech Lead',
+            description: '',
+            category: 'agents' as const,
+            file: 'tech-lead.md',
+          },
         ],
         skills: [
-          { id: 'tdd-methodology', name: 'TDD', description: '', category: 'skills' as const, file: 'tdd-methodology.md' },
+          {
+            id: 'tdd-methodology',
+            name: 'TDD',
+            description: '',
+            category: 'skills' as const,
+            file: 'tdd-methodology.md',
+          },
         ],
         commands: [
-          { id: 'commit', name: 'Commit', description: '', category: 'commands' as const, file: 'commit.md' },
+          {
+            id: 'commit',
+            name: 'Commit',
+            description: '',
+            category: 'commands' as const,
+            file: 'commit.md',
+          },
         ],
         docs: [
-          { id: 'quick-start', name: 'Quick Start', description: '', category: 'docs' as const, file: 'quick-start.md' },
+          {
+            id: 'quick-start',
+            name: 'Quick Start',
+            description: '',
+            category: 'docs' as const,
+            file: 'quick-start.md',
+          },
         ],
       };
 
@@ -214,7 +286,13 @@ describe('module installer', () => {
   describe('uninstallModule', () => {
     it('should uninstall installed module', async () => {
       const modules: ModuleDefinition[] = [
-        { id: 'tech-lead', name: 'Tech Lead', description: '', category: 'agents', file: 'tech-lead.md' },
+        {
+          id: 'tech-lead',
+          name: 'Tech Lead',
+          description: '',
+          category: 'agents',
+          file: 'tech-lead.md',
+        },
       ];
 
       await installModules('agents', modules, {
@@ -239,7 +317,13 @@ describe('module installer', () => {
   describe('isModuleInstalled', () => {
     it('should return true for installed module', async () => {
       const modules: ModuleDefinition[] = [
-        { id: 'tech-lead', name: 'Tech Lead', description: '', category: 'agents', file: 'tech-lead.md' },
+        {
+          id: 'tech-lead',
+          name: 'Tech Lead',
+          description: '',
+          category: 'agents',
+          file: 'tech-lead.md',
+        },
       ];
 
       await installModules('agents', modules, {
@@ -265,8 +349,20 @@ describe('module installer', () => {
 
     it('should return installed module ids', async () => {
       const modules: ModuleDefinition[] = [
-        { id: 'tech-lead', name: 'Tech Lead', description: '', category: 'agents', file: 'tech-lead.md' },
-        { id: 'qa-engineer', name: 'QA Engineer', description: '', category: 'agents', file: 'qa-engineer.md' },
+        {
+          id: 'tech-lead',
+          name: 'Tech Lead',
+          description: '',
+          category: 'agents',
+          file: 'tech-lead.md',
+        },
+        {
+          id: 'qa-engineer',
+          name: 'QA Engineer',
+          description: '',
+          category: 'agents',
+          file: 'qa-engineer.md',
+        },
       ];
 
       await installModules('agents', modules, {

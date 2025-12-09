@@ -1,26 +1,29 @@
+import os from 'node:os';
+import path from 'node:path';
+import fse from 'fs-extra';
 /**
  * Tests for permissions configurator
  */
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import fse from 'fs-extra';
-import path from 'node:path';
-import os from 'node:os';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { PERMISSION_PRESETS } from '../../../src/constants/permissions.js';
 import {
-  installPermissions,
+  analyzePermissions,
   getCurrentPermissions,
-  setCoAuthorSetting,
+  installPermissions,
   mergePermissions,
   resetPermissionsToPreset,
-  analyzePermissions,
+  setCoAuthorSetting,
 } from '../../../src/lib/permissions/configurator.js';
-import { PERMISSION_PRESETS } from '../../../src/constants/permissions.js';
 import type { PermissionsConfig } from '../../../src/types/permissions.js';
 
 describe('permissions configurator', () => {
   let testDir: string;
 
   beforeEach(async () => {
-    testDir = path.join(os.tmpdir(), `claude-config-permissions-test-${Date.now()}-${Math.random().toString(36).substring(7)}`);
+    testDir = path.join(
+      os.tmpdir(),
+      `claude-config-permissions-test-${Date.now()}-${Math.random().toString(36).substring(7)}`
+    );
     await fse.ensureDir(testDir);
   });
 

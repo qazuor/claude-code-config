@@ -1,8 +1,13 @@
 /**
  * Tests for presets constants
  */
-import { describe, it, expect } from 'vitest';
-import { PRESETS, getPreset, getPresetNames, isModuleInPreset } from '../../../src/constants/presets.js';
+import { describe, expect, it } from 'vitest';
+import {
+  PRESETS,
+  getPreset,
+  getPresetNames,
+  isModuleInPreset,
+} from '../../../src/constants/presets.js';
 import type { PresetName } from '../../../src/types/presets.js';
 
 describe('PRESETS', () => {
@@ -23,15 +28,17 @@ describe('PRESETS', () => {
 
   it('should export getPresetNames function', () => {
     const names = getPresetNames();
-    expect(names).toEqual(expect.arrayContaining([
-      'fullstack',
-      'frontend',
-      'backend',
-      'minimal',
-      'api-only',
-      'documentation',
-      'quality-focused',
-    ]));
+    expect(names).toEqual(
+      expect.arrayContaining([
+        'fullstack',
+        'frontend',
+        'backend',
+        'minimal',
+        'api-only',
+        'documentation',
+        'quality-focused',
+      ])
+    );
   });
 
   describe('each preset', () => {

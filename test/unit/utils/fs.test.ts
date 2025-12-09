@@ -1,17 +1,20 @@
+import os from 'node:os';
+import path from 'node:path';
+import fse from 'fs-extra';
 /**
  * Tests for fs utility
  */
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import * as fsUtils from '../../../src/lib/utils/fs.js';
-import fse from 'fs-extra';
-import path from 'node:path';
-import os from 'node:os';
 
 describe('fs utilities', () => {
   let testDir: string;
 
   beforeEach(async () => {
-    testDir = path.join(os.tmpdir(), `claude-config-fs-test-${Date.now()}-${Math.random().toString(36).substring(7)}`);
+    testDir = path.join(
+      os.tmpdir(),
+      `claude-config-fs-test-${Date.now()}-${Math.random().toString(36).substring(7)}`
+    );
     await fse.ensureDir(testDir);
   });
 
@@ -199,9 +202,9 @@ describe('fs utilities', () => {
       // Use absolute path glob pattern instead of cwd
       const files = await fsUtils.listFiles(path.join(testDir, '*.ts'));
       // Files should be found (may include full path)
-      expect(files.some(f => f.endsWith('file1.ts'))).toBe(true);
-      expect(files.some(f => f.endsWith('file2.ts'))).toBe(true);
-      expect(files.some(f => f.endsWith('file.js'))).toBe(false);
+      expect(files.some((f) => f.endsWith('file1.ts'))).toBe(true);
+      expect(files.some((f) => f.endsWith('file2.ts'))).toBe(true);
+      expect(files.some((f) => f.endsWith('file.js'))).toBe(false);
     });
 
     it('should support glob patterns', async () => {
@@ -526,9 +529,9 @@ describe('fs utilities', () => {
 
       const files = await fsUtils.readDirRecursive(dir, { extensions: ['ts', 'js'] });
       expect(files.length).toBe(2);
-      expect(files.some(f => f.endsWith('.ts'))).toBe(true);
-      expect(files.some(f => f.endsWith('.js'))).toBe(true);
-      expect(files.some(f => f.endsWith('.md'))).toBe(false);
+      expect(files.some((f) => f.endsWith('.ts'))).toBe(true);
+      expect(files.some((f) => f.endsWith('.js'))).toBe(true);
+      expect(files.some((f) => f.endsWith('.md'))).toBe(false);
     });
   });
 
@@ -575,7 +578,9 @@ describe('fs utilities', () => {
 
     it('should not throw for non-existent file', async () => {
       // On Unix it will throw, but the function catches it
-      await expect(fsUtils.makeExecutable(path.join(testDir, 'nonexistent'))).resolves.not.toThrow();
+      await expect(
+        fsUtils.makeExecutable(path.join(testDir, 'nonexistent'))
+      ).resolves.not.toThrow();
     });
   });
 

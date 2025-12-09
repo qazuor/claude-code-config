@@ -1,7 +1,7 @@
 /**
  * Test setup file
  */
-import { vi, beforeEach, afterEach } from 'vitest';
+import { afterEach, beforeEach, vi } from 'vitest';
 
 // Reset all mocks before each test
 beforeEach(() => {

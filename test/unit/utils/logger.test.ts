@@ -1,8 +1,8 @@
 /**
  * Tests for logger utility
  */
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { logger, colors } from '../../../src/lib/utils/logger.js';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { colors, logger } from '../../../src/lib/utils/logger.js';
 
 describe('logger', () => {
   let consoleSpy: ReturnType<typeof vi.spyOn>;
@@ -127,7 +127,13 @@ describe('logger', () => {
 
   describe('table method', () => {
     it('should render a table', () => {
-      logger.table(['Col1', 'Col2'], [['a', 'b'], ['c', 'd']]);
+      logger.table(
+        ['Col1', 'Col2'],
+        [
+          ['a', 'b'],
+          ['c', 'd'],
+        ]
+      );
       expect(consoleSpy).toHaveBeenCalled();
     });
   });

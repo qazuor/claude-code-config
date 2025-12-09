@@ -1,13 +1,13 @@
 /**
  * Tests for placeholders constants
  */
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import {
   PLACEHOLDERS,
   applyTransform,
+  getOptionalPlaceholders,
   getPlaceholder,
   getRequiredPlaceholders,
-  getOptionalPlaceholders,
 } from '../../../src/constants/placeholders.js';
 
 describe('PLACEHOLDERS', () => {
@@ -21,9 +21,9 @@ describe('PLACEHOLDERS', () => {
       expect(typeof placeholder.description).toBe('string');
 
       expect(placeholder.pattern).toBeDefined();
-      expect(
-        typeof placeholder.pattern === 'string' || placeholder.pattern instanceof RegExp
-      ).toBe(true);
+      expect(typeof placeholder.pattern === 'string' || placeholder.pattern instanceof RegExp).toBe(
+        true
+      );
 
       expect(placeholder.configKey).toBeDefined();
       expect(typeof placeholder.configKey).toBe('string');

@@ -1,17 +1,17 @@
 /**
  * Tests for dependencies checker
  */
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { DEPENDENCIES } from '../../../src/constants/dependencies.js';
 import {
-  getCurrentPlatform,
-  checkDependency,
   checkAllDependencies,
+  checkDependency,
   checkFeatureDependencies,
-  getInstallInstructions,
   formatDependencyReport,
+  getCurrentPlatform,
+  getInstallInstructions,
   getRequiredFeatures,
 } from '../../../src/lib/dependencies/checker.js';
-import { DEPENDENCIES } from '../../../src/constants/dependencies.js';
 import type { DependencyInfo, DependencyReport } from '../../../src/types/dependencies.js';
 
 // Mock child_process exec
@@ -118,10 +118,7 @@ describe('dependencies checker', () => {
     });
 
     it('should deduplicate dependencies across features', async () => {
-      const report = await checkFeatureDependencies([
-        'hooks',
-        'hook:notification:audio',
-      ]);
+      const report = await checkFeatureDependencies(['hooks', 'hook:notification:audio']);
       // Should have checked deps without duplicates
       const ids = report.checked.map((c) => c.id);
       const uniqueIds = [...new Set(ids)];

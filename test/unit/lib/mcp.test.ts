@@ -1,15 +1,15 @@
+import os from 'node:os';
+import path from 'node:path';
+import fse from 'fs-extra';
 /**
  * Tests for MCP configurator
  */
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import fse from 'fs-extra';
-import path from 'node:path';
-import os from 'node:os';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {
-  installMcpServers,
-  getInstalledMcpServers,
-  removeMcpServer,
   getAvailableMcpServers,
+  getInstalledMcpServers,
+  installMcpServers,
+  removeMcpServer,
   validateMcpConfig,
 } from '../../../src/lib/mcp/configurator.js';
 import type { McpConfig, McpInstallation } from '../../../src/types/config.js';
@@ -18,7 +18,10 @@ describe('mcp configurator', () => {
   let testDir: string;
 
   beforeEach(async () => {
-    testDir = path.join(os.tmpdir(), `claude-config-mcp-test-${Date.now()}-${Math.random().toString(36).substring(7)}`);
+    testDir = path.join(
+      os.tmpdir(),
+      `claude-config-mcp-test-${Date.now()}-${Math.random().toString(36).substring(7)}`
+    );
     await fse.ensureDir(testDir);
   });
 

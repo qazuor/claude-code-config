@@ -1,14 +1,14 @@
 /**
  * Tests for permissions constants
  */
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import {
-  PERMISSION_PRESETS,
   DEFAULT_DENY_RULES,
-  getPresetPermissions,
+  PERMISSION_PRESETS,
+  PRESET_DESCRIPTIONS,
   generateAllowRules,
   generateDenyRules,
-  PRESET_DESCRIPTIONS,
+  getPresetPermissions,
 } from '../../../src/constants/permissions.js';
 
 describe('PERMISSION_PRESETS', () => {

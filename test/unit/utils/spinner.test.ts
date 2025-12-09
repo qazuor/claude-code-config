@@ -1,8 +1,8 @@
 /**
  * Tests for spinner utility
  */
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { spinner, withSpinner, createProgressTracker } from '../../../src/lib/utils/spinner.js';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { createProgressTracker, spinner, withSpinner } from '../../../src/lib/utils/spinner.js';
 
 // Mock ora
 vi.mock('ora', () => {

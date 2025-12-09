@@ -1,36 +1,39 @@
+import os from 'node:os';
+import path from 'node:path';
+import fse from 'fs-extra';
 /**
  * Tests for config lib
  */
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {
-  readConfig,
-  writeConfig,
-  hasConfig,
-  hasClaudeDir,
-  getConfigPath,
-  getClaudeDirPath,
-  createDefaultConfig,
-  updateConfig,
-  mergeConfig,
   addModulesToConfig,
-  removeModulesFromConfig,
-  getInstalledModulesFromConfig,
+  createDefaultConfig,
+  getClaudeDirPath,
+  getConfigPath,
   getConfigVersion,
+  getInstalledModulesFromConfig,
+  hasClaudeDir,
+  hasConfig,
+  mergeConfig,
   needsMigration,
+  readConfig,
   readPartialConfig,
-  updateMcpConfig,
+  removeModulesFromConfig,
+  updateConfig,
   updateExtrasConfig,
+  updateMcpConfig,
+  writeConfig,
 } from '../../../src/lib/config/index.js';
-import fse from 'fs-extra';
-import path from 'node:path';
-import os from 'node:os';
 import type { ClaudeConfig } from '../../../src/types/config.js';
 
 describe('config lib', () => {
   let testDir: string;
 
   beforeEach(async () => {
-    testDir = path.join(os.tmpdir(), `claude-config-config-test-${Date.now()}-${Math.random().toString(36).substring(7)}`);
+    testDir = path.join(
+      os.tmpdir(),
+      `claude-config-config-test-${Date.now()}-${Math.random().toString(36).substring(7)}`
+    );
     await fse.ensureDir(testDir);
   });
 
@@ -197,7 +200,11 @@ describe('config lib', () => {
     it('should read config from .claude/config.json', async () => {
       const config = createDefaultConfig({
         version: '1.0.0',
-        projectInfo: { ...createTestProjectInfo(), name: 'read-test', description: 'test description' },
+        projectInfo: {
+          ...createTestProjectInfo(),
+          name: 'read-test',
+          description: 'test description',
+        },
         preferences: createTestPreferences(),
       });
       await writeConfig(testDir, config);

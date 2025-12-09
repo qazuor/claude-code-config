@@ -1,16 +1,16 @@
+import os from 'node:os';
+import path from 'node:path';
+import fse from 'fs-extra';
 /**
  * Tests for scaffold lib
  */
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {
   detectProject,
-  getProjectName,
   getProjectDescription,
+  getProjectName,
   hasExistingClaudeConfig,
 } from '../../../src/lib/scaffold/detector.js';
-import fse from 'fs-extra';
-import path from 'node:path';
-import os from 'node:os';
 
 describe('scaffold detector', () => {
   let testDir: string;
