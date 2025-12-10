@@ -197,7 +197,7 @@ export function getSuggestedBundles(selectedModules: ModuleSelectionResult): Bun
 }
 
 /**
- * Format bundle for display
+ * Format bundle for display (short version for list names)
  */
 export function formatBundleForDisplay(bundle: BundleDefinition): string {
   const resolved = resolveBundle(bundle);
@@ -217,6 +217,142 @@ export function formatBundleForDisplay(bundle: BundleDefinition): string {
   }
 
   return `${bundle.name} (${parts.join(', ')})`;
+}
+
+/**
+ * Format bundle description with full details for selection prompts
+ * Shows detailed multiline info that appears when hovering over a choice
+ */
+export function formatBundleDetailedDescription(bundle: BundleDefinition): string {
+  const resolved = resolveBundle(bundle);
+  const lines: string[] = [];
+
+  // Main description
+  lines.push(bundle.description);
+  lines.push('');
+
+  // Responsibilities (if available)
+  if (bundle.responsibilities && bundle.responsibilities.length > 0) {
+    lines.push('📋 Responsibilities:');
+    for (const resp of bundle.responsibilities.slice(0, 3)) {
+      lines.push(`   • ${resp}`);
+    }
+    if (bundle.responsibilities.length > 3) {
+      lines.push(`   • ...and ${bundle.responsibilities.length - 3} more`);
+    }
+    lines.push('');
+  }
+
+  // Use cases (if available and no responsibilities)
+  if (bundle.useCases && bundle.useCases.length > 0 && !bundle.responsibilities?.length) {
+    lines.push('🎯 Use cases:');
+    for (const uc of bundle.useCases.slice(0, 2)) {
+      lines.push(`   • ${uc}`);
+    }
+    lines.push('');
+  }
+
+  // Modules breakdown
+  lines.push('📦 Includes:');
+  if (resolved.modules.agents.length > 0) {
+    lines.push(
+      `   🤖 Agents (${resolved.modules.agents.length}): ${resolved.modules.agents.join(', ')}`
+    );
+  }
+  if (resolved.modules.skills.length > 0) {
+    lines.push(
+      `   ⚡ Skills (${resolved.modules.skills.length}): ${resolved.modules.skills.join(', ')}`
+    );
+  }
+  if (resolved.modules.commands.length > 0) {
+    const cmds = resolved.modules.commands.map((c) => `/${c}`).join(', ');
+    lines.push(`   💻 Commands (${resolved.modules.commands.length}): ${cmds}`);
+  }
+  if (resolved.modules.docs.length > 0) {
+    const docsPreview = resolved.modules.docs.slice(0, 4);
+    const more =
+      resolved.modules.docs.length > 4 ? `, +${resolved.modules.docs.length - 4} more` : '';
+    lines.push(`   📚 Docs (${resolved.modules.docs.length}): ${docsPreview.join(', ')}${more}`);
+  }
+
+  // Tech stack
+  if (bundle.techStack && bundle.techStack.length > 0) {
+    lines.push('');
+    lines.push(`🔧 Tech: ${bundle.techStack.join(', ')}`);
+  }
+
+  // Complexity indicator
+  if (bundle.complexity) {
+    const complexityLabel =
+      bundle.complexity === 'minimal'
+        ? '⚡ Minimal - Quick setup'
+        : bundle.complexity === 'comprehensive'
+          ? '🔥 Comprehensive - Full featured'
+          : '⭐ Standard';
+    lines.push(`📊 ${complexityLabel}`);
+  }
+
+  return lines.join('\n');
+}
+
+/**
+ * Format bundle with rich multi-line description for display
+ * Use this when you can show multiple lines
+ */
+export function formatBundleRichDescription(bundle: BundleDefinition): string[] {
+  const resolved = resolveBundle(bundle);
+  const lines: string[] = [];
+
+  // Main description
+  lines.push(bundle.description);
+
+  // Responsibilities preview
+  if (bundle.responsibilities && bundle.responsibilities.length > 0) {
+    lines.push('');
+    lines.push('Responsibilities:');
+    for (const resp of bundle.responsibilities.slice(0, 3)) {
+      lines.push(`  • ${resp}`);
+    }
+    if (bundle.responsibilities.length > 3) {
+      lines.push(`  • ...and ${bundle.responsibilities.length - 3} more`);
+    }
+  }
+
+  // Use cases preview
+  if (bundle.useCases && bundle.useCases.length > 0) {
+    lines.push('');
+    lines.push('Use cases:');
+    for (const uc of bundle.useCases.slice(0, 2)) {
+      lines.push(`  • ${uc}`);
+    }
+  }
+
+  // Modules breakdown
+  lines.push('');
+  lines.push('Includes:');
+  if (resolved.modules.agents.length > 0) {
+    lines.push(`  🤖 Agents: ${resolved.modules.agents.join(', ')}`);
+  }
+  if (resolved.modules.skills.length > 0) {
+    lines.push(`  ⚡ Skills: ${resolved.modules.skills.join(', ')}`);
+  }
+  if (resolved.modules.commands.length > 0) {
+    lines.push(`  💻 Commands: /${resolved.modules.commands.join(', /')}`);
+  }
+  if (resolved.modules.docs.length > 0) {
+    const docsPreview = resolved.modules.docs.slice(0, 5);
+    const more =
+      resolved.modules.docs.length > 5 ? `, +${resolved.modules.docs.length - 5} more` : '';
+    lines.push(`  📚 Docs: ${docsPreview.join(', ')}${more}`);
+  }
+
+  // Tech stack
+  if (bundle.techStack && bundle.techStack.length > 0) {
+    lines.push('');
+    lines.push(`🔧 Tech: ${bundle.techStack.join(', ')}`);
+  }
+
+  return lines;
 }
 
 /**
