@@ -173,15 +173,22 @@ export function getModulesByTag(
 }
 
 /**
- * Filter modules by IDs
+ * Filter modules by IDs or tags
+ * Presets use tags (e.g., 'core', 'quality'), so we match both IDs and tags
  */
 export function filterModules(
   registry: ModuleRegistry,
   category: ModuleCategory,
-  ids: string[]
+  idsOrTags: string[]
 ): ModuleDefinition[] {
-  const idSet = new Set(ids);
-  return registry[category].filter((m) => idSet.has(m.id));
+  const filterSet = new Set(idsOrTags);
+  return registry[category].filter((m) => {
+    // Match by ID
+    if (filterSet.has(m.id)) return true;
+    // Match by any tag
+    if (m.tags?.some((tag) => filterSet.has(tag))) return true;
+    return false;
+  });
 }
 
 /**

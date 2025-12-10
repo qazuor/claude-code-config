@@ -254,6 +254,138 @@ describe('modules lib', () => {
       const filtered = filterModules(registry, 'agents', []);
       expect(filtered).toEqual([]);
     });
+
+    it('should filter by tag when module has tags', () => {
+      const registryWithTags: ModuleRegistry = {
+        agents: [
+          {
+            id: 'tech-lead',
+            name: 'Tech Lead',
+            description: '',
+            category: 'agents',
+            file: 'tech-lead.md',
+            tags: ['core', 'leadership'],
+          },
+          {
+            id: 'qa-engineer',
+            name: 'QA Engineer',
+            description: '',
+            category: 'agents',
+            file: 'qa-engineer.md',
+            tags: ['quality', 'testing'],
+          },
+          {
+            id: 'debugger',
+            name: 'Debugger',
+            description: '',
+            category: 'agents',
+            file: 'debugger.md',
+            tags: ['quality', 'debugging'],
+          },
+        ],
+        skills: [],
+        commands: [],
+        docs: [],
+      };
+
+      // Filter by tag 'core' should return tech-lead
+      const coreFiltered = filterModules(registryWithTags, 'agents', ['core']);
+      expect(coreFiltered.length).toBe(1);
+      expect(coreFiltered[0].id).toBe('tech-lead');
+
+      // Filter by tag 'quality' should return qa-engineer and debugger
+      const qualityFiltered = filterModules(registryWithTags, 'agents', ['quality']);
+      expect(qualityFiltered.length).toBe(2);
+      expect(qualityFiltered.map((m) => m.id)).toContain('qa-engineer');
+      expect(qualityFiltered.map((m) => m.id)).toContain('debugger');
+    });
+
+    it('should filter by both ID and tag in same query', () => {
+      const registryWithTags: ModuleRegistry = {
+        agents: [
+          {
+            id: 'tech-lead',
+            name: 'Tech Lead',
+            description: '',
+            category: 'agents',
+            file: 'tech-lead.md',
+            tags: ['core'],
+          },
+          {
+            id: 'qa-engineer',
+            name: 'QA Engineer',
+            description: '',
+            category: 'agents',
+            file: 'qa-engineer.md',
+            tags: ['quality'],
+          },
+          {
+            id: 'debugger',
+            name: 'Debugger',
+            description: '',
+            category: 'agents',
+            file: 'debugger.md',
+            tags: ['quality'],
+          },
+        ],
+        skills: [],
+        commands: [],
+        docs: [],
+      };
+
+      // Filter by tag 'core' and explicit ID 'debugger'
+      const filtered = filterModules(registryWithTags, 'agents', ['core', 'debugger']);
+      expect(filtered.length).toBe(2);
+      expect(filtered.map((m) => m.id)).toContain('tech-lead');
+      expect(filtered.map((m) => m.id)).toContain('debugger');
+    });
+
+    it('should not duplicate modules when ID and tag match same module', () => {
+      const registryWithTags: ModuleRegistry = {
+        agents: [
+          {
+            id: 'tech-lead',
+            name: 'Tech Lead',
+            description: '',
+            category: 'agents',
+            file: 'tech-lead.md',
+            tags: ['core'],
+          },
+        ],
+        skills: [],
+        commands: [],
+        docs: [],
+      };
+
+      // Filter by both ID 'tech-lead' and tag 'core' (both match same module)
+      const filtered = filterModules(registryWithTags, 'agents', ['tech-lead', 'core']);
+      expect(filtered.length).toBe(1);
+      expect(filtered[0].id).toBe('tech-lead');
+    });
+
+    it('should handle modules with multiple tags', () => {
+      const registryWithTags: ModuleRegistry = {
+        agents: [
+          {
+            id: 'fullstack-dev',
+            name: 'Fullstack Dev',
+            description: '',
+            category: 'agents',
+            file: 'fullstack-dev.md',
+            tags: ['frontend', 'backend', 'core'],
+          },
+        ],
+        skills: [],
+        commands: [],
+        docs: [],
+      };
+
+      // Any matching tag should return the module
+      expect(filterModules(registryWithTags, 'agents', ['frontend']).length).toBe(1);
+      expect(filterModules(registryWithTags, 'agents', ['backend']).length).toBe(1);
+      expect(filterModules(registryWithTags, 'agents', ['core']).length).toBe(1);
+      expect(filterModules(registryWithTags, 'agents', ['nonexistent']).length).toBe(0);
+    });
   });
 
   describe('getModuleIds', () => {
