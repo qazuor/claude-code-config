@@ -6,133 +6,468 @@
       "name": "TDD Methodology",
       "description": "Test-Driven Development methodology and practices",
       "file": "testing/tdd-methodology.md",
-      "tags": ["testing", "tdd", "methodology"]
+      "tags": ["testing", "tdd", "methodology", "core"],
+      "longDescription": "Comprehensive guide to Test-Driven Development (TDD) using the Red-Green-Refactor cycle. Covers writing failing tests first, implementing minimal code to pass, and refactoring for quality.",
+      "whatItDoes": [
+        "Defines TDD cycle: Red → Green → Refactor",
+        "Provides test naming conventions and patterns",
+        "Covers AAA pattern (Arrange, Act, Assert)",
+        "Includes edge case and boundary testing",
+        "Guides on test isolation and mocking"
+      ],
+      "whenToUse": "Essential for any project following TDD practices. Use when writing new features or fixing bugs.",
+      "skillLevel": "intermediate",
+      "relatedModules": ["qa-engineer", "web-app-testing", "api-app-testing"]
     },
     {
       "id": "web-app-testing",
       "name": "Web App Testing",
-      "description": "Web application testing strategies and patterns",
+      "description": "Web application testing strategies with Playwright/Vitest",
       "file": "testing/web-app-testing.md",
-      "tags": ["testing", "web", "e2e"]
+      "tags": ["testing", "web", "e2e", "playwright"],
+      "longDescription": "End-to-end testing strategies for web applications using Playwright and Testing Library. Covers component testing, integration testing, and full E2E flows.",
+      "whatItDoes": [
+        "Guides E2E testing with Playwright",
+        "Covers component testing with Testing Library",
+        "Includes visual regression testing",
+        "Handles authentication in tests",
+        "Manages test data and fixtures"
+      ],
+      "whenToUse": "When building web applications that need E2E testing. Works with React, Vue, Astro, and other frameworks.",
+      "techStack": ["Playwright", "Testing Library", "Vitest", "MSW"],
+      "skillLevel": "intermediate",
+      "relatedModules": ["react-senior-dev", "astro-engineer", "qa-engineer"]
     },
     {
       "id": "api-app-testing",
       "name": "API Testing",
-      "description": "API testing strategies and patterns",
+      "description": "API testing strategies with Vitest and Supertest",
       "file": "testing/api-app-testing.md",
-      "tags": ["testing", "api", "integration"]
+      "tags": ["testing", "api", "integration", "supertest"],
+      "longDescription": "Testing strategies for REST APIs including unit tests, integration tests, and contract testing. Covers request validation, response assertions, and error handling.",
+      "whatItDoes": [
+        "Tests API endpoints with Supertest",
+        "Validates request/response schemas",
+        "Tests authentication and authorization",
+        "Handles database mocking and seeding",
+        "Covers error response testing"
+      ],
+      "whenToUse": "When building backend APIs with Hono, Express, Fastify, or other Node.js frameworks.",
+      "techStack": ["Vitest", "Supertest", "MSW", "Zod"],
+      "skillLevel": "intermediate",
+      "relatedModules": ["hono-engineer", "qa-engineer", "db-drizzle-engineer"]
     },
     {
       "id": "performance-testing",
       "name": "Performance Testing",
-      "description": "Performance testing and optimization",
+      "description": "Performance testing, benchmarking, and optimization",
       "file": "testing/performance-testing.md",
-      "tags": ["testing", "performance", "optimization"]
+      "tags": ["testing", "performance", "optimization", "benchmarking"],
+      "longDescription": "Performance testing methodologies including load testing, stress testing, and benchmarking. Covers identifying bottlenecks, measuring response times, and optimizing performance.",
+      "whatItDoes": [
+        "Defines performance benchmarks and SLAs",
+        "Guides load and stress testing",
+        "Identifies memory leaks and bottlenecks",
+        "Measures Core Web Vitals",
+        "Provides optimization recommendations"
+      ],
+      "whenToUse": "When you need to ensure your application can handle expected load and meets performance requirements.",
+      "techStack": ["k6", "Lighthouse", "Web Vitals", "Node.js profiler"],
+      "skillLevel": "advanced",
+      "relatedModules": ["performance-audit", "react-senior-dev"]
     },
     {
       "id": "security-testing",
       "name": "Security Testing",
       "description": "Security testing and vulnerability assessment",
       "file": "testing/security-testing.md",
-      "tags": ["testing", "security", "audit"]
+      "tags": ["testing", "security", "audit", "owasp"],
+      "longDescription": "Security testing practices covering OWASP Top 10, penetration testing basics, and vulnerability scanning. Focuses on identifying and preventing common security issues.",
+      "whatItDoes": [
+        "Tests for OWASP Top 10 vulnerabilities",
+        "Validates input sanitization",
+        "Tests authentication/authorization flows",
+        "Checks for injection vulnerabilities",
+        "Validates secure headers and CORS"
+      ],
+      "whenToUse": "Essential for any application handling user data or sensitive information. Use before production deployment.",
+      "skillLevel": "advanced",
+      "relatedModules": ["security-audit", "qa-engineer"]
     },
     {
       "id": "security-audit",
       "name": "Security Audit",
-      "description": "Comprehensive security audit procedures",
+      "description": "Comprehensive security audit procedures and checklists",
       "file": "audit/security-audit.md",
-      "tags": ["audit", "security"]
+      "tags": ["audit", "security", "owasp", "compliance"],
+      "longDescription": "Complete security audit framework covering code review, dependency scanning, configuration review, and compliance verification. Provides actionable remediation steps.",
+      "whatItDoes": [
+        "Audits code for security vulnerabilities",
+        "Scans dependencies for known CVEs",
+        "Reviews security configurations",
+        "Checks compliance requirements",
+        "Generates security reports"
+      ],
+      "whenToUse": "Before major releases, after security incidents, or as part of regular security reviews.",
+      "skillLevel": "advanced",
+      "relatedModules": ["security-testing", "tech-lead"]
     },
     {
       "id": "performance-audit",
       "name": "Performance Audit",
       "description": "Performance audit and optimization recommendations",
       "file": "audit/performance-audit.md",
-      "tags": ["audit", "performance"]
+      "tags": ["audit", "performance", "optimization", "lighthouse"],
+      "longDescription": "Performance audit framework for web applications covering Lighthouse metrics, bundle analysis, rendering performance, and backend optimization opportunities.",
+      "whatItDoes": [
+        "Audits Core Web Vitals (LCP, FID, CLS)",
+        "Analyzes bundle size and code splitting",
+        "Reviews rendering performance",
+        "Identifies N+1 queries and DB issues",
+        "Provides optimization recommendations"
+      ],
+      "whenToUse": "When application feels slow, before major launches, or during performance optimization sprints.",
+      "techStack": ["Lighthouse", "webpack-bundle-analyzer", "Chrome DevTools"],
+      "skillLevel": "intermediate",
+      "relatedModules": ["performance-testing", "react-senior-dev"]
     },
     {
       "id": "accessibility-audit",
       "name": "Accessibility Audit",
-      "description": "Accessibility audit and WCAG compliance",
+      "description": "Accessibility audit and WCAG compliance checking",
       "file": "audit/accessibility-audit.md",
-      "tags": ["audit", "accessibility", "a11y"]
+      "tags": ["audit", "accessibility", "a11y", "wcag"],
+      "longDescription": "Accessibility audit procedures following WCAG 2.1 guidelines. Covers keyboard navigation, screen reader compatibility, color contrast, and semantic HTML.",
+      "whatItDoes": [
+        "Audits WCAG 2.1 Level AA compliance",
+        "Tests keyboard navigation",
+        "Validates screen reader compatibility",
+        "Checks color contrast ratios",
+        "Reviews ARIA usage and semantic HTML"
+      ],
+      "whenToUse": "Essential for public-facing applications. Use during development and before releases.",
+      "techStack": ["axe-core", "Lighthouse", "NVDA", "VoiceOver"],
+      "skillLevel": "intermediate",
+      "relatedModules": ["ux-ui-designer", "react-senior-dev"]
     },
     {
       "id": "error-handling-patterns",
       "name": "Error Handling Patterns",
       "description": "Error handling best practices and patterns",
       "file": "patterns/error-handling-patterns.md",
-      "tags": ["patterns", "errors", "best-practices"]
+      "tags": ["patterns", "errors", "best-practices"],
+      "longDescription": "Comprehensive error handling patterns for TypeScript applications. Covers Result types, custom error classes, error boundaries, and graceful degradation.",
+      "whatItDoes": [
+        "Defines custom error class hierarchies",
+        "Implements Result/Either patterns",
+        "Handles async errors properly",
+        "Creates React error boundaries",
+        "Logs errors with proper context"
+      ],
+      "whenToUse": "When setting up error handling architecture or improving existing error handling.",
+      "techStack": ["TypeScript", "React", "Zod"],
+      "skillLevel": "intermediate",
+      "relatedModules": ["node-typescript-engineer", "react-senior-dev"]
     },
     {
       "id": "git-commit-helper",
       "name": "Git Commit Helper",
       "description": "Git commit message formatting and conventions",
       "file": "git/git-commit-helper.md",
-      "tags": ["git", "commits", "conventions"]
+      "tags": ["git", "commits", "conventions", "core"],
+      "longDescription": "Conventional commit message formatting following Angular conventions. Covers commit types, scopes, breaking changes, and atomic commit practices.",
+      "whatItDoes": [
+        "Formats conventional commit messages",
+        "Defines commit types (feat, fix, refactor, etc.)",
+        "Handles breaking change notation",
+        "Enforces atomic commit practices",
+        "Generates changelog-friendly messages"
+      ],
+      "whenToUse": "Use for every commit to maintain consistent git history.",
+      "skillLevel": "beginner",
+      "relatedModules": ["tech-lead"]
     },
     {
       "id": "documentation-writer",
       "name": "Documentation Writer",
       "description": "Technical documentation writing guidelines",
       "file": "documentation/documentation-writer.md",
-      "tags": ["documentation", "writing", "docs"]
+      "tags": ["documentation", "writing", "docs"],
+      "longDescription": "Guidelines for writing clear technical documentation including API docs, README files, architecture decisions, and user guides.",
+      "whatItDoes": [
+        "Creates README and getting started guides",
+        "Documents API endpoints with examples",
+        "Writes architecture decision records (ADRs)",
+        "Generates code documentation with JSDoc",
+        "Maintains changelog and release notes"
+      ],
+      "whenToUse": "When creating or updating documentation for any project component.",
+      "skillLevel": "intermediate",
+      "relatedModules": ["tech-writer"]
     },
     {
       "id": "add-memory",
       "name": "Add Memory",
       "description": "Learning and memory management for AI agents",
       "file": "utils/add-memory.md",
-      "tags": ["utils", "memory", "learning"]
+      "tags": ["utils", "memory", "learning", "meta"],
+      "longDescription": "Skill for capturing learnings and adding them to CLAUDE.md. Helps maintain project-specific knowledge and best practices discovered during development.",
+      "whatItDoes": [
+        "Captures project-specific learnings",
+        "Updates CLAUDE.md with new knowledge",
+        "Archives old learnings when limit reached",
+        "Creates learning documentation files",
+        "Maintains searchable knowledge base"
+      ],
+      "whenToUse": "When discovering new patterns, fixing recurring issues, or learning project-specific practices.",
+      "skillLevel": "beginner",
+      "relatedModules": ["tech-lead"]
     },
     {
       "id": "pdf-creator-editor",
       "name": "PDF Creator/Editor",
       "description": "PDF document creation and editing",
       "file": "utils/pdf-creator-editor.md",
-      "tags": ["utils", "pdf", "documents"]
+      "tags": ["utils", "pdf", "documents"],
+      "longDescription": "Guidelines for creating and editing PDF documents programmatically. Covers report generation, invoice creation, and document manipulation.",
+      "whatItDoes": [
+        "Creates PDF reports and documents",
+        "Generates invoices and receipts",
+        "Adds watermarks and headers",
+        "Merges and splits PDFs",
+        "Extracts text from PDFs"
+      ],
+      "whenToUse": "When your application needs to generate or manipulate PDF documents.",
+      "techStack": ["pdf-lib", "pdfkit", "puppeteer"],
+      "skillLevel": "intermediate",
+      "relatedModules": ["node-typescript-engineer"]
     },
     {
       "id": "json-data-auditor",
       "name": "JSON Data Auditor",
       "description": "JSON data validation and auditing",
       "file": "utils/json-data-auditor.md",
-      "tags": ["utils", "json", "validation"]
+      "tags": ["utils", "json", "validation", "zod"],
+      "longDescription": "Tools and techniques for validating JSON data structures, auditing data quality, and ensuring schema compliance with Zod.",
+      "whatItDoes": [
+        "Validates JSON against Zod schemas",
+        "Audits data quality and completeness",
+        "Identifies schema violations",
+        "Transforms and migrates data",
+        "Generates validation reports"
+      ],
+      "whenToUse": "When importing data, validating API responses, or auditing database records.",
+      "techStack": ["Zod", "TypeScript"],
+      "skillLevel": "intermediate",
+      "relatedModules": ["node-typescript-engineer", "db-drizzle-engineer"]
     },
     {
       "id": "brand-guidelines",
       "name": "Brand Guidelines",
-      "description": "Brand and design system guidelines",
+      "description": "Brand and design system guidelines template",
       "file": "brand-guidelines.md",
-      "tags": ["design", "brand", "guidelines"]
+      "tags": ["design", "brand", "guidelines"],
+      "longDescription": "Template for defining brand guidelines including colors, typography, spacing, and component styles. Provides foundation for consistent UI implementation.",
+      "whatItDoes": [
+        "Defines color palette and themes",
+        "Specifies typography scale and fonts",
+        "Documents spacing and layout system",
+        "Establishes component design patterns",
+        "Guides icon and imagery usage"
+      ],
+      "whenToUse": "When starting a new project or establishing design consistency across an application.",
+      "skillLevel": "beginner",
+      "relatedModules": ["ux-ui-designer", "react-senior-dev"]
     },
     {
       "id": "qa-criteria-validator",
       "name": "QA Criteria Validator",
-      "description": "Quality assurance criteria validation",
+      "description": "Quality assurance criteria validation checklist",
       "file": "qa/qa-criteria-validator.md",
-      "tags": ["qa", "validation", "criteria"]
+      "tags": ["qa", "validation", "criteria", "checklist"],
+      "longDescription": "Validation checklist for ensuring features meet quality standards before release. Covers functionality, edge cases, performance, and user experience.",
+      "whatItDoes": [
+        "Validates acceptance criteria completion",
+        "Checks edge case handling",
+        "Verifies error state coverage",
+        "Reviews performance requirements",
+        "Ensures accessibility compliance"
+      ],
+      "whenToUse": "Before marking any feature as complete. Essential for maintaining quality standards.",
+      "skillLevel": "intermediate",
+      "relatedModules": ["qa-engineer", "tech-lead"]
     },
     {
       "id": "vercel-specialist",
       "name": "Vercel Specialist",
-      "description": "Vercel deployment and configuration",
+      "description": "Vercel deployment and configuration expertise",
       "file": "tech/vercel-specialist.md",
-      "tags": ["tech", "vercel", "deployment"]
+      "tags": ["tech", "vercel", "deployment", "edge"],
+      "longDescription": "Expertise in Vercel platform including deployment configuration, edge functions, serverless functions, environment variables, and domain management.",
+      "whatItDoes": [
+        "Configures Vercel deployments",
+        "Sets up edge and serverless functions",
+        "Manages environment variables",
+        "Configures custom domains and redirects",
+        "Optimizes for Vercel's edge network"
+      ],
+      "whenToUse": "When deploying applications to Vercel or using Vercel-specific features.",
+      "techStack": ["Vercel", "Edge Functions", "Serverless"],
+      "skillLevel": "intermediate",
+      "relatedModules": ["astro-engineer", "tanstack-start-engineer"]
     },
     {
       "id": "shadcn-specialist",
       "name": "Shadcn Specialist",
-      "description": "Shadcn UI component library usage",
+      "description": "Shadcn UI component library expertise",
       "file": "tech/shadcn-specialist.md",
-      "tags": ["tech", "shadcn", "ui"]
+      "tags": ["tech", "shadcn", "ui", "tailwind"],
+      "longDescription": "Expertise in Shadcn UI component library including installation, customization, theming, and best practices for building accessible React components.",
+      "whatItDoes": [
+        "Installs and configures Shadcn components",
+        "Customizes component styles and variants",
+        "Implements dark mode and theming",
+        "Composes complex UI from primitives",
+        "Ensures accessibility in components"
+      ],
+      "whenToUse": "When building React applications with Shadcn UI component library.",
+      "techStack": ["Shadcn UI", "Radix UI", "Tailwind CSS", "React"],
+      "skillLevel": "intermediate",
+      "relatedModules": ["react-senior-dev", "ux-ui-designer"]
     },
     {
       "id": "mermaid-diagram-specialist",
       "name": "Mermaid Diagram Specialist",
       "description": "Mermaid diagram creation and formatting",
       "file": "tech/mermaid-diagram-specialist.md",
-      "tags": ["tech", "mermaid", "diagrams"]
+      "tags": ["tech", "mermaid", "diagrams", "documentation"],
+      "longDescription": "Expertise in creating Mermaid diagrams for documentation including flowcharts, sequence diagrams, entity-relationship diagrams, and architecture visualizations.",
+      "whatItDoes": [
+        "Creates flowcharts and decision trees",
+        "Designs sequence diagrams",
+        "Builds ER diagrams for databases",
+        "Visualizes architecture and data flow",
+        "Formats diagrams for documentation"
+      ],
+      "whenToUse": "When documenting architecture, workflows, or system designs in markdown files.",
+      "skillLevel": "beginner",
+      "relatedModules": ["tech-writer", "product-technical"]
+    },
+    {
+      "id": "zustand-patterns",
+      "name": "Zustand Patterns",
+      "description": "Zustand state management patterns and best practices",
+      "file": "state/zustand-patterns.md",
+      "tags": ["state", "zustand", "react", "patterns"],
+      "longDescription": "Comprehensive patterns for Zustand state management in React applications. Covers store creation, slices, middleware (persist, immer, devtools), selectors, and TypeScript integration.",
+      "whatItDoes": [
+        "Creates typed Zustand stores",
+        "Implements slice pattern for modular stores",
+        "Configures persist middleware for localStorage",
+        "Uses immer middleware for immutable updates",
+        "Integrates with React Query for server state"
+      ],
+      "whenToUse": "When building React applications needing simple, lightweight client state management. Perfect for small to medium apps.",
+      "techStack": ["Zustand", "React", "TypeScript", "Immer"],
+      "skillLevel": "intermediate",
+      "alternativeTo": ["redux-toolkit-patterns"],
+      "relatedModules": ["react-senior-dev", "tanstack-query-patterns"]
+    },
+    {
+      "id": "redux-toolkit-patterns",
+      "name": "Redux Toolkit Patterns",
+      "description": "Redux Toolkit state management patterns",
+      "file": "state/redux-toolkit-patterns.md",
+      "tags": ["state", "redux", "rtk", "react", "patterns"],
+      "longDescription": "Expert patterns for Redux Toolkit (RTK) including store setup, slices, async thunks, RTK Query for data fetching, and TypeScript integration with typed hooks.",
+      "whatItDoes": [
+        "Configures Redux store with typed hooks",
+        "Creates slices with reducers and actions",
+        "Implements async thunks with error handling",
+        "Sets up RTK Query for API integration",
+        "Uses selectors with createSelector"
+      ],
+      "whenToUse": "When building large-scale React applications with complex state interactions, or when team prefers Redux patterns.",
+      "techStack": ["Redux Toolkit", "RTK Query", "React", "TypeScript"],
+      "skillLevel": "intermediate",
+      "alternativeTo": ["zustand-patterns"],
+      "relatedModules": ["react-senior-dev", "tanstack-query-patterns"]
+    },
+    {
+      "id": "tanstack-query-patterns",
+      "name": "TanStack Query Patterns",
+      "description": "TanStack Query (React Query) server state management",
+      "file": "state/tanstack-query-patterns.md",
+      "tags": ["state", "react-query", "tanstack", "data-fetching", "patterns"],
+      "longDescription": "Expert patterns for TanStack Query server state management including queries, mutations, infinite queries, optimistic updates, prefetching, and cache management.",
+      "whatItDoes": [
+        "Configures QueryClient with defaults",
+        "Creates typed queries with error handling",
+        "Implements mutations with cache invalidation",
+        "Uses infinite queries for pagination",
+        "Implements optimistic updates for better UX"
+      ],
+      "whenToUse": "Essential for any React application fetching data from APIs. Handles caching, background updates, and server state.",
+      "techStack": ["TanStack Query", "React", "TypeScript"],
+      "skillLevel": "intermediate",
+      "relatedModules": ["react-senior-dev", "hono-engineer", "nextjs-engineer"]
+    },
+    {
+      "id": "react-hook-form-patterns",
+      "name": "React Hook Form Patterns",
+      "description": "React Hook Form with Zod validation patterns",
+      "file": "react/react-hook-form-patterns.md",
+      "tags": ["forms", "react", "zod", "validation", "patterns"],
+      "longDescription": "Expert patterns for React Hook Form with Zod validation including basic forms, nested objects, arrays with useFieldArray, controlled components, file uploads, and multi-step forms.",
+      "whatItDoes": [
+        "Creates forms with Zod schema validation",
+        "Handles nested objects and arrays",
+        "Uses Controller for controlled components",
+        "Integrates with Shadcn UI components",
+        "Implements multi-step form wizards"
+      ],
+      "whenToUse": "When building forms in React applications. Provides performant form handling with minimal re-renders and great TypeScript support.",
+      "techStack": ["React Hook Form", "Zod", "React", "TypeScript"],
+      "skillLevel": "intermediate",
+      "relatedModules": ["react-senior-dev", "shadcn-specialist", "nextjs-engineer"]
+    },
+    {
+      "id": "nextauth-patterns",
+      "name": "NextAuth.js Patterns",
+      "description": "NextAuth.js (Auth.js) authentication patterns",
+      "file": "auth/nextauth-patterns.md",
+      "tags": ["auth", "nextauth", "next.js", "oauth", "patterns"],
+      "longDescription": "Expert patterns for NextAuth.js authentication in Next.js applications. Covers OAuth providers, credentials provider, JWT/session strategies, middleware protection, and role-based access control.",
+      "whatItDoes": [
+        "Configures multiple OAuth providers",
+        "Implements credentials-based authentication",
+        "Protects routes with middleware",
+        "Handles session in server/client components",
+        "Implements role-based access control"
+      ],
+      "whenToUse": "When building Next.js applications that need authentication. Supports OAuth providers (GitHub, Google, etc.) and custom credentials.",
+      "techStack": ["NextAuth.js", "Auth.js", "Next.js", "Prisma"],
+      "skillLevel": "intermediate",
+      "relatedModules": ["nextjs-engineer", "prisma-engineer"]
+    },
+    {
+      "id": "i18n-patterns",
+      "name": "i18n Patterns",
+      "description": "Internationalization patterns for React/Next.js",
+      "file": "i18n/i18n-patterns.md",
+      "tags": ["i18n", "internationalization", "next-intl", "react-i18next", "patterns"],
+      "longDescription": "Expert patterns for internationalization in React and Next.js applications. Covers next-intl and react-i18next setup, translation file management, pluralization, formatting, and RTL support.",
+      "whatItDoes": [
+        "Sets up next-intl for Next.js apps",
+        "Configures react-i18next for React apps",
+        "Manages translation JSON files",
+        "Handles pluralization and interpolation",
+        "Formats dates, numbers, and currency"
+      ],
+      "whenToUse": "When building applications that need to support multiple languages or locales.",
+      "techStack": ["next-intl", "react-i18next", "Next.js", "React"],
+      "skillLevel": "intermediate",
+      "relatedModules": ["nextjs-engineer", "react-senior-dev", "i18n-specialist"]
     }
   ]
 }
