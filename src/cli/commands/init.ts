@@ -4,6 +4,7 @@
 
 import { Command } from 'commander';
 import { getPreset } from '../../constants/presets.js';
+import { installCodeStyle, showCodeStyleInstructions } from '../../lib/code-style/index.js';
 import { writeConfig } from '../../lib/config/index.js';
 import {
   checkFeatureDependencies,
@@ -26,6 +27,11 @@ import {
 import { joinPath, resolvePath } from '../../lib/utils/fs.js';
 import { colors, logger } from '../../lib/utils/logger.js';
 import { getTemplatesPath } from '../../lib/utils/paths.js';
+import {
+  disableEscListener,
+  enableEscListener,
+  showCancelHint,
+} from '../../lib/utils/prompt-cancel.js';
 import { spinner, withSpinner } from '../../lib/utils/spinner.js';
 import type { ClaudeConfig } from '../../types/config.js';
 import type { ModuleCategory, ModuleDefinition, ModuleRegistry } from '../../types/modules.js';
@@ -33,6 +39,7 @@ import type { PresetName } from '../../types/presets.js';
 import {
   confirmFinalConfiguration,
   confirmProjectInfo,
+  promptCodeStyleConfig,
   promptExistingProjectAction,
   promptHookConfig,
   promptMcpConfig,
@@ -96,6 +103,12 @@ async function runInit(path: string | undefined, options: InitOptions): Promise<
 
   logger.title('@qazuor/claude-code-config');
   logger.info(`Initializing Claude configuration in ${colors.primary(projectPath)}`);
+
+  // Enable ESC key listener for interactive mode
+  if (!options.yes) {
+    showCancelHint();
+    enableEscListener();
+  }
 
   try {
     // Check for existing configuration
@@ -177,7 +190,11 @@ async function runInit(path: string | undefined, options: InitOptions): Promise<
 
     // Show post-install instructions
     showPostInstallInstructions(config);
+
+    // Disable ESC listener after successful completion
+    disableEscListener();
   } catch (error) {
+    disableEscListener();
     spinner.fail();
     logger.error(`Initialization failed: ${error instanceof Error ? error.message : error}`);
     process.exit(1);
@@ -301,6 +318,9 @@ async function buildInteractiveConfig(
   // Permissions configuration
   const permissionsConfig = await promptPermissionsConfig();
 
+  // Code style configuration
+  const codeStyleConfig = await promptCodeStyleConfig();
+
   return {
     version: VERSION,
     templateSource: {
@@ -321,6 +341,7 @@ async function buildInteractiveConfig(
       scripts: preset?.extras.scripts ?? false,
       hooks: hookConfig,
       sessions: preset?.extras.sessions ?? false,
+      codeStyle: codeStyleConfig,
     },
     scaffold: {
       type: scaffoldOptions.type,
@@ -478,11 +499,26 @@ async function executeInstallation(
   // Set co-author setting
   await setCoAuthorSetting(projectPath, config.preferences.includeCoAuthor, 'project');
 
+  // Install code style configurations
+  if (config.extras.codeStyle?.enabled) {
+    const codeStyleResult = await installCodeStyle(projectPath, config.extras.codeStyle, {
+      overwrite: options.force,
+    });
+    if (codeStyleResult.errors.length > 0) {
+      logger.warn(`Code style installation warnings: ${codeStyleResult.errors.join(', ')}`);
+    }
+  }
+
   // Write config
   await writeConfig(projectPath, config);
 
   logger.newline();
   logger.success('Configuration installed successfully!');
+
+  // Show code style instructions if needed
+  if (config.extras.codeStyle?.enabled) {
+    showCodeStyleInstructions(config.extras.codeStyle);
+  }
 }
 
 /**
@@ -497,4 +533,3 @@ function showConfigSummary(config: ClaudeConfig): void {
   logger.keyValue('Commands', String(config.modules.commands.selected.length));
   logger.keyValue('Docs', String(config.modules.docs.selected.length));
 }
-
