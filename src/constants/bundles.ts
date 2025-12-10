@@ -20,6 +20,50 @@ export const BUNDLES: BundleDefinition[] = [
       'Complete stack for building React applications with TanStack Router and Start. Includes React component development, TanStack-specific patterns, and related testing/quality tools.',
     techStack: ['React', 'TanStack Start', 'TanStack Router', 'TanStack Query', 'TypeScript'],
     tags: ['react', 'tanstack', 'admin', 'spa'],
+    complexity: 'comprehensive',
+    responsibilities: [
+      'React component architecture and best practices',
+      'TanStack Router file-based routing patterns',
+      'Server state management with TanStack Query',
+      'Form handling with React Hook Form + Zod',
+      'UI components with Shadcn/Radix primitives',
+    ],
+    scope: 'Full frontend stack for React SPAs and admin dashboards',
+    useCases: [
+      'Admin dashboards and internal tools',
+      'Complex single-page applications',
+      'Data-heavy applications with tables/forms',
+      'Projects using TanStack ecosystem',
+    ],
+    moduleDetails: {
+      agents: [
+        {
+          id: 'react-senior-dev',
+          role: 'React Architecture',
+          responsibilities: ['Component design', 'State management', 'Performance optimization'],
+        },
+        {
+          id: 'tanstack-start-engineer',
+          role: 'TanStack Specialist',
+          responsibilities: ['Router setup', 'Query patterns', 'SSR configuration'],
+        },
+        {
+          id: 'ux-ui-designer',
+          role: 'UI/UX Design',
+          responsibilities: ['Component styling', 'Accessibility', 'Design system'],
+        },
+      ],
+      skills: [
+        { id: 'web-app-testing', purpose: 'React Testing Library patterns' },
+        { id: 'shadcn-specialist', purpose: 'Shadcn UI component usage' },
+        { id: 'accessibility-audit', purpose: 'WCAG compliance' },
+        { id: 'tanstack-query-patterns', purpose: 'Query/mutation patterns' },
+        { id: 'react-hook-form-patterns', purpose: 'Form validation patterns' },
+        { id: 'zustand-patterns', purpose: 'Client state management' },
+      ],
+      commands: [],
+      docs: [{ id: 'design-standards', topic: 'UI/UX design standards' }],
+    },
     modules: [
       { id: 'react-senior-dev', category: 'agents' },
       { id: 'tanstack-start-engineer', category: 'agents' },
@@ -30,6 +74,7 @@ export const BUNDLES: BundleDefinition[] = [
       { id: 'tanstack-query-patterns', category: 'skills' },
       { id: 'react-hook-form-patterns', category: 'skills' },
       { id: 'zustand-patterns', category: 'skills', optional: true },
+      { id: 'design-standards', category: 'docs', requiredBy: ['ux-ui-designer'], optional: true },
     ],
   },
   {
@@ -41,6 +86,47 @@ export const BUNDLES: BundleDefinition[] = [
       'Stack for building fast, content-focused websites with Astro and React components. Perfect for marketing sites, blogs, and documentation sites.',
     techStack: ['Astro', 'React', 'Tailwind CSS', 'MDX', 'TypeScript'],
     tags: ['astro', 'react', 'ssg', 'content'],
+    complexity: 'standard',
+    responsibilities: [
+      'Static site generation with Astro',
+      'Interactive React islands for dynamic content',
+      'SEO optimization and meta tags',
+      'Performance-first architecture',
+      'Content management with MDX',
+    ],
+    scope: 'Content-focused websites with selective interactivity',
+    useCases: [
+      'Marketing and landing pages',
+      'Documentation sites',
+      'Blogs and content platforms',
+      'Portfolio websites',
+    ],
+    moduleDetails: {
+      agents: [
+        {
+          id: 'astro-engineer',
+          role: 'Astro Specialist',
+          responsibilities: ['Routing', 'Islands architecture', 'Build optimization'],
+        },
+        {
+          id: 'react-senior-dev',
+          role: 'React Components',
+          responsibilities: ['Interactive components', 'Client hydration'],
+        },
+        {
+          id: 'seo-ai-specialist',
+          role: 'SEO Optimization',
+          responsibilities: ['Meta tags', 'Structured data', 'Performance'],
+        },
+      ],
+      skills: [
+        { id: 'web-app-testing', purpose: 'Component testing' },
+        { id: 'vercel-specialist', purpose: 'Deployment optimization' },
+        { id: 'performance-audit', purpose: 'Core Web Vitals' },
+      ],
+      commands: [],
+      docs: [],
+    },
     modules: [
       { id: 'astro-engineer', category: 'agents' },
       { id: 'react-senior-dev', category: 'agents' },
@@ -59,7 +145,56 @@ export const BUNDLES: BundleDefinition[] = [
       'Complete full-stack setup with Next.js App Router and Prisma ORM. Includes React components, Server Actions, and database patterns.',
     techStack: ['Next.js', 'React', 'Prisma', 'Tailwind CSS', 'TypeScript'],
     tags: ['nextjs', 'prisma', 'fullstack', 'react'],
+    complexity: 'comprehensive',
     alternativeTo: ['react-tanstack-stack', 'astro-react-stack'],
+    responsibilities: [
+      'Full-stack React with Next.js App Router',
+      'Database modeling with Prisma ORM',
+      'Server Actions and API routes',
+      'Authentication with NextAuth.js',
+      'Deployment on Vercel',
+    ],
+    scope: 'Complete full-stack web application development',
+    useCases: [
+      'SaaS applications',
+      'E-commerce platforms',
+      'Full-stack web apps with auth',
+      'Projects needing SSR/SSG flexibility',
+    ],
+    moduleDetails: {
+      agents: [
+        {
+          id: 'nextjs-engineer',
+          role: 'Next.js Specialist',
+          responsibilities: ['App Router', 'Server Actions', 'Caching strategies'],
+        },
+        {
+          id: 'react-senior-dev',
+          role: 'React Components',
+          responsibilities: ['Client components', 'State management'],
+        },
+        {
+          id: 'prisma-engineer',
+          role: 'Database',
+          responsibilities: ['Schema design', 'Migrations', 'Query optimization'],
+        },
+        {
+          id: 'ux-ui-designer',
+          role: 'UI/UX',
+          responsibilities: ['Design system', 'Responsive design'],
+        },
+      ],
+      skills: [
+        { id: 'web-app-testing', purpose: 'Next.js testing patterns' },
+        { id: 'shadcn-specialist', purpose: 'UI components' },
+        { id: 'vercel-specialist', purpose: 'Deployment' },
+        { id: 'tanstack-query-patterns', purpose: 'Client data fetching' },
+        { id: 'react-hook-form-patterns', purpose: 'Form handling' },
+        { id: 'nextauth-patterns', purpose: 'Authentication' },
+      ],
+      commands: [],
+      docs: [],
+    },
     modules: [
       { id: 'nextjs-engineer', category: 'agents' },
       { id: 'react-senior-dev', category: 'agents' },
@@ -82,7 +217,48 @@ export const BUNDLES: BundleDefinition[] = [
       'Backend stack using Express for APIs and Prisma for database access. Classic, well-documented stack for traditional REST APIs.',
     techStack: ['Express.js', 'Prisma', 'PostgreSQL', 'Zod', 'TypeScript'],
     tags: ['express', 'prisma', 'api', 'backend'],
+    complexity: 'standard',
     alternativeTo: ['hono-drizzle-stack'],
+    responsibilities: [
+      'RESTful API design with Express',
+      'Database access with Prisma ORM',
+      'Request validation with Zod',
+      'Error handling and logging',
+      'Authentication middleware',
+    ],
+    scope: 'Backend API development with traditional Express patterns',
+    useCases: [
+      'REST APIs for mobile apps',
+      'Backend services for SPAs',
+      'Microservices',
+      'Projects needing Express ecosystem',
+    ],
+    moduleDetails: {
+      agents: [
+        {
+          id: 'express-engineer',
+          role: 'Express Specialist',
+          responsibilities: ['Route design', 'Middleware', 'Error handling'],
+        },
+        {
+          id: 'prisma-engineer',
+          role: 'Database',
+          responsibilities: ['Schema', 'Migrations', 'Queries'],
+        },
+        {
+          id: 'node-typescript-engineer',
+          role: 'Node.js/TypeScript',
+          responsibilities: ['Type safety', 'Build config', 'Shared packages'],
+        },
+      ],
+      skills: [
+        { id: 'api-app-testing', purpose: 'API testing with supertest' },
+        { id: 'error-handling-patterns', purpose: 'Error middleware' },
+        { id: 'security-testing', purpose: 'Security best practices' },
+      ],
+      commands: [],
+      docs: [{ id: 'architecture-patterns', topic: 'API architecture patterns' }],
+    },
     modules: [
       { id: 'express-engineer', category: 'agents' },
       { id: 'prisma-engineer', category: 'agents' },
@@ -90,6 +266,7 @@ export const BUNDLES: BundleDefinition[] = [
       { id: 'api-app-testing', category: 'skills' },
       { id: 'error-handling-patterns', category: 'skills' },
       { id: 'security-testing', category: 'skills' },
+      { id: 'architecture-patterns', category: 'docs', optional: true },
     ],
   },
   {
@@ -101,7 +278,48 @@ export const BUNDLES: BundleDefinition[] = [
       'Complete backend stack using Hono for APIs and Drizzle for database access. Includes shared TypeScript packages, API testing, and quality tools.',
     techStack: ['Hono', 'Drizzle ORM', 'PostgreSQL', 'Zod', 'TypeScript'],
     tags: ['hono', 'drizzle', 'api', 'backend'],
+    complexity: 'standard',
     alternativeTo: ['express-prisma-stack'],
+    responsibilities: [
+      'High-performance APIs with Hono',
+      'Type-safe database queries with Drizzle',
+      'Schema validation with Zod',
+      'Edge-ready deployment',
+      'Monorepo-friendly architecture',
+    ],
+    scope: 'Modern, type-safe backend API development',
+    useCases: [
+      'Edge/serverless APIs',
+      'Type-safe monorepo backends',
+      'High-performance REST APIs',
+      'Projects prioritizing type safety',
+    ],
+    moduleDetails: {
+      agents: [
+        {
+          id: 'hono-engineer',
+          role: 'Hono Specialist',
+          responsibilities: ['Route handlers', 'Middleware', 'OpenAPI integration'],
+        },
+        {
+          id: 'db-drizzle-engineer',
+          role: 'Drizzle Database',
+          responsibilities: ['Schema design', 'Migrations', 'Type-safe queries'],
+        },
+        {
+          id: 'node-typescript-engineer',
+          role: 'TypeScript/Node',
+          responsibilities: ['Type inference', 'Build setup', 'Shared types'],
+        },
+      ],
+      skills: [
+        { id: 'api-app-testing', purpose: 'Hono testing patterns' },
+        { id: 'error-handling-patterns', purpose: 'Error middleware' },
+        { id: 'security-testing', purpose: 'Security validation' },
+      ],
+      commands: [],
+      docs: [{ id: 'architecture-patterns', topic: 'API architecture patterns' }],
+    },
     modules: [
       { id: 'hono-engineer', category: 'agents' },
       { id: 'db-drizzle-engineer', category: 'agents' },
@@ -109,6 +327,7 @@ export const BUNDLES: BundleDefinition[] = [
       { id: 'api-app-testing', category: 'skills' },
       { id: 'error-handling-patterns', category: 'skills' },
       { id: 'security-testing', category: 'skills' },
+      { id: 'architecture-patterns', category: 'docs', optional: true },
     ],
   },
 
@@ -124,6 +343,43 @@ export const BUNDLES: BundleDefinition[] = [
       'Everything you need for a robust testing strategy including TDD methodology, web testing, API testing, performance testing, and QA validation.',
     techStack: ['Vitest', 'Playwright', 'Testing Library', 'MSW'],
     tags: ['testing', 'tdd', 'qa', 'e2e'],
+    complexity: 'comprehensive',
+    responsibilities: [
+      'TDD workflow enforcement (Red-Green-Refactor)',
+      'Unit, integration, and E2E testing patterns',
+      'API testing with mocking and fixtures',
+      'Performance testing and benchmarking',
+      'QA validation and acceptance criteria',
+    ],
+    scope: 'Complete testing strategy from unit tests to E2E',
+    useCases: [
+      'Projects requiring 90%+ test coverage',
+      'TDD-first development workflow',
+      'API-heavy applications needing thorough testing',
+      'Projects with QA validation requirements',
+    ],
+    moduleDetails: {
+      agents: [
+        {
+          id: 'qa-engineer',
+          role: 'Quality Assurance',
+          responsibilities: [
+            'Test planning and strategy',
+            'Acceptance criteria validation',
+            'Bug triage and reporting',
+          ],
+        },
+      ],
+      skills: [
+        { id: 'tdd-methodology', purpose: 'TDD workflow and best practices' },
+        { id: 'web-app-testing', purpose: 'Frontend testing patterns' },
+        { id: 'api-app-testing', purpose: 'API and backend testing' },
+        { id: 'performance-testing', purpose: 'Performance benchmarks' },
+        { id: 'qa-criteria-validator', purpose: 'Acceptance validation' },
+      ],
+      commands: [{ id: 'run-tests', usage: '/run-tests --coverage' }],
+      docs: [{ id: 'testing-standards', topic: 'Testing conventions and standards' }],
+    },
     modules: [
       { id: 'qa-engineer', category: 'agents' },
       { id: 'tdd-methodology', category: 'skills' },
@@ -132,6 +388,8 @@ export const BUNDLES: BundleDefinition[] = [
       { id: 'performance-testing', category: 'skills' },
       { id: 'qa-criteria-validator', category: 'skills' },
       { id: 'run-tests', category: 'commands' },
+      // Doc required by QA agent and TDD skill
+      { id: 'testing-standards', category: 'docs', requiredBy: ['qa-engineer', 'tdd-methodology'] },
     ],
   },
   {
@@ -142,6 +400,27 @@ export const BUNDLES: BundleDefinition[] = [
     longDescription: 'Core testing tools for TDD development without the full QA suite.',
     techStack: ['Vitest', 'Testing Library'],
     tags: ['testing', 'tdd', 'minimal'],
+    complexity: 'minimal',
+    responsibilities: [
+      'Basic TDD workflow support',
+      'Unit and integration testing',
+      'Test execution and reporting',
+    ],
+    scope: 'Essential testing for small to medium projects',
+    useCases: [
+      'Small projects with basic testing needs',
+      'Quick prototypes needing some test coverage',
+      'Projects where full QA suite is overkill',
+    ],
+    moduleDetails: {
+      agents: [],
+      skills: [
+        { id: 'tdd-methodology', purpose: 'TDD workflow basics' },
+        { id: 'api-app-testing', purpose: 'API testing patterns' },
+      ],
+      commands: [{ id: 'run-tests', usage: '/run-tests' }],
+      docs: [],
+    },
     modules: [
       { id: 'tdd-methodology', category: 'skills' },
       { id: 'api-app-testing', category: 'skills' },
@@ -160,6 +439,58 @@ export const BUNDLES: BundleDefinition[] = [
     longDescription:
       'Comprehensive quality assurance bundle including all audit types, code review, and debugging tools.',
     tags: ['quality', 'audit', 'security', 'performance'],
+    complexity: 'comprehensive',
+    responsibilities: [
+      'Security vulnerability detection and prevention',
+      'Performance profiling and optimization guidance',
+      'Accessibility compliance (WCAG) validation',
+      'Code quality review and best practices',
+      'Bug investigation and debugging assistance',
+    ],
+    scope: 'Complete quality assurance across security, performance, and accessibility',
+    useCases: [
+      'Enterprise applications with strict security requirements',
+      'Public-facing apps needing accessibility compliance',
+      'Performance-critical applications',
+      'Projects requiring comprehensive code reviews',
+    ],
+    moduleDetails: {
+      agents: [
+        {
+          id: 'qa-engineer',
+          role: 'Quality Assurance Lead',
+          responsibilities: [
+            'Test strategy and coverage',
+            'Acceptance criteria validation',
+            'Quality metrics tracking',
+          ],
+        },
+        {
+          id: 'debugger',
+          role: 'Debug Specialist',
+          responsibilities: ['Root cause analysis', 'Bug reproduction', 'Fix verification'],
+        },
+      ],
+      skills: [
+        { id: 'security-audit', purpose: 'OWASP vulnerability scanning' },
+        { id: 'security-testing', purpose: 'Security test patterns' },
+        { id: 'performance-audit', purpose: 'Performance bottleneck detection' },
+        { id: 'performance-testing', purpose: 'Load and stress testing' },
+        { id: 'accessibility-audit', purpose: 'WCAG compliance checking' },
+        { id: 'qa-criteria-validator', purpose: 'Acceptance criteria validation' },
+      ],
+      commands: [
+        { id: 'quality-check', usage: '/quality-check' },
+        { id: 'code-check', usage: '/code-check src/' },
+        { id: 'review-code', usage: '/review-code --thorough' },
+        { id: 'review-security', usage: '/review-security' },
+        { id: 'review-performance', usage: '/review-performance' },
+      ],
+      docs: [
+        { id: 'code-standards', topic: 'Code quality standards' },
+        { id: 'atomic-commits', topic: 'Atomic commit practices' },
+      ],
+    },
     modules: [
       { id: 'qa-engineer', category: 'agents' },
       { id: 'debugger', category: 'agents' },
@@ -174,6 +505,9 @@ export const BUNDLES: BundleDefinition[] = [
       { id: 'review-code', category: 'commands' },
       { id: 'review-security', category: 'commands' },
       { id: 'review-performance', category: 'commands' },
+      // Docs required by agents
+      { id: 'code-standards', category: 'docs', requiredBy: ['qa-engineer'] },
+      { id: 'atomic-commits', category: 'docs', optional: true },
     ],
   },
   {
@@ -183,6 +517,28 @@ export const BUNDLES: BundleDefinition[] = [
     category: 'quality',
     longDescription: 'Core quality tools without the full audit suite.',
     tags: ['quality', 'minimal'],
+    complexity: 'minimal',
+    responsibilities: [
+      'Basic code quality checks',
+      'Quick code reviews',
+      'Lint and format validation',
+    ],
+    scope: 'Essential quality checks for day-to-day development',
+    useCases: [
+      'Small projects with basic quality needs',
+      'Quick PRs needing fast review',
+      'Projects where full audits are overkill',
+    ],
+    moduleDetails: {
+      agents: [],
+      skills: [],
+      commands: [
+        { id: 'quality-check', usage: '/quality-check' },
+        { id: 'code-check', usage: '/code-check' },
+        { id: 'review-code', usage: '/review-code' },
+      ],
+      docs: [],
+    },
     modules: [
       { id: 'quality-check', category: 'commands' },
       { id: 'code-check', category: 'commands' },
@@ -416,6 +772,59 @@ export const BUNDLES: BundleDefinition[] = [
     longDescription:
       'Complete planning workflow bundle including product definition, technical analysis, task breakdown, and sync to issue trackers.',
     tags: ['planning', 'workflow', 'pdr'],
+    complexity: 'comprehensive',
+    responsibilities: [
+      'Feature planning from requirements to implementation tasks',
+      'Technical analysis and architecture decision documentation',
+      'Task breakdown with atomic task methodology',
+      'Integration with issue trackers (GitHub, Linear)',
+    ],
+    scope: 'End-to-end planning workflow for features, refactors, and epics',
+    useCases: [
+      'Starting a new feature from scratch',
+      'Planning a major refactor or migration',
+      'Breaking down epics into manageable tasks',
+      'Documenting technical decisions (ADRs)',
+    ],
+    moduleDetails: {
+      agents: [
+        {
+          id: 'product-functional',
+          role: 'Product Requirements',
+          responsibilities: [
+            'Create PDR documents',
+            'Define acceptance criteria',
+            'User story mapping',
+          ],
+        },
+        {
+          id: 'product-technical',
+          role: 'Technical Analysis',
+          responsibilities: ['Architecture decisions', 'Tech stack evaluation', 'Risk assessment'],
+        },
+        {
+          id: 'tech-lead',
+          role: 'Coordination & Task Breakdown',
+          responsibilities: ['Task atomization', 'Workflow selection', 'Team coordination'],
+        },
+      ],
+      skills: [],
+      commands: [
+        { id: 'start-feature-plan', usage: '/start-feature-plan "User authentication"' },
+        { id: 'start-refactor-plan', usage: '/start-refactor-plan "Database optimization"' },
+        { id: 'sync-planning', usage: '/sync-planning' },
+      ],
+      docs: [
+        { id: 'decision-tree', topic: 'Workflow selection guide' },
+        { id: 'phase-1-planning', topic: 'Planning phase methodology' },
+        { id: 'phase-2-implementation', topic: 'Implementation phase guide' },
+        { id: 'phase-3-validation', topic: 'Validation and QA phase' },
+        { id: 'phase-4-finalization', topic: 'Closing and documentation' },
+        { id: 'pdr-template', topic: 'Product Definition Record template' },
+        { id: 'tech-analysis-template', topic: 'Technical analysis template' },
+        { id: 'todos-template', topic: 'Task tracking template' },
+      ],
+    },
     modules: [
       { id: 'product-functional', category: 'agents' },
       { id: 'product-technical', category: 'agents' },
@@ -423,14 +832,19 @@ export const BUNDLES: BundleDefinition[] = [
       { id: 'start-feature-plan', category: 'commands' },
       { id: 'start-refactor-plan', category: 'commands' },
       { id: 'sync-planning', category: 'commands' },
-      { id: 'decision-tree', category: 'docs' },
-      { id: 'phase-1-planning', category: 'docs' },
-      { id: 'phase-2-implementation', category: 'docs' },
+      // Required docs - needed for agents to work properly
+      { id: 'decision-tree', category: 'docs', requiredBy: ['tech-lead'] },
+      {
+        id: 'phase-1-planning',
+        category: 'docs',
+        requiredBy: ['product-functional', 'product-technical'],
+      },
+      { id: 'phase-2-implementation', category: 'docs', requiredBy: ['tech-lead'] },
       { id: 'phase-3-validation', category: 'docs' },
       { id: 'phase-4-finalization', category: 'docs' },
-      { id: 'pdr-template', category: 'docs' },
-      { id: 'tech-analysis-template', category: 'docs' },
-      { id: 'todos-template', category: 'docs' },
+      { id: 'pdr-template', category: 'docs', requiredBy: ['product-functional'] },
+      { id: 'tech-analysis-template', category: 'docs', requiredBy: ['product-technical'] },
+      { id: 'todos-template', category: 'docs', requiredBy: ['tech-lead'] },
     ],
   },
   {
@@ -441,15 +855,52 @@ export const BUNDLES: BundleDefinition[] = [
     longDescription:
       'Everything for comprehensive documentation including standards, templates, diagrams, and writing guidelines.',
     tags: ['documentation', 'writing', 'standards'],
+    complexity: 'standard',
+    responsibilities: [
+      'Technical documentation writing',
+      'API documentation generation',
+      'Architecture diagram creation',
+      'Markdown formatting and standards',
+      'Glossary and terminology management',
+    ],
+    scope: 'Complete documentation workflow for technical projects',
+    useCases: [
+      'Creating and maintaining project documentation',
+      'Writing API and SDK documentation',
+      'Creating architecture diagrams',
+      'Standardizing documentation across team',
+    ],
+    moduleDetails: {
+      agents: [
+        {
+          id: 'tech-writer',
+          role: 'Technical Writer',
+          responsibilities: ['Documentation structure', 'Content writing', 'Style consistency'],
+        },
+      ],
+      skills: [
+        { id: 'documentation-writer', purpose: 'Documentation best practices' },
+        { id: 'mermaid-diagram-specialist', purpose: 'Diagram creation' },
+      ],
+      commands: [
+        { id: 'update-docs', usage: '/update-docs' },
+        { id: 'markdown-format', usage: '/markdown-format' },
+      ],
+      docs: [
+        { id: 'documentation-standards', topic: 'Documentation conventions' },
+        { id: 'workflow-diagrams', topic: 'Diagram templates' },
+        { id: 'glossary', topic: 'Project terminology' },
+      ],
+    },
     modules: [
       { id: 'tech-writer', category: 'agents' },
       { id: 'documentation-writer', category: 'skills' },
       { id: 'mermaid-diagram-specialist', category: 'skills' },
       { id: 'update-docs', category: 'commands' },
       { id: 'markdown-format', category: 'commands' },
-      { id: 'documentation-standards', category: 'docs' },
-      { id: 'workflow-diagrams', category: 'docs' },
-      { id: 'glossary', category: 'docs' },
+      { id: 'documentation-standards', category: 'docs', requiredBy: ['tech-writer'] },
+      { id: 'workflow-diagrams', category: 'docs', optional: true },
+      { id: 'glossary', category: 'docs', optional: true },
     ],
   },
   {
@@ -459,9 +910,28 @@ export const BUNDLES: BundleDefinition[] = [
     category: 'workflow',
     longDescription: 'Git workflow tools including conventional commits and atomic commit helpers.',
     tags: ['git', 'commits', 'workflow'],
+    complexity: 'minimal',
+    responsibilities: [
+      'Conventional commit message formatting',
+      'Atomic commit enforcement',
+      'Commit message generation',
+    ],
+    scope: 'Git commit workflow and conventions',
+    useCases: [
+      'Enforcing commit message standards',
+      'Generating semantic commit messages',
+      'Following atomic commit practices',
+    ],
+    moduleDetails: {
+      agents: [],
+      skills: [{ id: 'git-commit-helper', purpose: 'Commit message patterns' }],
+      commands: [{ id: 'commit', usage: '/commit' }],
+      docs: [{ id: 'atomic-commits', topic: 'Atomic commit guidelines' }],
+    },
     modules: [
       { id: 'git-commit-helper', category: 'skills' },
       { id: 'commit', category: 'commands' },
+      { id: 'atomic-commits', category: 'docs', optional: true },
     ],
   },
 ];
