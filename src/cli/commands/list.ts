@@ -3,8 +3,13 @@
  */
 
 import { Command } from 'commander';
+import {
+  BUNDLE_CATEGORY_NAMES,
+  getAllBundles,
+  getBundlesGroupedByCategory,
+} from '../../constants/bundles.js';
 import { MCP_SERVERS } from '../../constants/mcp-servers.js';
-import { PRESETS, getPresetNames } from '../../constants/presets.js';
+import { formatBundleForDisplay, resolveBundle } from '../../lib/bundles/resolver.js';
 import { readConfig } from '../../lib/config/index.js';
 import { loadRegistry } from '../../lib/modules/index.js';
 import { resolvePath } from '../../lib/utils/fs.js';
@@ -15,7 +20,7 @@ import type { ModuleCategory } from '../../types/modules.js';
 interface ListOptions {
   installed?: boolean;
   available?: boolean;
-  presets?: boolean;
+  bundles?: boolean;
   mcp?: boolean;
   verbose?: boolean;
 }
@@ -25,11 +30,11 @@ interface ListOptions {
  */
 export function createListCommand(): Command {
   const cmd = new Command('list')
-    .description('List available modules, presets, or MCP servers')
-    .argument('[type]', 'Type to list (agents|skills|commands|docs|presets|mcp)')
+    .description('List available modules, bundles, or MCP servers')
+    .argument('[type]', 'Type to list (agents|skills|commands|docs|bundles|mcp)')
     .option('-i, --installed', 'Show only installed modules')
     .option('-a, --available', 'Show all available modules')
-    .option('--presets', 'List all presets')
+    .option('--bundles', 'List all bundles')
     .option('--mcp', 'List MCP servers')
     .option('-v, --verbose', 'Show detailed information')
     .action(runList);
@@ -44,9 +49,9 @@ async function runList(type: string | undefined, options: ListOptions): Promise<
   const projectPath = resolvePath('.');
 
   try {
-    // List presets
-    if (options.presets || type === 'presets') {
-      listPresets(options.verbose);
+    // List bundles
+    if (options.bundles || type === 'bundles') {
+      listBundles(options.verbose);
       return;
     }
 
@@ -130,33 +135,62 @@ function showModule(
 }
 
 /**
- * List presets
+ * List bundles
  */
-function listPresets(verbose?: boolean): void {
-  logger.title('Available Presets');
+function listBundles(verbose?: boolean): void {
+  logger.title('Available Bundles');
   logger.newline();
 
-  for (const name of getPresetNames()) {
-    const preset = PRESETS[name];
-    console.log(`  ${colors.primary(preset.displayName)} ${colors.muted(`(${name})`)}`);
-    logger.note(`    ${preset.description}`);
+  const grouped = getBundlesGroupedByCategory();
 
-    if (verbose) {
+  for (const [category, bundles] of Object.entries(grouped)) {
+    const categoryName = BUNDLE_CATEGORY_NAMES[category] || category;
+    logger.subtitle(categoryName);
+
+    for (const bundle of bundles) {
+      console.log(
+        `  ${colors.primary(formatBundleForDisplay(bundle))} ${colors.muted(`(${bundle.id})`)}`
+      );
+      logger.note(`    ${bundle.description}`);
+
+      if (verbose) {
+        const resolved = resolveBundle(bundle);
+
+        if (bundle.longDescription) {
+          logger.newline();
+          logger.note(`    ${bundle.longDescription}`);
+        }
+
+        logger.newline();
+        logger.info('    Modules:');
+        if (resolved.modules.agents.length > 0) {
+          logger.note(`      Agents: ${resolved.modules.agents.join(', ')}`);
+        }
+        if (resolved.modules.skills.length > 0) {
+          logger.note(`      Skills: ${resolved.modules.skills.join(', ')}`);
+        }
+        if (resolved.modules.commands.length > 0) {
+          logger.note(`      Commands: ${resolved.modules.commands.join(', ')}`);
+        }
+        if (resolved.modules.docs.length > 0) {
+          logger.note(`      Docs: ${resolved.modules.docs.join(', ')}`);
+        }
+
+        if (bundle.techStack && bundle.techStack.length > 0) {
+          logger.newline();
+          logger.note(`    Tech stack: ${bundle.techStack.join(', ')}`);
+        }
+
+        if (bundle.alternativeTo && bundle.alternativeTo.length > 0) {
+          logger.note(`    Alternative to: ${bundle.alternativeTo.join(', ')}`);
+        }
+      }
       logger.newline();
-      logger.info('    Modules:');
-      logger.note(`      Agents: ${preset.modules.agents.join(', ')}`);
-      logger.note(`      Skills: ${preset.modules.skills.join(', ')}`);
-      logger.note(`      Commands: ${preset.modules.commands.join(', ')}`);
-      logger.note(`      Docs: ${preset.modules.docs.join(', ')}`);
-      logger.newline();
-      logger.info('    Extras:');
-      logger.note(`      Schemas: ${preset.extras.schemas ? 'Yes' : 'No'}`);
-      logger.note(`      Scripts: ${preset.extras.scripts ? 'Yes' : 'No'}`);
-      logger.note(`      Hooks: ${preset.extras.hooks ? 'Yes' : 'No'}`);
-      logger.note(`      Sessions: ${preset.extras.sessions ? 'Yes' : 'No'}`);
     }
-    logger.newline();
   }
+
+  const allBundles = getAllBundles();
+  logger.info(`Total bundles: ${allBundles.length}`);
 }
 
 /**
