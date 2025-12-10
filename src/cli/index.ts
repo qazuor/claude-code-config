@@ -12,7 +12,7 @@ import {
 const VERSION = '0.1.0';
 
 export const program = new Command()
-  .name('claude-config')
+  .name('qazuor-claude-config')
   .description('CLI tool to install and manage Claude Code configurations')
   .version(VERSION);
 
