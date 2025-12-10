@@ -1,27 +1,44 @@
-# Web App Testing Skill
+---
+name: web-app-testing
+category: qa
+description: Comprehensive web testing strategy using unit, integration, and E2E tests
+usage: Use when implementing web features to ensure quality and coverage
+input: Feature requirements, components, test framework configuration
+output: Test suite with 90%+ coverage, E2E tests, accessibility validation
+config_required:
+  - TEST_FRAMEWORK: "Unit test framework (e.g., Vitest, Jest)"
+  - UI_FRAMEWORK: "UI library (e.g., React, Vue, Svelte)"
+  - E2E_FRAMEWORK: "E2E test framework (e.g., Playwright, Cypress)"
+  - COVERAGE_TARGET: "Minimum coverage percentage (e.g., 90%)"
+---
+
+# Web App Testing
+
+## ⚙️ Configuration
+
+| Setting | Description | Example |
+|---------|-------------|---------|
+| TEST_FRAMEWORK | Unit/integration test framework | `Vitest`, `Jest` |
+| UI_FRAMEWORK | UI library/framework | `React`, `Vue`, `Svelte` |
+| E2E_FRAMEWORK | End-to-end test framework | `Playwright`, `Cypress` |
+| COVERAGE_TARGET | Minimum coverage required | `90%` |
+| A11Y_TOOL | Accessibility testing tool | `axe-core`, `pa11y` |
+| TEST_LIBRARY | Component testing library | `Testing Library`, `Vue Test Utils` |
 
 ## Purpose
 
-Provide comprehensive testing strategy and implementation guidance for web applications using Vitest (unit/integration), React Testing Library, and Playwright (E2E), ensuring 90%+ code coverage and adherence to testing best practices.
-
----
+Comprehensive testing strategy ensuring quality, accessibility, and coverage across web applications.
 
 ## Capabilities
 
 - Design test suites (unit, integration, E2E)
-- Create test fixtures and mocks
-- Implement TDD workflow
-- Ensure 90%+ coverage
-- Test accessibility compliance
-- Test performance benchmarks
-- Test security requirements
-- Write maintainable, readable tests
+- Test components and user interactions
+- Validate accessibility (WCAG AA)
+- Measure test coverage
+- Test responsive design
+- Validate performance
 
----
-
-## Testing Philosophy
-
-### Test Pyramid
+## Test Pyramid
 
 ```text
         /\
@@ -29,526 +46,250 @@ Provide comprehensive testing strategy and implementation guidance for web appli
       /------\
      /  Int   \     15-20% - Component interactions
     /----------\
-   /    Unit    \   70-80% - Business logic, utilities
+   /    Unit    \   70-80% - Business logic
   /--------------\
-```text
+```
 
 **Distribution:**
-
-- **Unit Tests**: 70-80% - Fast, isolated, focused
-- **Integration Tests**: 15-20% - Component interactions, API calls
-- **E2E Tests**: 5-10% - Critical user flows
-
----
+- Unit Tests: 70-80% - Fast, isolated
+- Integration Tests: 15-20% - Component interactions
+- E2E Tests: 5-10% - Critical flows
 
 ## Test Structure: AAA Pattern
 
-Every test should follow **Arrange-Act-Assert**:
+Every test follows **Arrange-Act-Assert**:
 
 ```typescript
 describe('Feature', () => {
   it('should do something specific', () => {
-    // Arrange: Set up test data and conditions
+    // Arrange: Set up test data
     const input = { value: 42 };
-    const expected = 84;
 
-    // Act: Execute the behavior being tested
-    const actual = multiplyByTwo(input.value);
+    // Act: Execute behavior
+    const result = myFunction(input.value);
 
-    // Assert: Verify the outcome
-    expect(actual).toBe(expected);
+    // Assert: Verify outcome
+    expect(result).toBe(84);
   });
 });
-```text
-
----
+```
 
 ## Unit Testing
 
 ### Testing Pure Functions
 
 ```typescript
-// src/utils/price-calculator.ts
-export function calculateTotalPrice(input: {
+// utils/calculator.ts
+export function calculateTotal(input: {
   basePrice: number;
-  nights: number;
-  cleaningFee: number;
-  serviceFeePercent: number;
+  quantity: number;
+  discount: number;
 }): number {
-  const subtotal = input.basePrice * input.nights + input.cleaningFee;
-  const serviceFee = subtotal * (input.serviceFeePercent / 100);
-  return subtotal + serviceFee;
+  const subtotal = input.basePrice * input.quantity;
+  return subtotal * (1 - input.discount / 100);
 }
 
-// src/utils/price-calculator.test.ts
-import { describe, it, expect } from 'vitest';
-import { calculateTotalPrice } from './price-calculator';
+// utils/calculator.test.ts
+import { describe, it, expect } from '{{TEST_FRAMEWORK}}';
+import { calculateTotal } from './calculator';
 
-describe('calculateTotalPrice', () => {
-  it('should calculate total with all fees', () => {
-    // Arrange
+describe('calculateTotal', () => {
+  it('should calculate total with discount', () => {
     const input = {
       basePrice: 100,
-      nights: 3,
-      cleaningFee: 50,
-      serviceFeePercent: 10,
+      quantity: 3,
+      discount: 10
     };
-    const expected = 385; // (100*3 + 50) * 1.1
 
-    // Act
-    const actual = calculateTotalPrice(input);
+    const result = calculateTotal(input);
 
-    // Assert
-    expect(actual).toBe(expected);
+    expect(result).toBe(270);
   });
 
-  it('should handle zero service fee', () => {
-    // Arrange
+  it('should handle zero discount', () => {
     const input = {
       basePrice: 100,
-      nights: 2,
-      cleaningFee: 25,
-      serviceFeePercent: 0,
+      quantity: 2,
+      discount: 0
     };
-    const expected = 225;
 
-    // Act
-    const actual = calculateTotalPrice(input);
-
-    // Assert
-    expect(actual).toBe(expected);
-  });
-
-  it('should handle single night booking', () => {
-    // Arrange
-    const input = {
-      basePrice: 150,
-      nights: 1,
-      cleaningFee: 30,
-      serviceFeePercent: 5,
-    };
-    const expected = 189; // (150 + 30) * 1.05
-
-    // Act
-    const actual = calculateTotalPrice(input);
-
-    // Assert
-    expect(actual).toBe(expected);
+    expect(calculateTotal(input)).toBe(200);
   });
 });
-```text
+```
 
-### Testing Services with Mocks
-
-```typescript
-// packages/service-core/src/services/entity/entity.service.test.ts
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { EntityService } from './entity.service';
-import { EntityModel } from '@repo/db';
-import type { ServiceContext } from '@repo/types';
-
-// Mock the model
-vi.mock('@repo/db', () => ({
-  EntityModel: vi.fn(),
-}));
-
-describe('EntityService', () => {
-  let service: EntityService;
-  let mockModel: any;
-  let mockContext: ServiceContext;
-
-  beforeEach(() => {
-    // Arrange: Create mock model
-    mockModel = {
-      findById: vi.fn(),
-      findAll: vi.fn(),
-      create: vi.fn(),
-      update: vi.fn(),
-      softDelete: vi.fn(),
-    };
-
-    // Arrange: Create mock context
-    mockContext = {
-      actor: {
-        id: 'user-123',
-        role: 'owner',
-        permissions: ['entity:create'],
-      },
-      logger: {
-        info: vi.fn(),
-        error: vi.fn(),
-        warn: vi.fn(),
-      },
-    };
-
-    // Arrange: Create service instance
-    service = new EntityService(mockContext, mockModel);
-  });
-
-  describe('findById', () => {
-    it('should return entity when found', async () => {
-      // Arrange
-      const mockEntity = {
-        id: 'acc-123',
-        title: 'Beach House',
-        ownerId: 'user-123',
-      };
-      mockModel.findById.mockResolvedValue(mockEntity);
-      const input = { id: 'acc-123' };
-
-      // Act
-      const result = await service.findById(input);
-
-      // Assert
-      expect(result.success).toBe(true);
-      expect(result.data).toEqual(mockEntity);
-      expect(mockModel.findById).toHaveBeenCalledWith(input);
-    });
-
-    it('should return error when not found', async () => {
-      // Arrange
-      mockModel.findById.mockResolvedValue(null);
-      const input = { id: 'nonexistent' };
-
-      // Act
-      const result = await service.findById(input);
-
-      // Assert
-      expect(result.success).toBe(false);
-      expect(result.error?.code).toBe('NOT_FOUND');
-    });
-
-    it('should handle database errors', async () => {
-      // Arrange
-      mockModel.findById.mockRejectedValue(new Error('DB connection failed'));
-      const input = { id: 'acc-123' };
-
-      // Act
-      const result = await service.findById(input);
-
-      // Assert
-      expect(result.success).toBe(false);
-      expect(result.error?.code).toBe('INTERNAL_ERROR');
-    });
-  });
-
-  describe('create', () => {
-    it('should create entity when authorized', async () => {
-      // Arrange
-      const input = {
-        title: 'New Beach House',
-        description: 'Beautiful house',
-        pricePerNight: 150,
-        ownerId: 'user-123',
-      };
-      const mockCreated = { id: 'acc-456', ...input };
-      mockModel.create.mockResolvedValue(mockCreated);
-
-      // Act
-      const result = await service.create(input);
-
-      // Assert
-      expect(result.success).toBe(true);
-      expect(result.data).toEqual(mockCreated);
-      expect(mockModel.create).toHaveBeenCalledWith(input);
-    });
-
-    it('should reject when user lacks permission', async () => {
-      // Arrange
-      mockContext.actor.permissions = []; // No create permission
-      service = new EntityService(mockContext, mockModel);
-      const input = { title: 'House', ownerId: 'user-123' };
-
-      // Act
-      const result = await service.create(input);
-
-      // Assert
-      expect(result.success).toBe(false);
-      expect(result.error?.code).toBe('FORBIDDEN');
-      expect(mockModel.create).not.toHaveBeenCalled();
-    });
-  });
-});
-```text
-
-### Testing React Components
+### Testing Components
 
 ```typescript
-// components/EntityCard.test.tsx
+// components/Card.test.tsx
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
-import { EntityCard } from './EntityCard';
+import { describe, it, expect } from '{{TEST_FRAMEWORK}}';
+import { Card } from './Card';
 
-describe('EntityCard', () => {
-  const mockEntity = {
-    id: 'acc-123',
-    title: 'Beach House with Ocean View',
-    description: 'Beautiful beach house',
-    city: 'City Name',
-    pricePerNight: 150,
-    maxGuests: 6,
-    images: ['https://example.com/image1.jpg'],
+describe('Card', () => {
+  const mockItem = {
+    id: '1',
+    title: 'Test Item',
+    description: 'Test description',
+    price: 150
   };
 
-  it('should render entity details', () => {
-    // Arrange & Act
-    render(<EntityCard entity={mockEntity} />);
+  it('should render item details', () => {
+    render(<Card item={mockItem} />);
 
-    // Assert
-    expect(screen.getByText('Beach House with Ocean View')).toBeInTheDocument();
-    expect(screen.getByText('City Name')).toBeInTheDocument();
-    expect(screen.getByText('$150/noche')).toBeInTheDocument();
-    expect(screen.getByText('6 guests')).toBeInTheDocument();
+    expect(screen.getByText('Test Item')).toBeInTheDocument();
+    expect(screen.getByText('$150')).toBeInTheDocument();
   });
 
   it('should render image with alt text', () => {
-    // Arrange & Act
-    render(<EntityCard entity={mockEntity} />);
+    render(<Card item={mockItem} />);
 
-    // Assert
-    const image = screen.getByAltText('Beach House with Ocean View');
+    const image = screen.getByAltText('Test Item');
     expect(image).toBeInTheDocument();
-    expect(image).toHaveAttribute('src', mockEntity.images[0]);
   });
 
   it('should have accessible link', () => {
-    // Arrange & Act
-    render(<EntityCard entity={mockEntity} />);
+    render(<Card item={mockItem} />);
 
-    // Assert
-    const link = screen.getByRole('link', { name: /ver detalles/i });
-    expect(link).toHaveAttribute('href', '/entitys/acc-123');
-  });
-
-  it('should handle missing image gracefully', () => {
-    // Arrange
-    const noImageEntity = {
-      ...mockEntity,
-      images: [],
-    };
-
-    // Act
-    render(<EntityCard entity={noImageEntity} />);
-
-    // Assert
-    const image = screen.getByAltText('Beach House with Ocean View');
-    expect(image).toHaveAttribute('src', '/placeholder-entity.jpg');
+    const link = screen.getByRole('link');
+    expect(link).toHaveAttribute('href', '/items/1');
   });
 });
-```text
-
----
+```
 
 ## Integration Testing
 
-### Testing API Routes
+### Testing API Integration
 
 ```typescript
-// apps/api/src/routes/entitys/index.test.ts
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { testClient } from 'hono/testing';
-import { app } from '../../index';
-import { db } from '@repo/db';
-import { entityTable } from '@repo/db/schemas';
+// routes/items.test.ts
+import { describe, it, expect, beforeAll, afterAll } from '{{TEST_FRAMEWORK}}';
+import { testClient } from 'test-client';
+import { app } from '../src/index';
+import { db } from '@/db';
 
-describe('Entity API Routes', () => {
+describe('Item API Routes', () => {
   beforeAll(async () => {
-    // Setup test database
     await db.execute('BEGIN');
   });
 
   afterAll(async () => {
-    // Cleanup
     await db.execute('ROLLBACK');
   });
 
-  describe('GET /entitys', () => {
-    it('should return list of entitys', async () => {
-      // Arrange: Insert test data
-      await db.insert(entityTable).values([
-        {
-          id: 'acc-1',
-          title: 'Beach House',
-          city: 'City Name',
-          pricePerNight: 150,
-        },
-        {
-          id: 'acc-2',
-          title: 'Mountain Cabin',
-          city: 'Paran�',
-          pricePerNight: 100,
-        },
-      ]);
+  describe('GET /api/items', () => {
+    it('should return list of items', async () => {
+      const res = await testClient(app).items.$get();
 
-      // Act
-      const res = await testClient(app).entitys.$get();
-
-      // Assert
       expect(res.status).toBe(200);
       const data = await res.json();
-      expect(data.success).toBe(true);
-      expect(data.data).toHaveLength(2);
-      expect(data.data[0].title).toBe('Beach House');
+      expect(data).toHaveProperty('items');
+      expect(data.items).toBeInstanceOf(Array);
     });
 
-    it('should filter by city', async () => {
-      // Arrange
-      // (data from previous test)
-
-      // Act
-      const res = await testClient(app).entitys.$get({
-        query: { city: 'City Name' },
+    it('should filter by category', async () => {
+      const res = await testClient(app).items.$get({
+        query: { category: 'electronics' }
       });
 
-      // Assert
       expect(res.status).toBe(200);
       const data = await res.json();
-      expect(data.data).toHaveLength(1);
-      expect(data.data[0].city).toBe('City Name');
-    });
-
-    it('should return 400 for invalid query params', async () => {
-      // Act
-      const res = await testClient(app).entitys.$get({
-        query: { minPrice: 'invalid' },
-      });
-
-      // Assert
-      expect(res.status).toBe(400);
-      const data = await res.json();
-      expect(data.success).toBe(false);
-      expect(data.error.code).toBe('VALIDATION_ERROR');
+      expect(data.items.every(i => i.category === 'electronics')).toBe(true);
     });
   });
 
-  describe('POST /entitys', () => {
-    it('should create entity when authenticated', async () => {
-      // Arrange
-      const newEntity = {
-        title: 'New House',
-        description: 'Beautiful house',
-        city: 'City Name',
-        pricePerNight: 200,
-        maxGuests: 4,
+  describe('POST /api/items', () => {
+    it('should create item when authenticated', async () => {
+      const newItem = {
+        title: 'New Item',
+        description: 'Description',
+        price: 200
       };
 
-      // Act
-      const res = await testClient(app).entitys.$post({
-        json: newEntity,
-        headers: {
-          Authorization: 'Bearer valid-token',
-        },
+      const res = await testClient(app).items.$post({
+        json: newItem,
+        headers: { Authorization: 'Bearer valid-token' }
       });
 
-      // Assert
       expect(res.status).toBe(201);
       const data = await res.json();
-      expect(data.success).toBe(true);
-      expect(data.data.title).toBe('New House');
-      expect(data.data.id).toBeDefined();
+      expect(data.title).toBe('New Item');
     });
 
     it('should return 401 when not authenticated', async () => {
-      // Act
-      const res = await testClient(app).entitys.$post({
-        json: { title: 'House' },
+      const res = await testClient(app).items.$post({
+        json: { title: 'Item' }
       });
 
-      // Assert
       expect(res.status).toBe(401);
-    });
-
-    it('should validate required fields', async () => {
-      // Act
-      const res = await testClient(app).entitys.$post({
-        json: { title: 'House' }, // Missing required fields
-        headers: { Authorization: 'Bearer valid-token' },
-      });
-
-      // Assert
-      expect(res.status).toBe(400);
-      const data = await res.json();
-      expect(data.error.code).toBe('VALIDATION_ERROR');
     });
   });
 });
-```text
+```
 
----
-
-## E2E Testing with Playwright
+## E2E Testing
 
 ### Critical User Journeys
 
 ```typescript
-// tests/e2e/booking-flow.test.ts
+// tests/e2e/checkout-flow.test.ts
 import { test, expect } from '@playwright/test';
 
-test.describe('Booking Flow', () => {
-  test('user can complete full booking', async ({ page }) => {
-    // Arrange: Navigate to homepage
+test.describe('Checkout Flow', () => {
+  test('user can complete purchase', async ({ page }) => {
+    // Navigate to homepage
     await page.goto('/');
 
-    // Act 1: Search for entitys
-    await page.fill('[aria-label="Search entitys"]', 'City Name');
-    await page.click('button:has-text("Buscar")');
+    // Search for items
+    await page.fill('[aria-label="Search"]', 'laptop');
+    await page.click('button:has-text("Search")');
 
-    // Assert: Search results displayed
-    await expect(page.locator('h2')).toContainText('Resultados');
-    await expect(page.locator('[data-testid="entity-card"]').first()).toBeVisible();
+    // Verify results
+    await expect(page.locator('h2')).toContainText('Results');
+    await expect(page.locator('[data-testid="item-card"]').first()).toBeVisible();
 
-    // Act 2: Select first entity
-    await page.locator('[data-testid="entity-card"]').first().click();
+    // Select item
+    await page.locator('[data-testid="item-card"]').first().click();
 
-    // Assert: Details page loaded
-    await expect(page).toHaveURL(/\/entitys\/acc-/);
+    // Verify details page
+    await expect(page).toHaveURL(/\/items\//);
     await expect(page.locator('h1')).toBeVisible();
 
-    // Act 3: Select dates and guests
-    await page.fill('[name="check-in"]', '2024-06-01');
-    await page.fill('[name="check-out"]', '2024-06-05');
-    await page.selectOption('[name="guests"]', '2');
+    // Add to cart
+    await page.click('button:has-text("Add to Cart")');
 
-    // Assert: Price calculated
-    await expect(page.locator('[data-testid="total-price"]')).toContainText('$');
+    // Verify cart updated
+    await expect(page.locator('[data-testid="cart-count"]')).toContainText('1');
 
-    // Act 4: Click book button
-    await page.click('button:has-text("Reservar")');
+    // Proceed to checkout
+    await page.click('[data-testid="cart-button"]');
+    await page.click('button:has-text("Checkout")');
 
-    // Assert: Redirected to login (if not authenticated)
-    await expect(page).toHaveURL(/\/login/);
-
-    // Act 5: Login
-    await page.fill('[name="email"]', 'test@example.com');
-    await page.fill('[name="password"]', 'password123');
+    // Complete purchase
+    await page.fill('[name="card-number"]', '4242424242424242');
+    await page.fill('[name="expiry"]', '12/25');
+    await page.fill('[name="cvc"]', '123');
     await page.click('button[type="submit"]');
 
-    // Assert: Redirected back to booking
-    await expect(page).toHaveURL(/\/booking/);
-
-    // Act 6: Confirm booking
-    await page.click('button:has-text("Confirmar")');
-
-    // Assert: Success page
-    await expect(page.locator('h1')).toContainText('�Reserva confirmada!');
-    await expect(page.locator('[data-testid="booking-id"]')).toBeVisible();
+    // Verify success
+    await expect(page.locator('h1')).toContainText('Order Confirmed');
   });
 
-  test('should handle invalid dates', async ({ page }) => {
-    // Arrange
-    await page.goto('/entitys/acc-123');
+  test('should handle invalid payment', async ({ page }) => {
+    // Setup: Add item to cart
+    await page.goto('/items/1');
+    await page.click('button:has-text("Add to Cart")');
+    await page.click('button:has-text("Checkout")');
 
-    // Act: Select check-out before check-in
-    await page.fill('[name="check-in"]', '2024-06-05');
-    await page.fill('[name="check-out"]', '2024-06-01');
+    // Enter invalid card
+    await page.fill('[name="card-number"]', '0000000000000000');
+    await page.click('button[type="submit"]');
 
-    // Assert: Error message displayed
-    await expect(page.locator('[role="alert"]')).toContainText(
-      'La fecha de salida debe ser posterior'
-    );
+    // Verify error
+    await expect(page.locator('[role="alert"]')).toContainText('Invalid card');
   });
 });
-```text
+```
 
 ### Accessibility Testing
 
@@ -559,159 +300,99 @@ import { injectAxe, checkA11y } from 'axe-playwright';
 
 test.describe('Accessibility', () => {
   test('homepage is accessible', async ({ page }) => {
-    // Arrange
     await page.goto('/');
     await injectAxe(page);
 
-    // Act & Assert
     await checkA11y(page, undefined, {
-      detailedReport: true,
-      detailedReportOptions: { html: true },
+      detailedReport: true
     });
   });
 
   test('keyboard navigation works', async ({ page }) => {
-    // Arrange
     await page.goto('/');
 
-    // Act: Tab through interactive elements
-    await page.keyboard.press('Tab'); // Skip link
-    await page.keyboard.press('Tab'); // Logo
-    await page.keyboard.press('Tab'); // Search input
-    await page.keyboard.press('Tab'); // Search button
+    // Tab through elements
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab');
 
-    // Assert: Focus visible
-    const focused = await page.evaluate(() => document.activeElement?.tagName);
-    expect(focused).toBe('BUTTON');
+    // Verify focus visible
+    const focused = await page.evaluate(() =>
+      document.activeElement?.tagName
+    );
+    expect(focused).toBeTruthy();
   });
 });
-```text
-
----
+```
 
 ## Coverage Requirements
 
-### Minimum Coverage: 90%
+### Target: {{COVERAGE_TARGET}}
 
 ```bash
-
 # Run tests with coverage
+{{TEST_COMMAND}} --coverage
 
-pnpm test:coverage
-
-# View coverage report
-
+# View report
 open coverage/index.html
+```
 
-# Check coverage thresholds
-
-pnpm test:coverage --reporter=json-summary
-```text
-
-**Coverage Configuration:**
+**Configuration:**
 
 ```typescript
-// vitest.config.ts
-export default defineConfig({
+// test.config.ts
+export default {
   test: {
     coverage: {
       provider: 'v8',
-      reporter: ['text', 'json', 'html'],
       thresholds: {
         lines: 90,
         functions: 90,
         branches: 90,
-        statements: 90,
-      },
-      exclude: [
-        '**/*.test.ts',
-        '**/*.test.tsx',
-        '**/test/**',
-        '**/dist/**',
-      ],
-    },
-  },
-});
-```text
-
----
-
-## TDD Workflow
-
-### Red-Green-Refactor
-
-```typescript
-// 1. RED: Write failing test first
-describe('formatPrice', () => {
-  it('should format price with currency', () => {
-    expect(formatPrice(150)).toBe('$150');
-  });
-});
-// Run: FAIL - formatPrice is not defined
-
-// 2. GREEN: Write minimal code to pass
-export function formatPrice(price: number): string {
-  return `$${price}`;
+        statements: 90
+      }
+    }
+  }
 }
-// Run: PASS
-
-// 3. REFACTOR: Improve implementation
-export function formatPrice(price: number, currency = 'USD'): string {
-  return new Intl.NumberFormat('es-AR', {
-    style: 'currency',
-    currency,
-  }).format(price);
-}
-// Run: PASS - update test if needed
-```text
-
----
+```
 
 ## Best Practices
 
-###  DO
-
+**DO:**
 - Write tests before code (TDD)
 - Use descriptive test names
 - Follow AAA pattern
 - Test edge cases
 - Mock external dependencies
 - Keep tests isolated
-- Use meaningful assertions
 - Test user behavior, not implementation
 
-### L DON'T
-
+**DON'T:**
 - Test implementation details
 - Share state between tests
 - Write flaky tests
 - Skip error cases
-- Over-mock (mock only what's necessary)
-- Write tests that depend on test order
-- Ignore accessibility in tests
+- Over-mock
+- Depend on test order
+- Ignore accessibility
 
----
+## Output
 
-## Deliverables
+**Produces:**
+1. Test suite with {{COVERAGE_TARGET}}+ coverage
+2. Test fixtures for reusable data
+3. Test helpers for common operations
+4. E2E tests for critical journeys
+5. Accessibility tests
+6. Coverage report
 
-When this skill is applied, produce:
+**Success Criteria:**
+- All tests passing
+- Coverage >= {{COVERAGE_TARGET}}
+- No accessibility violations
+- E2E tests cover critical paths
 
-1. **Test Suite** with 90%+ coverage
-2. **Test Fixtures** for reusable test data
-3. **Test Helpers** for common operations
-4. **E2E Tests** for critical user journeys
-5. **Accessibility Tests** with axe-core
-6. **Coverage Report** showing threshold compliance
+## Related Skills
 
----
-
-**This skill ensures high-quality, well-tested code that is maintainable, reliable, and meets project standards.**
-
-
----
-
-## Changelog
-
-| Version | Date | Changes | Author | Related |
-|---------|------|---------|--------|---------|
-| 1.0.0 | 2025-10-31 | Initial version | @tech-lead | P-004 |
+- `tdd-methodology` - Test-Driven Development
+- `api-app-testing` - API testing
+- `qa-criteria-validator` - Acceptance criteria validation

@@ -1,18 +1,38 @@
-# Zustand State Management Patterns
+---
+name: zustand-patterns
+category: state
+description: Zustand lightweight state management patterns for React applications
+usage: Use when implementing simple global client state without Redux boilerplate
+input: State structure, actions, persistence needs
+output: Store definitions, hooks, middleware configuration
+config_required:
+  state_organization: "How state is organized (single store vs slices)"
+  persistence: "What state needs to be persisted"
+  storage_type: "Storage mechanism for persistence"
+  devtools: "Whether to enable Redux DevTools integration"
+---
 
-Expert patterns for **Zustand** state management in React applications.
+# Zustand Patterns
 
-## Core Concepts
+## ⚙️ Configuration
 
-- Lightweight state management
-- No boilerplate, minimal setup
+| Setting | Description | Example |
+|---------|-------------|---------|
+| `state_organization` | State organization strategy | Single store, multiple stores, slices |
+| `persistence` | State to persist | User preferences, auth tokens, cart |
+| `storage_type` | Storage mechanism | localStorage, sessionStorage, AsyncStorage |
+| `devtools` | Redux DevTools integration | `true`, `false` |
+
+## Purpose
+
+Implement lightweight state management with:
+- Minimal boilerplate
 - TypeScript-first design
 - Works outside React components
-- Middleware support
+- Middleware support (persist, immer, devtools)
+- No providers needed
 
-## Store Patterns
-
-### Basic Store
+## Basic Store
 
 ```typescript
 import { create } from 'zustand';
@@ -32,17 +52,9 @@ export const useCounterStore = create<CounterState>((set) => ({
 }));
 ```
 
-### Store with Async Actions
+## Async Actions
 
 ```typescript
-import { create } from 'zustand';
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-}
-
 interface UserState {
   user: User | null;
   isLoading: boolean;
@@ -61,7 +73,7 @@ export const useUserStore = create<UserState>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const response = await fetch(`/api/users/${id}`);
-      if (!response.ok) throw new Error('Failed to fetch user');
+      if (!response.ok) throw new Error('Failed to fetch');
       const user = await response.json();
       set({ user, isLoading: false });
     } catch (error) {
@@ -77,10 +89,8 @@ export const useUserStore = create<UserState>((set, get) => ({
     try {
       const response = await fetch(`/api/users/${currentUser.id}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
-      if (!response.ok) throw new Error('Failed to update user');
       const updatedUser = await response.json();
       set({ user: updatedUser, isLoading: false });
     } catch (error) {
@@ -92,7 +102,7 @@ export const useUserStore = create<UserState>((set, get) => ({
 }));
 ```
 
-### Slices Pattern (Modular Stores)
+## Slices Pattern
 
 ```typescript
 import { create, StateCreator } from 'zustand';
@@ -105,7 +115,7 @@ interface AuthSlice {
   logout: () => void;
 }
 
-const createAuthSlice: StateCreator<AuthSlice & UserSlice, [], [], AuthSlice> = (set) => ({
+const createAuthSlice: StateCreator<AppStore, [], [], AuthSlice> = (set) => ({
   token: null,
   isAuthenticated: false,
   login: (token) => set({ token, isAuthenticated: true }),
@@ -118,7 +128,7 @@ interface UserSlice {
   setUser: (user: User | null) => void;
 }
 
-const createUserSlice: StateCreator<AuthSlice & UserSlice, [], [], UserSlice> = (set) => ({
+const createUserSlice: StateCreator<AppStore, [], [], UserSlice> = (set) => ({
   user: null,
   setUser: (user) => set({ user }),
 });
@@ -132,7 +142,9 @@ export const useAppStore = create<AppStore>()((...args) => ({
 }));
 ```
 
-### Persist Middleware
+## Middleware
+
+### Persist
 
 ```typescript
 import { create } from 'zustand';
@@ -170,24 +182,17 @@ export const useSettingsStore = create<SettingsState>()(
 );
 ```
 
-### Immer Middleware
+### Immer
 
 ```typescript
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-
-interface Todo {
-  id: string;
-  text: string;
-  completed: boolean;
-}
 
 interface TodoState {
   todos: Todo[];
   addTodo: (text: string) => void;
   toggleTodo: (id: string) => void;
   removeTodo: (id: string) => void;
-  updateTodo: (id: string, text: string) => void;
 }
 
 export const useTodoStore = create<TodoState>()(
@@ -210,11 +215,6 @@ export const useTodoStore = create<TodoState>()(
       set((state) => {
         state.todos = state.todos.filter((t) => t.id !== id);
       }),
-    updateTodo: (id, text) =>
-      set((state) => {
-        const todo = state.todos.find((t) => t.id === id);
-        if (todo) todo.text = text;
-      }),
   }))
 );
 ```
@@ -230,15 +230,7 @@ const count = useCounterStore((state) => state.count);
 // Select action (stable reference)
 const increment = useCounterStore((state) => state.increment);
 
-// Select multiple values with shallow comparison
-import { shallow } from 'zustand/shallow';
-
-const { user, isLoading } = useUserStore(
-  (state) => ({ user: state.user, isLoading: state.isLoading }),
-  shallow
-);
-
-// Or use useShallow hook
+// Select multiple with shallow comparison
 import { useShallow } from 'zustand/react/shallow';
 
 const { user, isLoading } = useUserStore(
@@ -246,7 +238,7 @@ const { user, isLoading } = useUserStore(
 );
 ```
 
-### Using Outside React
+### Outside React
 
 ```typescript
 // Get current state
@@ -266,7 +258,6 @@ const unsubscribe = useCounterStore.subscribe((state) => {
 ```typescript
 interface CartState {
   items: CartItem[];
-  // Computed via selector, not stored
 }
 
 export const useCartStore = create<CartState>(() => ({
@@ -287,17 +278,24 @@ export const useCartItemCount = () =>
 
 ## Best Practices
 
-1. **Selectors**: Always use selectors to minimize re-renders
-2. **Actions**: Keep actions in the store, not in components
-3. **Typing**: Use TypeScript interfaces for full type safety
-4. **Slices**: Split large stores into slices for maintainability
-5. **Persist**: Use persist middleware for user preferences
-6. **Immer**: Use immer for complex nested state updates
+| Practice | Description |
+|----------|-------------|
+| **Use Selectors** | Always use selectors to minimize re-renders |
+| **Actions in Store** | Keep actions in the store, not components |
+| **TypeScript** | Use TypeScript interfaces for full type safety |
+| **Slices for Large Stores** | Split large stores into slices |
+| **Persist User Preferences** | Use persist middleware for settings |
+| **Immer for Nested Updates** | Use immer for complex nested state |
 
 ## When to Use
 
 - Small to medium React applications
 - When Redux is overkill
-- When you need state outside React
-- For simple global state needs
-- With or without React Query for server state
+- Need state outside React components
+- Simple global state needs
+- With TanStack Query for server state
+
+## Related Skills
+
+- `redux-toolkit-patterns` - For complex state needs
+- `tanstack-query-patterns` - For server state

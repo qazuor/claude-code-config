@@ -5,7 +5,7 @@
       "id": "tdd-methodology",
       "name": "TDD Methodology",
       "description": "Test-Driven Development methodology and practices",
-      "file": "testing/tdd-methodology.md",
+      "file": "patterns/tdd-methodology.md",
       "tags": ["testing", "tdd", "methodology", "core"],
       "longDescription": "Comprehensive guide to Test-Driven Development (TDD) using the Red-Green-Refactor cycle. Covers writing failing tests first, implementing minimal code to pass, and refactoring for quality.",
       "whatItDoes": [
@@ -23,7 +23,7 @@
       "id": "web-app-testing",
       "name": "Web App Testing",
       "description": "Web application testing strategies with Playwright/Vitest",
-      "file": "testing/web-app-testing.md",
+      "file": "qa/web-app-testing.md",
       "tags": ["testing", "web", "e2e", "playwright"],
       "longDescription": "End-to-end testing strategies for web applications using Playwright and Testing Library. Covers component testing, integration testing, and full E2E flows.",
       "whatItDoes": [
@@ -72,7 +72,7 @@
         "Provides optimization recommendations"
       ],
       "whenToUse": "When you need to ensure your application can handle expected load and meets performance requirements.",
-      "techStack": ["k6", "Lighthouse", "Web Vitals", "Node.js profiler"],
+      "techStack": ["k6", "Lighthouse", "Web Vitals"],
       "skillLevel": "advanced",
       "relatedModules": ["performance-audit", "react-senior-dev"]
     },
@@ -93,6 +93,24 @@
       "whenToUse": "Essential for any application handling user data or sensitive information. Use before production deployment.",
       "skillLevel": "advanced",
       "relatedModules": ["security-audit", "qa-engineer"]
+    },
+    {
+      "id": "qa-criteria-validator",
+      "name": "QA Criteria Validator",
+      "description": "Quality assurance criteria validation checklist",
+      "file": "qa/qa-criteria-validator.md",
+      "tags": ["qa", "validation", "criteria", "checklist"],
+      "longDescription": "Validation checklist for ensuring features meet quality standards before release. Covers functionality, edge cases, performance, and user experience.",
+      "whatItDoes": [
+        "Validates acceptance criteria completion",
+        "Checks edge case handling",
+        "Verifies error state coverage",
+        "Reviews performance requirements",
+        "Ensures accessibility compliance"
+      ],
+      "whenToUse": "Before marking any feature as complete. Essential for maintaining quality standards.",
+      "skillLevel": "intermediate",
+      "relatedModules": ["qa-engineer", "tech-lead"]
     },
     {
       "id": "security-audit",
@@ -170,6 +188,122 @@
       "relatedModules": ["node-typescript-engineer", "react-senior-dev"]
     },
     {
+      "id": "nextauth-patterns",
+      "name": "NextAuth.js Patterns",
+      "description": "NextAuth.js (Auth.js) authentication patterns",
+      "file": "auth/nextauth-patterns.md",
+      "tags": ["auth", "nextauth", "next.js", "oauth", "patterns"],
+      "longDescription": "Expert patterns for NextAuth.js authentication in Next.js applications. Covers OAuth providers, credentials provider, JWT/session strategies, middleware protection, and role-based access control.",
+      "whatItDoes": [
+        "Configures multiple OAuth providers",
+        "Implements credentials-based authentication",
+        "Protects routes with middleware",
+        "Handles session in server/client components",
+        "Implements role-based access control"
+      ],
+      "whenToUse": "When building Next.js applications that need authentication. Supports OAuth providers (GitHub, Google, etc.) and custom credentials.",
+      "techStack": ["NextAuth.js", "Auth.js", "Next.js", "Prisma"],
+      "skillLevel": "intermediate",
+      "relatedModules": ["nextjs-engineer", "prisma-engineer"]
+    },
+    {
+      "id": "i18n-patterns",
+      "name": "i18n Patterns",
+      "description": "Internationalization patterns for React/Next.js",
+      "file": "i18n/i18n-patterns.md",
+      "tags": ["i18n", "internationalization", "next-intl", "react-i18next", "patterns"],
+      "longDescription": "Expert patterns for internationalization in React and Next.js applications. Covers next-intl and react-i18next setup, translation file management, pluralization, formatting, and RTL support.",
+      "whatItDoes": [
+        "Sets up next-intl for Next.js apps",
+        "Configures react-i18next for React apps",
+        "Manages translation JSON files",
+        "Handles pluralization and interpolation",
+        "Formats dates, numbers, and currency"
+      ],
+      "whenToUse": "When building applications that need to support multiple languages or locales.",
+      "techStack": ["next-intl", "react-i18next", "Next.js", "React"],
+      "skillLevel": "intermediate",
+      "relatedModules": ["nextjs-engineer", "react-senior-dev", "i18n-specialist"]
+    },
+    {
+      "id": "zustand-patterns",
+      "name": "Zustand Patterns",
+      "description": "Zustand state management patterns and best practices",
+      "file": "state/zustand-patterns.md",
+      "tags": ["state", "zustand", "react", "patterns"],
+      "longDescription": "Comprehensive patterns for Zustand state management in React applications. Covers store creation, slices, middleware (persist, immer, devtools), selectors, and TypeScript integration.",
+      "whatItDoes": [
+        "Creates typed Zustand stores",
+        "Implements slice pattern for modular stores",
+        "Configures persist middleware for localStorage",
+        "Uses immer middleware for immutable updates",
+        "Integrates with React Query for server state"
+      ],
+      "whenToUse": "When building React applications needing simple, lightweight client state management. Perfect for small to medium apps.",
+      "techStack": ["Zustand", "React", "TypeScript", "Immer"],
+      "skillLevel": "intermediate",
+      "alternativeTo": ["redux-toolkit-patterns"],
+      "relatedModules": ["react-senior-dev", "tanstack-query-patterns"]
+    },
+    {
+      "id": "redux-toolkit-patterns",
+      "name": "Redux Toolkit Patterns",
+      "description": "Redux Toolkit state management patterns",
+      "file": "state/redux-toolkit-patterns.md",
+      "tags": ["state", "redux", "rtk", "react", "patterns"],
+      "longDescription": "Expert patterns for Redux Toolkit (RTK) including store setup, slices, async thunks, RTK Query for data fetching, and TypeScript integration with typed hooks.",
+      "whatItDoes": [
+        "Configures Redux store with typed hooks",
+        "Creates slices with reducers and actions",
+        "Implements async thunks with error handling",
+        "Sets up RTK Query for API integration",
+        "Uses selectors with createSelector"
+      ],
+      "whenToUse": "When building large-scale React applications with complex state interactions, or when team prefers Redux patterns.",
+      "techStack": ["Redux Toolkit", "RTK Query", "React", "TypeScript"],
+      "skillLevel": "intermediate",
+      "alternativeTo": ["zustand-patterns"],
+      "relatedModules": ["react-senior-dev", "tanstack-query-patterns"]
+    },
+    {
+      "id": "tanstack-query-patterns",
+      "name": "TanStack Query Patterns",
+      "description": "TanStack Query (React Query) server state management",
+      "file": "state/tanstack-query-patterns.md",
+      "tags": ["state", "react-query", "tanstack", "data-fetching", "patterns"],
+      "longDescription": "Expert patterns for TanStack Query server state management including queries, mutations, infinite queries, optimistic updates, prefetching, and cache management.",
+      "whatItDoes": [
+        "Configures QueryClient with defaults",
+        "Creates typed queries with error handling",
+        "Implements mutations with cache invalidation",
+        "Uses infinite queries for pagination",
+        "Implements optimistic updates for better UX"
+      ],
+      "whenToUse": "Essential for any React application fetching data from APIs. Handles caching, background updates, and server state.",
+      "techStack": ["TanStack Query", "React", "TypeScript"],
+      "skillLevel": "intermediate",
+      "relatedModules": ["react-senior-dev", "hono-engineer", "nextjs-engineer"]
+    },
+    {
+      "id": "react-hook-form-patterns",
+      "name": "React Hook Form Patterns",
+      "description": "React Hook Form with Zod validation patterns",
+      "file": "react/react-hook-form-patterns.md",
+      "tags": ["forms", "react", "zod", "validation", "patterns"],
+      "longDescription": "Expert patterns for React Hook Form with Zod validation including basic forms, nested objects, arrays with useFieldArray, controlled components, file uploads, and multi-step forms.",
+      "whatItDoes": [
+        "Creates forms with Zod schema validation",
+        "Handles nested objects and arrays",
+        "Uses Controller for controlled components",
+        "Integrates with UI component libraries",
+        "Implements multi-step form wizards"
+      ],
+      "whenToUse": "When building forms in React applications. Provides performant form handling with minimal re-renders and great TypeScript support.",
+      "techStack": ["React Hook Form", "Zod", "React", "TypeScript"],
+      "skillLevel": "intermediate",
+      "relatedModules": ["react-senior-dev", "shadcn-specialist", "nextjs-engineer"]
+    },
+    {
       "id": "git-commit-helper",
       "name": "Git Commit Helper",
       "description": "Git commit message formatting and conventions",
@@ -188,21 +322,21 @@
       "relatedModules": ["tech-lead"]
     },
     {
-      "id": "documentation-writer",
-      "name": "Documentation Writer",
-      "description": "Technical documentation writing guidelines",
-      "file": "documentation/documentation-writer.md",
-      "tags": ["documentation", "writing", "docs"],
-      "longDescription": "Guidelines for writing clear technical documentation including API docs, README files, architecture decisions, and user guides.",
+      "id": "markdown-formatter",
+      "name": "Markdown Formatter",
+      "description": "Markdown formatting standards and linting",
+      "file": "documentation/markdown-formatter.md",
+      "tags": ["documentation", "markdown", "formatting"],
+      "longDescription": "Standards for consistent markdown formatting including headings, lists, code blocks, tables, and links. Ensures readable and maintainable documentation.",
       "whatItDoes": [
-        "Creates README and getting started guides",
-        "Documents API endpoints with examples",
-        "Writes architecture decision records (ADRs)",
-        "Generates code documentation with JSDoc",
-        "Maintains changelog and release notes"
+        "Enforces consistent heading hierarchy",
+        "Standardizes list and code block formatting",
+        "Validates link references",
+        "Checks language specifications in code blocks",
+        "Ensures proper spacing and indentation"
       ],
-      "whenToUse": "When creating or updating documentation for any project component.",
-      "skillLevel": "intermediate",
+      "whenToUse": "When writing or reviewing documentation to ensure consistency.",
+      "skillLevel": "beginner",
       "relatedModules": ["tech-writer"]
     },
     {
@@ -280,24 +414,6 @@
       "relatedModules": ["ux-ui-designer", "react-senior-dev"]
     },
     {
-      "id": "qa-criteria-validator",
-      "name": "QA Criteria Validator",
-      "description": "Quality assurance criteria validation checklist",
-      "file": "qa/qa-criteria-validator.md",
-      "tags": ["qa", "validation", "criteria", "checklist"],
-      "longDescription": "Validation checklist for ensuring features meet quality standards before release. Covers functionality, edge cases, performance, and user experience.",
-      "whatItDoes": [
-        "Validates acceptance criteria completion",
-        "Checks edge case handling",
-        "Verifies error state coverage",
-        "Reviews performance requirements",
-        "Ensures accessibility compliance"
-      ],
-      "whenToUse": "Before marking any feature as complete. Essential for maintaining quality standards.",
-      "skillLevel": "intermediate",
-      "relatedModules": ["qa-engineer", "tech-lead"]
-    },
-    {
       "id": "vercel-specialist",
       "name": "Vercel Specialist",
       "description": "Vercel deployment and configuration expertise",
@@ -352,122 +468,6 @@
       "whenToUse": "When documenting architecture, workflows, or system designs in markdown files.",
       "skillLevel": "beginner",
       "relatedModules": ["tech-writer", "product-technical"]
-    },
-    {
-      "id": "zustand-patterns",
-      "name": "Zustand Patterns",
-      "description": "Zustand state management patterns and best practices",
-      "file": "state/zustand-patterns.md",
-      "tags": ["state", "zustand", "react", "patterns"],
-      "longDescription": "Comprehensive patterns for Zustand state management in React applications. Covers store creation, slices, middleware (persist, immer, devtools), selectors, and TypeScript integration.",
-      "whatItDoes": [
-        "Creates typed Zustand stores",
-        "Implements slice pattern for modular stores",
-        "Configures persist middleware for localStorage",
-        "Uses immer middleware for immutable updates",
-        "Integrates with React Query for server state"
-      ],
-      "whenToUse": "When building React applications needing simple, lightweight client state management. Perfect for small to medium apps.",
-      "techStack": ["Zustand", "React", "TypeScript", "Immer"],
-      "skillLevel": "intermediate",
-      "alternativeTo": ["redux-toolkit-patterns"],
-      "relatedModules": ["react-senior-dev", "tanstack-query-patterns"]
-    },
-    {
-      "id": "redux-toolkit-patterns",
-      "name": "Redux Toolkit Patterns",
-      "description": "Redux Toolkit state management patterns",
-      "file": "state/redux-toolkit-patterns.md",
-      "tags": ["state", "redux", "rtk", "react", "patterns"],
-      "longDescription": "Expert patterns for Redux Toolkit (RTK) including store setup, slices, async thunks, RTK Query for data fetching, and TypeScript integration with typed hooks.",
-      "whatItDoes": [
-        "Configures Redux store with typed hooks",
-        "Creates slices with reducers and actions",
-        "Implements async thunks with error handling",
-        "Sets up RTK Query for API integration",
-        "Uses selectors with createSelector"
-      ],
-      "whenToUse": "When building large-scale React applications with complex state interactions, or when team prefers Redux patterns.",
-      "techStack": ["Redux Toolkit", "RTK Query", "React", "TypeScript"],
-      "skillLevel": "intermediate",
-      "alternativeTo": ["zustand-patterns"],
-      "relatedModules": ["react-senior-dev", "tanstack-query-patterns"]
-    },
-    {
-      "id": "tanstack-query-patterns",
-      "name": "TanStack Query Patterns",
-      "description": "TanStack Query (React Query) server state management",
-      "file": "state/tanstack-query-patterns.md",
-      "tags": ["state", "react-query", "tanstack", "data-fetching", "patterns"],
-      "longDescription": "Expert patterns for TanStack Query server state management including queries, mutations, infinite queries, optimistic updates, prefetching, and cache management.",
-      "whatItDoes": [
-        "Configures QueryClient with defaults",
-        "Creates typed queries with error handling",
-        "Implements mutations with cache invalidation",
-        "Uses infinite queries for pagination",
-        "Implements optimistic updates for better UX"
-      ],
-      "whenToUse": "Essential for any React application fetching data from APIs. Handles caching, background updates, and server state.",
-      "techStack": ["TanStack Query", "React", "TypeScript"],
-      "skillLevel": "intermediate",
-      "relatedModules": ["react-senior-dev", "hono-engineer", "nextjs-engineer"]
-    },
-    {
-      "id": "react-hook-form-patterns",
-      "name": "React Hook Form Patterns",
-      "description": "React Hook Form with Zod validation patterns",
-      "file": "react/react-hook-form-patterns.md",
-      "tags": ["forms", "react", "zod", "validation", "patterns"],
-      "longDescription": "Expert patterns for React Hook Form with Zod validation including basic forms, nested objects, arrays with useFieldArray, controlled components, file uploads, and multi-step forms.",
-      "whatItDoes": [
-        "Creates forms with Zod schema validation",
-        "Handles nested objects and arrays",
-        "Uses Controller for controlled components",
-        "Integrates with Shadcn UI components",
-        "Implements multi-step form wizards"
-      ],
-      "whenToUse": "When building forms in React applications. Provides performant form handling with minimal re-renders and great TypeScript support.",
-      "techStack": ["React Hook Form", "Zod", "React", "TypeScript"],
-      "skillLevel": "intermediate",
-      "relatedModules": ["react-senior-dev", "shadcn-specialist", "nextjs-engineer"]
-    },
-    {
-      "id": "nextauth-patterns",
-      "name": "NextAuth.js Patterns",
-      "description": "NextAuth.js (Auth.js) authentication patterns",
-      "file": "auth/nextauth-patterns.md",
-      "tags": ["auth", "nextauth", "next.js", "oauth", "patterns"],
-      "longDescription": "Expert patterns for NextAuth.js authentication in Next.js applications. Covers OAuth providers, credentials provider, JWT/session strategies, middleware protection, and role-based access control.",
-      "whatItDoes": [
-        "Configures multiple OAuth providers",
-        "Implements credentials-based authentication",
-        "Protects routes with middleware",
-        "Handles session in server/client components",
-        "Implements role-based access control"
-      ],
-      "whenToUse": "When building Next.js applications that need authentication. Supports OAuth providers (GitHub, Google, etc.) and custom credentials.",
-      "techStack": ["NextAuth.js", "Auth.js", "Next.js", "Prisma"],
-      "skillLevel": "intermediate",
-      "relatedModules": ["nextjs-engineer", "prisma-engineer"]
-    },
-    {
-      "id": "i18n-patterns",
-      "name": "i18n Patterns",
-      "description": "Internationalization patterns for React/Next.js",
-      "file": "i18n/i18n-patterns.md",
-      "tags": ["i18n", "internationalization", "next-intl", "react-i18next", "patterns"],
-      "longDescription": "Expert patterns for internationalization in React and Next.js applications. Covers next-intl and react-i18next setup, translation file management, pluralization, formatting, and RTL support.",
-      "whatItDoes": [
-        "Sets up next-intl for Next.js apps",
-        "Configures react-i18next for React apps",
-        "Manages translation JSON files",
-        "Handles pluralization and interpolation",
-        "Formats dates, numbers, and currency"
-      ],
-      "whenToUse": "When building applications that need to support multiple languages or locales.",
-      "techStack": ["next-intl", "react-i18next", "Next.js", "React"],
-      "skillLevel": "intermediate",
-      "relatedModules": ["nextjs-engineer", "react-senior-dev", "i18n-specialist"]
     }
   ]
 }

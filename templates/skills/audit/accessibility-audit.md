@@ -5,388 +5,160 @@ description: Comprehensive accessibility audit validating WCAG 2.1 Level AA comp
 usage: Use for accessibility compliance validation before deployment, after UI changes, or as part of regular accessibility assessments
 input: Application URLs, user flows, component library, design system, accessibility requirements
 output: Accessibility audit report with WCAG compliance status, violations by severity, remediation steps, and testing results
+config_required:
+  - target_environment: "Environment to audit (dev/staging/production)"
+  - wcag_level: "Target compliance level (A, AA, AAA)"
+  - screen_readers: "Available screen readers for testing"
+  - test_devices: "Devices/browsers for testing"
+  - audit_depth: "quick (30min), standard (60min), comprehensive (90min)"
 ---
 
 # Accessibility Audit
 
-## Overview
+## Purpose
 
-**Purpose**: Comprehensive accessibility audit ensuring WCAG 2.1 Level AA compliance and inclusive user experience
+Comprehensive accessibility audit ensuring WCAG 2.1 compliance and inclusive user experience for all users.
 
 **Category**: Audit
 **Primary Users**: tech-lead
 **Coordinates**: Accessibility validation and compliance verification
 
-## When to Use This Skill
+## When to Use
 
 - Before production deployment
 - After major UI/UX changes
 - When adding new components or pages
-- As part of regular accessibility reviews (quarterly)
-- Before launching marketing campaigns
-- When compliance requirements mandate accessibility audits
-- After receiving accessibility-related user feedback
-
-## Prerequisites
-
-**Required:**
-
-- Running application (dev/staging/production)
-- Access to all user interfaces (web, admin)
-- Component library and design system
-- User flow documentation
-- Browser with accessibility tools
-
-**Optional:**
-
-- Screen reader software (NVDA, JAWS, VoiceOver)
-- Accessibility testing tools (axe, Lighthouse, WAVE)
-- Real users with disabilities for testing
-- Accessibility requirements documentation
-- Previous audit reports for comparison
-
-## Input
-
-**What the skill needs:**
-
-- Application URLs and user flows
-- Component library documentation
-- Design system specifications
-- Target WCAG level (default: AA)
-- Supported assistive technologies
-- Browser/device support matrix
-- Historical accessibility data
-
-## Audit Areas (8 Comprehensive Checks)
-
-### 1. WCAG 2.1 Compliance
-
-**Checks:**
-
-- **Perceivable**: Text alternatives, captions, adaptable content, distinguishable content
-- **Operable**: Keyboard accessible, enough time, seizures prevention, navigable
-- **Understandable**: Readable, predictable, input assistance
-- **Robust**: Compatible with assistive technologies
-
-**Levels:**
-
-- Level A (minimum)
-- Level AA (target)
-- Level AAA (aspirational)
-
-**Output:** WCAG compliance score, violations by principle, priority fixes
-
-### 2. Semantic HTML & ARIA
-
-**Checks:**
-
-- Proper HTML5 semantic elements (`<nav>`, `<main>`, `<article>`, etc.)
-- ARIA roles usage (only when semantic HTML insufficient)
-- ARIA properties (aria-label, aria-labelledby, aria-describedby)
-- ARIA states (aria-expanded, aria-selected, aria-hidden)
-- Landmark regions
-- Heading hierarchy (h1-h6)
-- Lists markup (ul, ol, dl)
-- Table markup (th, caption, scope)
-
-**Metrics:**
-
-- Semantic HTML usage %
-- ARIA attribute correctness
-- Landmark coverage
-- Heading structure validity
-
-**Output:** Semantic HTML score, ARIA implementation gaps, structure violations
-
-### 3. Keyboard Navigation
-
-**Checks:**
-
-- All interactive elements accessible via keyboard
-- Logical tab order (matches visual order)
-- Focus indicators visible and clear
-- Skip navigation links
-- Keyboard shortcuts documented
-- No keyboard traps
-- Modal focus management
-- Dropdown/menu keyboard support
-
-**Test Scenarios:**
-
-- Navigate entire app using only keyboard
-- Tab through all interactive elements
-- Open/close modals and menus
-- Submit forms
-- Navigate data tables
-
-**Metrics:**
-
-- % of interactive elements keyboard accessible
-- Tab order correctness
-- Focus indicator visibility
-
-**Output:** Keyboard navigation score, inaccessible elements, focus issues
-
-### 4. Screen Reader Compatibility
-
-**Checks:**
-
-- Proper reading order
-- Form labels and instructions
-- Error messages announced
-- Dynamic content updates (aria-live)
-- Image alt text quality
-- Link text descriptiveness
-- Button text clarity
-- Table headers association
-
-**Screen Readers Tested:**
-
-- NVDA (Windows, free)
-- JAWS (Windows, commercial)
-- VoiceOver (macOS/iOS, built-in)
-- TalkBack (Android, built-in)
-
-**Metrics:**
-
-- % of content accessible to screen readers
-- Alt text coverage
-- Form label association
-- Dynamic content announcement
-
-**Output:** Screen reader compatibility score, announcement issues, content gaps
-
-### 5. Visual Accessibility
-
-**Checks:**
-
-- **Color Contrast**: WCAG AA (4.5:1 text, 3:1 UI components)
-- **Text Size**: Minimum 16px, scalable to 200%
-- **Color Alone**: Never sole indicator of information
-- **Focus Indicators**: Visible, high contrast (3:1 minimum)
-- **Text Spacing**: Line height, letter spacing, word spacing
-- **Reflow**: Content adapts to 320px width at 400% zoom
-- **Images of Text**: Avoided except logos
-- **Motion**: Reduced motion support (prefers-reduced-motion)
-
-**Metrics:**
-
-- Color contrast ratio (AA: 4.5:1, AAA: 7:1)
-- Text size in pixels
-- Focus indicator contrast ratio
-- Reflow breakpoints
-
-**Output:** Visual accessibility score, contrast violations, text sizing issues
-
-### 6. Forms & Input Accessibility
-
-**Checks:**
-
-- All inputs have labels (associated via for/id or aria-labelledby)
-- Required fields indicated
-- Error messages clear and associated (aria-describedby)
-- Autocomplete attributes for personal data
-- Fieldset/legend for grouped inputs
-- Input type appropriate (email, tel, number, etc.)
-- Help text accessible
-- Success messages announced
-
-**Validation:**
-
-- Native HTML5 validation
-- Clear error messages
-- Error prevention strategies
-- Error recovery assistance
-
-**Metrics:**
-
-- % of inputs with labels
-- % with autocomplete
-- Error message clarity score
-- Form completion success rate
-
-**Output:** Form accessibility score, unlabeled inputs, validation issues
-
-### 7. Responsive & Mobile Accessibility
-
-**Checks:**
-
-- Touch targets ≥ 44x44px (WCAG 2.1)
-- Spacing between targets ≥ 8px
-- Pinch-to-zoom enabled
-- Orientation support (portrait/landscape)
-- Screen reader mobile compatibility
-- Swipe gestures documented
-- Mobile keyboard navigation
-- Viewport meta tag correct
-
-**Mobile Screen Readers:**
-
-- VoiceOver (iOS)
-- TalkBack (Android)
-
-**Metrics:**
-
-- Touch target size (pixels)
-- Target spacing (pixels)
-- Zoom capability
-- Orientation support
-
-**Output:** Mobile accessibility score, touch target violations, orientation issues
-
-### 8. Content Accessibility
-
-**Checks:**
-
-- Reading level appropriate (Flesch-Kincaid)
-- Language attribute set (`<html lang="es">`)
-- Abbreviations expanded (first use)
-- Idioms/jargon explained
-- Instructions don't rely on sensory characteristics
-- Timing adjustable for time-limited content
-- Animations pauseable
-- Auto-playing media controllable
-
-**Readability Metrics:**
-
-- Flesch Reading Ease (target: 60-70)
-- Flesch-Kincaid Grade Level (target: 8-9)
-- Average sentence length
-- Complex word percentage
-
-**Output:** Content accessibility score, readability metrics, clarity issues
+- Regular accessibility reviews (quarterly recommended)
+- Before launching public campaigns
+- When compliance requirements mandate audits
+- After receiving accessibility feedback
+
+## Configuration
+
+| Setting | Description | Example |
+|---------|-------------|---------|
+| target_environment | Environment to audit | `production`, `staging` |
+| wcag_level | Target compliance level | `AA` (default), `A`, `AAA` |
+| screen_readers | Available for testing | `NVDA, JAWS, VoiceOver, TalkBack` |
+| test_devices | Testing matrix | `Desktop Chrome/Firefox, iOS Safari, Android Chrome` |
+| audit_depth | Thoroughness level | `quick`, `standard`, `comprehensive` |
+| previous_audit_date | Last audit for comparison | `2024-09-15` |
+
+## Audit Areas
+
+| Area | Key Checks | Target | Output |
+|------|------------|--------|--------|
+| **WCAG Compliance** | Perceivable, Operable, Understandable, Robust | Level AA | Compliance score, violations by principle |
+| **Semantic HTML & ARIA** | Semantic elements, ARIA roles/properties/states, landmarks, headings | Proper structure | Semantic score, ARIA gaps, structure violations |
+| **Keyboard Navigation** | Tab order, focus indicators, skip links, no traps, modal focus | 100% accessible | Navigation score, inaccessible elements |
+| **Screen Reader** | Reading order, labels, announcements, alt text, dynamic updates | Compatible | Compatibility score, announcement issues |
+| **Visual** | Color contrast (4.5:1 text, 3:1 UI), text size, focus indicators, reflow | WCAG AA | Contrast violations, sizing issues |
+| **Forms** | Labels, required fields, error messages, autocomplete, validation | All labeled | Form score, unlabeled inputs, validation issues |
+| **Mobile** | Touch targets (44x44px), spacing (8px), zoom, orientation | Touch-friendly | Mobile score, target violations |
+| **Content** | Reading level, language attribute, abbreviations, timing, media controls | Clear & understandable | Readability metrics, clarity issues |
 
 ## Workflow
 
-### Phase 1: Preparation (10 minutes)
+### 1. Preparation (10min)
 
-1. **Setup Environment:**
-   - Install browser extensions (axe DevTools, WAVE)
-   - Configure screen reader
-   - Prepare test scenarios
-   - Document baseline
+- Install browser extensions (axe DevTools, WAVE, Lighthouse)
+- Configure screen reader
+- Prepare test scenarios
+- Document baseline
 
-2. **Identify Critical Paths:**
-   - Homepage → Entity search
-   - Search → Booking flow
-   - User registration → Login
-   - Admin dashboard navigation
+### 2. Automated Testing (20min)
 
-### Phase 2: Automated Testing (20 minutes)
+```bash
+# Lighthouse accessibility audit
+lighthouse https://app-url --only-categories=accessibility --view
 
-1. **Lighthouse Accessibility Audit:**
+# Pa11y CI (command line)
+pa11y-ci --sitemap https://app-url/sitemap.xml
+```
 
-   ```bash
-   lighthouse https://your-app.com --only-categories=accessibility --view
-   ```
+Run:
+- axe DevTools on all critical pages
+- WAVE evaluation
+- Export and categorize results
 
-2. **axe DevTools:**
-   - Run axe on all critical pages
-   - Export results
-   - Categorize violations by severity
+### 3. Manual Testing (40min)
 
-3. **WAVE Evaluation:**
-   - Visual feedback on accessibility issues
-   - Contrast checker
-   - Structure outline
+**Keyboard Navigation:**
+- Navigate entire app with keyboard only (Tab, Shift+Tab, Enter, Space, Arrows)
+- Test all interactive elements
+- Verify focus indicators
+- Check for keyboard traps
 
-4. **Pa11y CI (Command Line):**
+**Screen Reader Testing:**
+- Test with NVDA (Windows) or VoiceOver (macOS/iOS)
+- Verify reading order
+- Check dynamic content announcements
+- Test forms and navigation
 
-   ```bash
-   pa11y-ci --sitemap https://your-app.com/sitemap.xml
-   ```
+**Visual Testing:**
+- Contrast checker (Chrome DevTools)
+- Text resize to 200%
+- Zoom to 400% (verify reflow)
+- Reduced motion (prefers-reduced-motion)
 
-### Phase 3: Manual Testing (40 minutes)
+**Form Testing:**
+- Submit with errors, verify announcements
+- Check autocomplete and required indicators
 
-1. **Keyboard Navigation Testing:**
-   - Disconnect mouse
-   - Navigate entire app with Tab, Shift+Tab, Enter, Space, Arrow keys
-   - Test all interactive elements
-   - Verify focus indicators
-   - Check for keyboard traps
+### 4. Manual Review (20min)
 
-2. **Screen Reader Testing:**
-   - **NVDA (Windows):**
-     - Test homepage, forms, navigation
-     - Verify reading order
-     - Check dynamic content announcements
+**Code Review:**
+- HTML semantics
+- ARIA attributes correctness
+- Heading hierarchy
+- Alt text quality
 
-   - **VoiceOver (macOS/iOS):**
-     - Test mobile app
-     - Verify touch gestures
-     - Check rotor navigation
+**Content Review:**
+- Language attribute
+- Reading level
+- Link/button text clarity
 
-3. **Visual Testing:**
-   - Contrast checker (Chrome DevTools)
-   - Text resize to 200% (verify no content loss)
-   - Zoom to 400% (verify reflow)
-   - Reduced motion (prefers-reduced-motion)
+### 5. Reporting (15min)
 
-4. **Form Testing:**
-   - Submit forms with errors
-   - Verify error announcements
-   - Check autocomplete
-   - Test required field indicators
+**Categorize Findings:**
+- **Critical:** Blocks access (missing alt, keyboard traps, no labels)
+- **High:** Severe impact (low contrast, poor focus, confusing navigation)
+- **Medium:** Moderate impact (missing ARIA, suboptimal alt text)
+- **Low:** Best practices (semantic HTML, heading order)
 
-### Phase 4: Manual Review (20 minutes)
+## WCAG 2.1 Quick Reference
 
-1. **Code Review:**
-   - HTML semantics
-   - ARIA attributes correctness
-   - Heading hierarchy
-   - Alt text quality
+| Level | Requirements | Examples |
+|-------|--------------|----------|
+| **A (Minimum)** | Basic accessibility | Alt text, keyboard access, clear labels, no seizures |
+| **AA (Target)** | Meaningful accessibility | Contrast 4.5:1 (text) / 3:1 (UI), resize 200%, consistent navigation, error suggestions |
+| **AAA (Aspirational)** | Enhanced accessibility | Contrast 7:1 (text), no timing, no interruptions, enhanced errors |
 
-2. **Content Review:**
-   - Language attribute
-   - Reading level
-   - Link text clarity
-   - Button labels
-
-### Phase 5: Reporting (15 minutes)
-
-1. **Categorize Findings:**
-   - **Critical:** Blocks access (missing alt, keyboard traps, no labels)
-   - **High:** Severely impacts UX (low contrast, poor focus, confusing navigation)
-   - **Medium:** Moderate impact (missing ARIA, suboptimal alt text)
-   - **Low:** Best practices (semantic HTML, heading order)
-
-2. **Generate Report:**
-   - Executive summary with WCAG compliance level
-   - Violations by severity
-   - WCAG success criteria failed
-   - Remediation steps with priority
-   - Testing methodology
-
-## Output
-
-**Accessibility Audit Report** (saved as `accessibility-audit-report.md`):
+## Report Template
 
 ```markdown
 # Accessibility Audit Report
 
 **Date:** YYYY-MM-DD
-**Auditor:** tech-lead
-**Application:** [App Name]
-**Environment:** [dev/staging/production]
+**Environment:** [environment]
 **WCAG Target:** Level AA
 
 ## Executive Summary
 
-- **WCAG Compliance:** [Pass/Fail] Level AA
-- **Overall Accessibility Score:** X/100
-- **Critical Issues:** X (blocking access)
-- **High Issues:** X (severe impact)
-- **Medium Issues:** X (moderate impact)
-- **Low Issues:** X (best practices)
+- WCAG Compliance: [Pass/Fail] Level AA
+- Overall Score: X/100
+- Critical Issues: X (blocking)
+- High Issues: X (severe)
+- Medium Issues: X (moderate)
+- Low Issues: X (best practices)
 
-## WCAG 2.1 Compliance Status
+## WCAG 2.1 Compliance
 
 ### Principle 1: Perceivable
 
 | Success Criterion | Level | Status | Issues |
 |-------------------|-------|--------|--------|
 | 1.1.1 Non-text Content | A | ✅/❌ | X |
-| 1.2.1 Audio-only/Video-only | A | ✅/❌ | X |
 | 1.3.1 Info and Relationships | A | ✅/❌ | X |
 | 1.4.3 Contrast (Minimum) | AA | ✅/❌ | X |
 | 1.4.11 Non-text Contrast | AA | ✅/❌ | X |
@@ -399,14 +171,12 @@ output: Accessibility audit report with WCAG compliance status, violations by se
 | 2.1.2 No Keyboard Trap | A | ✅/❌ | X |
 | 2.4.3 Focus Order | A | ✅/❌ | X |
 | 2.4.7 Focus Visible | AA | ✅/❌ | X |
-| 2.5.5 Target Size | AAA | ✅/❌ | X |
 
 ### Principle 3: Understandable
 
 | Success Criterion | Level | Status | Issues |
 |-------------------|-------|--------|--------|
 | 3.1.1 Language of Page | A | ✅/❌ | X |
-| 3.2.1 On Focus | A | ✅/❌ | X |
 | 3.3.1 Error Identification | A | ✅/❌ | X |
 | 3.3.2 Labels or Instructions | A | ✅/❌ | X |
 
@@ -424,132 +194,58 @@ output: Accessibility audit report with WCAG compliance status, violations by se
 | Semantic HTML & ARIA | X/100 | X | X | X | X |
 | Keyboard Navigation | X/100 | X | X | X | X |
 | Screen Reader | X/100 | X | X | X | X |
-| Visual Accessibility | X/100 | X | X | X | X |
-| Forms & Inputs | X/100 | X | X | X | X |
-| Mobile Accessibility | X/100 | X | X | X | X |
-| Content Accessibility | X/100 | X | X | X | X |
+| Visual | X/100 | X | X | X | X |
+| Forms | X/100 | X | X | X | X |
+| Mobile | X/100 | X | X | X | X |
+| Content | X/100 | X | X | X | X |
 
 ## Findings by Severity
 
-### Critical (Immediate Action Required)
+### Critical (Immediate Action)
 
 1. **[Issue Title]**
-   - **WCAG:** 1.1.1 Non-text Content (Level A)
-   - **Severity:** Critical
-   - **Location:** [Page/Component]
-   - **Description:** [Details]
-   - **User Impact:** Blocks access for screen reader users
-   - **Remediation:** [Fix steps]
-   - **Effort:** [Low/Medium/High]
-
-### High (Fix Before Deployment)
-
-[...]
-
-### Medium (Fix Soon)
-
-[...]
-
-### Low (Best Practices)
-
-[...]
+   - WCAG: 1.1.1 Non-text Content (Level A)
+   - Severity: Critical
+   - Location: [Page/Component]
+   - Description: [Details]
+   - User Impact: [Impact description]
+   - Remediation: [Fix steps]
+   - Effort: [Low/Medium/High]
 
 ## Testing Results
 
-### Automated Testing
+### Automated
+- Lighthouse: X/100
+- axe DevTools: X critical, X serious, X moderate
+- WAVE: X errors, X contrast errors
 
-**Lighthouse:**
-- Accessibility Score: X/100
-- Issues Found: X
-
-**axe DevTools:**
-- Critical: X
-- Serious: X
-- Moderate: X
-- Minor: X
-
-**WAVE:**
-- Errors: X
-- Contrast Errors: X
-- Alerts: X
-
-### Manual Testing
-
-**Keyboard Navigation:**
-- ✅/❌ All interactive elements accessible
-- ✅/❌ Logical tab order
-- ✅/❌ Visible focus indicators
-- ✅/❌ No keyboard traps
-
-**Screen Reader (NVDA):**
-- ✅/❌ Content announced correctly
-- ✅/❌ Form labels associated
-- ✅/❌ Dynamic updates announced
-- ✅/❌ Logical reading order
-
-**Visual:**
+### Manual
+- ✅/❌ Keyboard navigation functional
+- ✅/❌ Screen reader compatible
 - ✅/❌ Color contrast meets AA (4.5:1)
 - ✅/❌ Text scalable to 200%
-- ✅/❌ Content reflows at 400% zoom
-- ✅/❌ Reduced motion supported
 
 ## Remediation Recommendations
 
-### Priority 1: Critical Fixes (Immediate)
+### Priority 1: Critical (Immediate)
+1. **[Recommendation]**
+   - Pages: [affected pages]
+   - Fix: [specific action]
+   - Effort: [hours]
+   - Impact: [user benefit]
 
-1. **Add Missing Alt Text**
-   - **Pages:** Homepage, Search results
-   - **Images:** X images missing alt
-   - **Fix:** Add descriptive alt text for all images
-   - **Effort:** 2 hours
-   - **Impact:** Unblocks screen reader users
-
-2. **Fix Keyboard Traps**
-   - **Components:** Modal dialog, dropdown menu
-   - **Issue:** Focus locked, cannot escape
-   - **Fix:** Implement Esc key handler, focus management
-   - **Effort:** 4 hours
-   - **Impact:** Enables keyboard-only navigation
-
-### Priority 2: High Fixes (This Sprint)
-
-[...]
-
-### Priority 3: Medium Fixes (Next Sprint)
-
-[...]
-
-### Priority 4: Low Improvements (Backlog)
-
-[...]
+### Priority 2: High (This Sprint)
+### Priority 3: Medium (Next Sprint)
+### Priority 4: Low (Backlog)
 
 ## Component-Specific Issues
 
-### Navigation
+**Navigation:** [issues]
+**Forms:** [issues]
+**Modals:** [issues]
+**Tables:** [issues]
 
-- Missing skip link
-- No landmark regions
-- Submenu not keyboard accessible
-
-### Forms
-
-- X inputs missing labels
-- Error messages not associated
-- No autocomplete attributes
-
-### Modals
-
-- Focus not trapped
-- Esc key doesn't close
-- Background not hidden from screen readers
-
-### Data Tables
-
-- Missing `<th>` headers
-- No `scope` attributes
-- No `<caption>`
-
-## Browser/Assistive Technology Testing
+## Browser/Screen Reader Testing
 
 | Browser | Screen Reader | Status | Issues |
 |---------|--------------|--------|--------|
@@ -557,124 +253,57 @@ output: Accessibility audit report with WCAG compliance status, violations by se
 | Firefox | NVDA | ✅/❌ | X |
 | Safari | VoiceOver | ✅/❌ | X |
 | iOS Safari | VoiceOver | ✅/❌ | X |
-| Chrome Android | TalkBack | ✅/❌ | X |
 
 ## Trend Analysis
-
-*Compare with previous audit (if available)*
 
 | Metric | Previous | Current | Change |
 |--------|----------|---------|--------|
 | Compliance Level | AA | AA | ➡️ |
 | Critical Issues | X | X | ⬇️ X% |
-| Accessibility Score | X/100 | X/100 | ⬆️ X% |
-| WCAG Success Criteria | X/50 | X/50 | ⬆️ X |
+| Score | X/100 | X/100 | ⬆️ X% |
 
 ## Next Steps
 
-1. **Immediate Actions** (Critical)
-   - [Action 1 with owner and deadline]
-   - [Action 2]
-
-2. **Short-term Fixes** (High, this sprint)
-   - [Action 1]
-   - [Action 2]
-
-3. **Medium-term Improvements** (Medium, next sprint)
-   - [Action 1]
-   - [Action 2]
-
-4. **Long-term Enhancements** (Low, backlog)
-   - [Action 1]
-   - [Action 2]
-
-5. **Continuous Monitoring**
-   - Add accessibility tests to CI/CD
-   - Schedule quarterly audits
-   - Track WCAG compliance in releases
-   - Monitor user feedback from assistive technology users
+1. **Immediate** (Critical) - [with owners/deadlines]
+2. **Short-term** (High, this sprint)
+3. **Medium-term** (Medium, next sprint)
+4. **Long-term** (Low, backlog)
+5. **Monitoring** - Add accessibility tests to CI/CD, quarterly audits
 ```
 
 ## Success Criteria
 
 - WCAG 2.1 Level AA compliance validated
-- All critical accessibility issues identified
+- All critical issues identified
 - Screen reader compatibility verified
 - Keyboard navigation fully functional
-- Visual accessibility standards met
-- Remediation steps prioritized and documented
-- Report delivered with actionable fixes
-
-## WCAG 2.1 Quick Reference
-
-**Level A (Minimum):**
-
-- Alt text for images
-- Keyboard accessible
-- Clear labels
-- No seizure triggers
-
-**Level AA (Target):**
-
-- Color contrast 4.5:1 (text)
-- Color contrast 3:1 (UI components)
-- Resize text 200%
-- Multiple ways to navigate
-- Consistent navigation
-- Error suggestions
-
-**Level AAA (Aspirational):**
-
-- Color contrast 7:1 (text)
-- No timing
-- No interruptions
-- Enhanced error suggestions
+- Visual standards met
+- Remediation prioritized and documented
 
 ## Best Practices
 
-1. **Test early and often** - Don't wait for final audit
-2. **Use semantic HTML first** - ARIA is supplemental
-3. **Test with real users** - People with disabilities provide invaluable feedback
-4. **Automate where possible** - CI/CD accessibility checks
-5. **Train the team** - Accessibility is everyone's responsibility
-6. **Document patterns** - Create accessible component library
-7. **Track compliance** - Regular audits, not one-time checks
+1. Test early and often, don't wait for final audit
+2. Use semantic HTML first, ARIA is supplemental
+3. Test with real users with disabilities
+4. Automate where possible (CI/CD checks)
+5. Train the team - accessibility is everyone's responsibility
+6. Document patterns in component library
+7. Track compliance regularly, not one-time
 
-## Tools Integration
+## Common Violations
 
-**Browser Extensions:**
-
-- axe DevTools - Automated testing
-- WAVE - Visual feedback
-- Lighthouse - Audit scores
-- Color Contrast Analyzer - Contrast checking
-
-**Screen Readers:**
-
-- NVDA (Windows, free)
-- JAWS (Windows, commercial)
-- VoiceOver (macOS/iOS, built-in)
-- TalkBack (Android, built-in)
-
-**Command Line:**
-
-- Pa11y CI - Automated testing
-- axe-core - Headless testing
-- Lighthouse CI - Continuous integration
-
-**CI/CD Integration:**
-
-- Add accessibility tests to pipeline
-- Fail builds on critical violations
-- Track compliance trends over time
+| Violation | Fix | Priority |
+|-----------|-----|----------|
+| Missing alt text | Add descriptive alt to all images | Critical |
+| Keyboard trap | Add Esc handler, manage focus | Critical |
+| No labels | Associate labels with inputs (for/id) | Critical |
+| Low contrast | Increase to 4.5:1 (text) / 3:1 (UI) | High |
+| Poor focus indicators | Add visible 3:1 contrast focus styles | High |
+| Missing skip link | Add skip-to-main navigation link | Medium |
+| Improper ARIA | Remove unnecessary ARIA, fix attributes | Medium |
+| Non-semantic HTML | Use proper semantic elements | Low |
 
 ## Related Skills
 
-- [web-app-testing](../testing/web-app-testing.md) - For development testing
-- [qa-criteria-validator](../qa/qa-criteria-validator.md) - For acceptance validation
-- [ui-ux-designer](../../agents/design/ui-ux-designer.md) - For accessible design
-
-## Related Commands
-
-- `/accessibility-audit` - Invoke this skill for comprehensive accessibility review
-- `/quality-check` - Includes basic accessibility checks
+- [web-app-testing](../testing/web-app-testing.md) - Development testing
+- [qa-criteria-validator](../qa/qa-criteria-validator.md) - Acceptance validation

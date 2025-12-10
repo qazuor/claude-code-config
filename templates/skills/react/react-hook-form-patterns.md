@@ -1,18 +1,38 @@
+---
+name: react-hook-form-patterns
+category: react
+description: React Hook Form patterns with Zod validation for performant forms
+usage: Use when building forms with validation, complex schemas, and minimal re-renders
+input: Form schema, validation rules, field types
+output: Form components, validation schemas, submit handlers
+config_required:
+  validation_library: "Validation library being used"
+  ui_library: "UI component library if any"
+  validation_mode: "When to validate (onChange, onBlur, onSubmit)"
+  default_values: "Default form values structure"
+---
+
 # React Hook Form Patterns
 
-Expert patterns for **React Hook Form** with Zod validation.
+## ⚙️ Configuration
 
-## Core Concepts
+| Setting | Description | Example |
+|---------|-------------|---------|
+| `validation_library` | Schema validation library | Zod, Yup, Joi |
+| `ui_library` | UI component library | Shadcn UI, Material UI, Chakra UI |
+| `validation_mode` | Validation trigger | `onBlur`, `onChange`, `onSubmit` |
+| `default_values` | Default form values | Empty object, populated data |
 
-- Performant form handling
+## Purpose
+
+Build performant forms with:
 - Minimal re-renders
-- Zod schema validation
-- TypeScript integration
-- Controlled and uncontrolled inputs
+- Type-safe validation with Zod
+- Support for complex nested schemas
+- Arrays with dynamic fields
+- Integration with UI libraries
 
-## Setup
-
-### Basic Form with Zod
+## Basic Form
 
 ```typescript
 import { useForm } from 'react-hook-form';
@@ -20,8 +40,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 
 const loginSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
+  email: z.string().email('Invalid email'),
+  password: z.string().min(8, 'Min 8 characters'),
   rememberMe: z.boolean().optional(),
 });
 
@@ -47,38 +67,16 @@ function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <div>
-        <label htmlFor="email">Email</label>
-        <input
-          id="email"
-          type="email"
-          {...register('email')}
-          aria-invalid={errors.email ? 'true' : 'false'}
-        />
-        {errors.email && (
-          <span role="alert">{errors.email.message}</span>
-        )}
-      </div>
+      <input {...register('email')} aria-invalid={errors.email ? 'true' : 'false'} />
+      {errors.email && <span role="alert">{errors.email.message}</span>}
 
-      <div>
-        <label htmlFor="password">Password</label>
-        <input
-          id="password"
-          type="password"
-          {...register('password')}
-          aria-invalid={errors.password ? 'true' : 'false'}
-        />
-        {errors.password && (
-          <span role="alert">{errors.password.message}</span>
-        )}
-      </div>
+      <input type="password" {...register('password')} />
+      {errors.password && <span>{errors.password.message}</span>}
 
-      <div>
-        <label>
-          <input type="checkbox" {...register('rememberMe')} />
-          Remember me
-        </label>
-      </div>
+      <label>
+        <input type="checkbox" {...register('rememberMe')} />
+        Remember me
+      </label>
 
       <button type="submit" disabled={isSubmitting}>
         {isSubmitting ? 'Logging in...' : 'Log in'}
@@ -88,62 +86,34 @@ function LoginForm() {
 }
 ```
 
-## Complex Schema Patterns
+## Complex Schemas
 
 ### Nested Objects
 
 ```typescript
-const addressSchema = z.object({
-  street: z.string().min(1, 'Street is required'),
-  city: z.string().min(1, 'City is required'),
-  zipCode: z.string().regex(/^\d{5}$/, 'Invalid ZIP code'),
-  country: z.string().min(1, 'Country is required'),
-});
-
 const userSchema = z.object({
-  firstName: z.string().min(1, 'First name is required'),
-  lastName: z.string().min(1, 'Last name is required'),
-  email: z.string().email(),
-  address: addressSchema,
-  billingAddress: addressSchema.optional(),
-  sameAsBilling: z.boolean(),
+  firstName: z.string().min(1),
+  lastName: z.string().min(1),
+  address: z.object({
+    street: z.string().min(1),
+    city: z.string().min(1),
+    zipCode: z.string().regex(/^\d{5}$/),
+  }),
 });
 
 type UserFormData = z.infer<typeof userSchema>;
 
 function UserForm() {
-  const { register, watch, formState: { errors } } = useForm<UserFormData>({
+  const { register, formState: { errors } } = useForm<UserFormData>({
     resolver: zodResolver(userSchema),
   });
-
-  const sameAsBilling = watch('sameAsBilling');
 
   return (
     <form>
       <input {...register('firstName')} />
-      <input {...register('lastName')} />
-
-      {/* Nested fields */}
-      <fieldset>
-        <legend>Address</legend>
-        <input {...register('address.street')} />
-        <input {...register('address.city')} />
-        <input {...register('address.zipCode')} />
-        {errors.address?.street && <span>{errors.address.street.message}</span>}
-      </fieldset>
-
-      <label>
-        <input type="checkbox" {...register('sameAsBilling')} />
-        Billing address same as shipping
-      </label>
-
-      {!sameAsBilling && (
-        <fieldset>
-          <legend>Billing Address</legend>
-          <input {...register('billingAddress.street')} />
-          <input {...register('billingAddress.city')} />
-        </fieldset>
-      )}
+      <input {...register('address.street')} />
+      <input {...register('address.city')} />
+      {errors.address?.street && <span>{errors.address.street.message}</span>}
     </form>
   );
 }
@@ -155,11 +125,11 @@ function UserForm() {
 const orderSchema = z.object({
   items: z.array(
     z.object({
-      productId: z.string().min(1, 'Product is required'),
-      quantity: z.number().min(1, 'Quantity must be at least 1'),
+      productId: z.string().min(1),
+      quantity: z.number().min(1),
       notes: z.string().optional(),
     })
-  ).min(1, 'At least one item is required'),
+  ).min(1, 'At least one item required'),
 });
 
 type OrderFormData = z.infer<typeof orderSchema>;
@@ -182,36 +152,23 @@ function OrderForm() {
       {fields.map((field, index) => (
         <div key={field.id}>
           <input {...register(`items.${index}.productId`)} />
-          <input
-            type="number"
-            {...register(`items.${index}.quantity`, { valueAsNumber: true })}
-          />
-          <input {...register(`items.${index}.notes`)} />
-          <button type="button" onClick={() => remove(index)}>
-            Remove
-          </button>
+          <input type="number" {...register(`items.${index}.quantity`, { valueAsNumber: true })} />
+          <button type="button" onClick={() => remove(index)}>Remove</button>
           {errors.items?.[index]?.productId && (
             <span>{errors.items[index]?.productId?.message}</span>
           )}
         </div>
       ))}
-
-      <button
-        type="button"
-        onClick={() => append({ productId: '', quantity: 1, notes: '' })}
-      >
+      <button type="button" onClick={() => append({ productId: '', quantity: 1, notes: '' })}>
         Add Item
       </button>
-
-      <button type="submit">Submit Order</button>
+      <button type="submit">Submit</button>
     </form>
   );
 }
 ```
 
 ## Controlled Components
-
-### Using Controller
 
 ```typescript
 import { Controller, useForm } from 'react-hook-form';
@@ -221,13 +178,10 @@ const eventSchema = z.object({
   title: z.string().min(1),
   date: z.date(),
   category: z.enum(['meeting', 'deadline', 'reminder']),
-  priority: z.number().min(1).max(5),
 });
 
-type EventFormData = z.infer<typeof eventSchema>;
-
 function EventForm() {
-  const { control, handleSubmit } = useForm<EventFormData>({
+  const { control, handleSubmit } = useForm({
     resolver: zodResolver(eventSchema),
   });
 
@@ -255,21 +209,7 @@ function EventForm() {
             options={[
               { label: 'Meeting', value: 'meeting' },
               { label: 'Deadline', value: 'deadline' },
-              { label: 'Reminder', value: 'reminder' },
             ]}
-          />
-        )}
-      />
-
-      <Controller
-        name="priority"
-        control={control}
-        render={({ field }) => (
-          <Slider
-            value={[field.value]}
-            onValueChange={([value]) => field.onChange(value)}
-            min={1}
-            max={5}
           />
         )}
       />
@@ -278,40 +218,29 @@ function EventForm() {
 }
 ```
 
-## Integration with Shadcn UI
+## UI Library Integration
 
 ```typescript
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Form,
-  FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
+  FormControl,
   FormMessage,
 } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-
-const profileSchema = z.object({
-  username: z.string().min(2).max(30),
-  bio: z.string().max(160).optional(),
-});
 
 function ProfileForm() {
-  const form = useForm<z.infer<typeof profileSchema>>({
+  const form = useForm({
     resolver: zodResolver(profileSchema),
-    defaultValues: {
-      username: '',
-      bio: '',
-    },
+    defaultValues: { username: '', bio: '' },
   });
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmit)}>
         <FormField
           control={form.control}
           name="username"
@@ -321,32 +250,11 @@ function ProfileForm() {
               <FormControl>
                 <Input placeholder="johndoe" {...field} />
               </FormControl>
-              <FormDescription>
-                This is your public display name.
-              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
-
-        <FormField
-          control={form.control}
-          name="bio"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Bio</FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder="Tell us about yourself"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <Button type="submit">Update profile</Button>
+        <Button type="submit">Submit</Button>
       </form>
     </Form>
   );
@@ -355,26 +263,23 @@ function ProfileForm() {
 
 ## Advanced Patterns
 
-### Form with File Upload
+### File Upload
 
 ```typescript
 const uploadSchema = z.object({
   title: z.string().min(1),
   file: z
     .instanceof(FileList)
-    .refine((files) => files.length > 0, 'File is required')
-    .refine(
-      (files) => files[0]?.size <= 5 * 1024 * 1024,
-      'File must be less than 5MB'
-    )
+    .refine((files) => files.length > 0, 'File required')
+    .refine((files) => files[0]?.size <= 5 * 1024 * 1024, 'Max 5MB')
     .refine(
       (files) => ['image/jpeg', 'image/png'].includes(files[0]?.type),
-      'Only JPEG and PNG files are allowed'
+      'Only JPEG/PNG allowed'
     ),
 });
 
 function UploadForm() {
-  const { register, handleSubmit, formState: { errors } } = useForm({
+  const { register, handleSubmit } = useForm({
     resolver: zodResolver(uploadSchema),
   });
 
@@ -389,7 +294,6 @@ function UploadForm() {
     <form onSubmit={handleSubmit(onSubmit)}>
       <input {...register('title')} />
       <input type="file" {...register('file')} accept="image/jpeg,image/png" />
-      {errors.file && <span>{errors.file.message}</span>}
       <button type="submit">Upload</button>
     </form>
   );
@@ -399,25 +303,19 @@ function UploadForm() {
 ### Async Validation
 
 ```typescript
-const registerSchema = z.object({
-  username: z.string().min(3),
-  email: z.string().email(),
-});
-
 function RegisterForm() {
   const form = useForm({
     resolver: zodResolver(registerSchema),
     mode: 'onBlur',
   });
 
-  // Async validation for username availability
   const validateUsername = async (username: string) => {
     const response = await fetch(`/api/check-username?username=${username}`);
     const { available } = await response.json();
     if (!available) {
       form.setError('username', {
         type: 'manual',
-        message: 'Username is already taken',
+        message: 'Username already taken',
       });
       return false;
     }
@@ -425,105 +323,37 @@ function RegisterForm() {
   };
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)}>
+    <form>
       <input
         {...form.register('username')}
         onBlur={(e) => validateUsername(e.target.value)}
       />
-      {/* ... */}
     </form>
-  );
-}
-```
-
-### Multi-step Form
-
-```typescript
-const steps = ['Personal', 'Address', 'Review'] as const;
-
-const personalSchema = z.object({
-  firstName: z.string().min(1),
-  lastName: z.string().min(1),
-  email: z.string().email(),
-});
-
-const addressSchema = z.object({
-  street: z.string().min(1),
-  city: z.string().min(1),
-  zipCode: z.string().min(5),
-});
-
-function MultiStepForm() {
-  const [step, setStep] = useState(0);
-  const [formData, setFormData] = useState({});
-
-  const personalForm = useForm({
-    resolver: zodResolver(personalSchema),
-    defaultValues: formData,
-  });
-
-  const addressForm = useForm({
-    resolver: zodResolver(addressSchema),
-    defaultValues: formData,
-  });
-
-  const handleNext = async (data: any) => {
-    setFormData((prev) => ({ ...prev, ...data }));
-    setStep((prev) => prev + 1);
-  };
-
-  const handleBack = () => {
-    setStep((prev) => prev - 1);
-  };
-
-  const handleSubmit = async () => {
-    await submitRegistration(formData);
-  };
-
-  return (
-    <div>
-      <Steps current={step} steps={steps} />
-
-      {step === 0 && (
-        <form onSubmit={personalForm.handleSubmit(handleNext)}>
-          {/* Personal fields */}
-          <button type="submit">Next</button>
-        </form>
-      )}
-
-      {step === 1 && (
-        <form onSubmit={addressForm.handleSubmit(handleNext)}>
-          {/* Address fields */}
-          <button type="button" onClick={handleBack}>Back</button>
-          <button type="submit">Next</button>
-        </form>
-      )}
-
-      {step === 2 && (
-        <div>
-          <ReviewData data={formData} />
-          <button onClick={handleBack}>Back</button>
-          <button onClick={handleSubmit}>Submit</button>
-        </div>
-      )}
-    </div>
   );
 }
 ```
 
 ## Best Practices
 
-1. **Zod Schemas**: Define schemas separately for reuse and testing
-2. **Type Inference**: Use `z.infer<typeof schema>` for types
-3. **Validation Mode**: Use `mode: 'onBlur'` for better UX
-4. **Controller**: Use Controller for controlled components
-5. **useFieldArray**: Use for dynamic arrays
-6. **Error Handling**: Show errors inline with accessible markup
+| Practice | Description |
+|----------|-------------|
+| **Separate Schemas** | Define schemas separately for reuse and testing |
+| **Type Inference** | Use `z.infer<typeof schema>` for types |
+| **Validation Mode** | Use `mode: 'onBlur'` for better UX |
+| **Controller for Custom** | Use Controller for controlled components |
+| **useFieldArray** | Use for dynamic arrays |
+| **Accessible Errors** | Show errors with accessible markup |
 
 ## When to Use
 
 - Any React form with validation
 - Complex multi-step forms
 - Forms with dynamic fields
-- When you need minimal re-renders
+- Need minimal re-renders
 - Integration with UI libraries
+
+## Related Skills
+
+- `error-handling-patterns` - Handle form errors
+- `web-app-testing` - Test forms
+- `shadcn-specialist` - Shadcn UI integration

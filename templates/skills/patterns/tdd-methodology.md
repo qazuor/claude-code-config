@@ -1,49 +1,51 @@
 ---
 name: tdd-methodology
 category: patterns
-description: Test-Driven Development workflow (RED-GREEN-REFACTOR) ensuring 90%+ coverage and design quality
-usage: Use when implementing new features to ensure testability, design quality, and comprehensive test coverage
+description: Test-Driven Development workflow (RED-GREEN-REFACTOR) ensuring quality and coverage
+usage: Use when implementing features to ensure testability and design quality
 input: Feature requirements, acceptance criteria, technical specifications
-output: Test files written before implementation, 90%+ coverage, well-designed code
+output: Tests written before implementation, well-designed code with high coverage
+config_required:
+  - TEST_FRAMEWORK: "Test framework to use (e.g., Vitest, Jest)"
+  - COVERAGE_TARGET: "Minimum coverage percentage (e.g., 90%)"
+  - TEST_COMMAND: "Command to run tests (e.g., pnpm test)"
 ---
 
 # TDD Methodology
 
-## Overview
+## ⚙️ Configuration
 
-**Purpose**: Test-Driven Development approach ensuring testable, well-designed code with comprehensive coverage
+| Setting | Description | Example |
+|---------|-------------|---------|
+| TEST_FRAMEWORK | Test framework | `Vitest`, `Jest`, `Mocha` |
+| COVERAGE_TARGET | Minimum coverage | `90%` |
+| TEST_COMMAND | Run tests command | `pnpm test`, `npm test` |
+| WATCH_COMMAND | Watch mode command | `pnpm test:watch` |
+| COVERAGE_COMMAND | Coverage command | `pnpm test:coverage` |
 
-**Category**: Patterns
-**Primary Users**: All engineers (hono-engineer, react-senior-dev, db-drizzle-engineer, qa-engineer)
+## Purpose
 
-## When to Use This Skill
-
-- When implementing new features
-- When fixing bugs (write failing test first)
-- When refactoring code
-- When designing complex logic
-- Always (TDD should be default approach)
+Test-Driven Development approach ensuring testable, well-designed code with comprehensive coverage.
 
 ## The TDD Cycle
 
 ### RED → GREEN → REFACTOR
 
-**RED**: Write a failing test
-**GREEN**: Write minimum code to pass
-**REFACTOR**: Improve code while keeping tests green
+- **RED**: Write a failing test
+- **GREEN**: Write minimum code to pass
+- **REFACTOR**: Improve code while keeping tests green
 
 **Cycle time**: 2-10 minutes per iteration
 
 ## Workflow
 
-### Step 1: RED - Write Failing Test
+### 1. RED - Write Failing Test
 
-**Objective**: Define expected behavior through a failing test
+**Objective**: Define expected behavior through failing test
 
 **Actions:**
-
 1. Identify single behavior to test
-2. Write test that describes expected behavior
+2. Write test describing expected behavior
 3. Run test - it MUST fail
 4. Verify failure message is clear
 
@@ -51,33 +53,31 @@ output: Test files written before implementation, 90%+ coverage, well-designed c
 
 ```typescript
 // Step 1: RED - Write failing test
-describe('BookingService', () => {
-  it('should create booking with valid dates', async () => {
-    const service = new BookingService();
+describe('OrderService', () => {
+  it('should create order with valid data', async () => {
+    const service = new OrderService();
 
-    const booking = await service.create({
-      entityId: 'acc-1',
-      checkIn: '2024-02-01',
-      checkOut: '2024-02-05',
-      guests: 2
+    const order = await service.create({
+      itemId: 'item-1',
+      quantity: 2,
+      customerId: 'customer-1'
     });
 
-    expect(booking).toHaveProperty('id');
-    expect(booking.status).toBe('pending');
+    expect(order).toHaveProperty('id');
+    expect(order.status).toBe('pending');
   });
 });
 
-// Run: pnpm test
-// Result: FAIL - BookingService is not defined
+// Run: {{TEST_COMMAND}}
+// Result: FAIL - OrderService is not defined
 ```
 
-### Step 2: GREEN - Make Test Pass
+### 2. GREEN - Make Test Pass
 
 **Objective**: Write minimum code to make test pass
 
 **Actions:**
-
-1. Write simplest code that passes test
+1. Write simplest code that passes
 2. Don't add extra features
 3. Don't optimize yet
 4. Run test - it MUST pass
@@ -86,26 +86,25 @@ describe('BookingService', () => {
 
 ```typescript
 // Step 2: GREEN - Minimum implementation
-export class BookingService {
+export class OrderService {
   async create(data) {
     return {
-      id: 'booking-1',
+      id: 'order-1',
       status: 'pending',
       ...data
     };
   }
 }
 
-// Run: pnpm test
+// Run: {{TEST_COMMAND}}
 // Result: PASS ✓
 ```
 
-### Step 3: REFACTOR - Improve Code
+### 3. REFACTOR - Improve Code
 
 **Objective**: Improve design while keeping tests green
 
 **Actions:**
-
 1. Remove duplication
 2. Improve names
 3. Extract methods/classes
@@ -117,38 +116,33 @@ export class BookingService {
 
 ```typescript
 // Step 3: REFACTOR - Add proper implementation
-export class BookingService extends BaseCrudService<Booking> {
+export class OrderService extends BaseCrudService<Order> {
   constructor(
-    private bookingModel: BookingModel,
-    private validator: BookingValidator
+    private orderModel: OrderModel,
+    private validator: OrderValidator
   ) {
-    super(bookingModel);
+    super(orderModel);
   }
 
-  async create(data: CreateBookingInput): Promise<Booking> {
-    // Validate dates
-    await this.validator.validateDates(data);
+  async create(data: CreateOrderInput): Promise<Order> {
+    await this.validator.validate(data);
 
-    // Create booking
-    const booking = await this.bookingModel.create({
+    const order = await this.orderModel.create({
       ...data,
       status: 'pending'
     });
 
-    return booking;
+    return order;
   }
 }
 
-// Run: pnpm test
+// Run: {{TEST_COMMAND}}
 // Result: PASS ✓ (still passing)
 ```
 
-### Step 4: Repeat
+### 4. Repeat
 
-**Objective**: Continue cycle for next behavior
-
-**Actions:**
-
+**Continue cycle for next behavior:**
 1. Pick next behavior
 2. Write failing test (RED)
 3. Make it pass (GREEN)
@@ -157,7 +151,7 @@ export class BookingService extends BaseCrudService<Booking> {
 
 ## TDD Rules
 
-### Three Laws of TDD (Uncle Bob)
+### Three Laws of TDD
 
 1. **Don't write production code** until you have a failing test
 2. **Don't write more test** than needed to fail
@@ -172,10 +166,10 @@ export class BookingService extends BaseCrudService<Booking> {
 - **Independent tests**: No test dependencies
 - **Repeatable**: Same results every time
 
-## Benefits of TDD
+## Benefits
 
 1. **Design Quality**: Forces modular, testable design
-2. **Coverage**: 90%+ coverage naturally achieved
+2. **Coverage**: High coverage naturally achieved
 3. **Documentation**: Tests document behavior
 4. **Confidence**: Safe refactoring
 5. **Bug Prevention**: Catches issues early
@@ -215,36 +209,36 @@ export class BookingService extends BaseCrudService<Booking> {
 
 ## TDD with Different Layers
 
-### Database Layer (Drizzle + Model)
+### Database Layer
 
 ```typescript
 // RED: Write failing test
-it('should find booking by ID', async () => {
-  const model = new BookingModel(db);
-  const booking = await model.findById('booking-1');
-  expect(booking).toBeDefined();
+it('should find item by ID', async () => {
+  const model = new ItemModel(db);
+  const item = await model.findById('item-1');
+  expect(item).toBeDefined();
 });
 
 // GREEN: Implement
-class BookingModel extends BaseModel<Booking> {
+class ItemModel extends BaseModel<Item> {
   async findById(id: string) {
-    return await db.bookings.findFirst({
-      where: eq(bookings.id, id)
+    return await db.items.findFirst({
+      where: eq(items.id, id)
     });
   }
 }
 
 // REFACTOR: Add error handling
 async findById(id: string) {
-  const booking = await db.bookings.findFirst({
-    where: eq(bookings.id, id)
+  const item = await db.items.findFirst({
+    where: eq(items.id, id)
   });
 
-  if (!booking) {
-    throw new NotFoundError('Booking not found');
+  if (!item) {
+    throw new NotFoundError('Item not found');
   }
 
-  return booking;
+  return item;
 }
 ```
 
@@ -252,28 +246,27 @@ async findById(id: string) {
 
 ```typescript
 // RED: Business logic test
-it('should not allow booking with past dates', async () => {
+it('should not allow negative quantity', async () => {
   await expect(
     service.create({
-      checkIn: '2020-01-01',
-      checkOut: '2020-01-05'
+      quantity: -1
     })
-  ).rejects.toThrow('Past dates not allowed');
+  ).rejects.toThrow('Quantity must be positive');
 });
 
 // GREEN: Implement validation
 async create(data) {
-  if (new Date(data.checkIn) < new Date()) {
-    throw new Error('Past dates not allowed');
+  if (data.quantity < 0) {
+    throw new Error('Quantity must be positive');
   }
   return await this.model.create(data);
 }
 
 // REFACTOR: Extract validator
-class DateValidator {
-  validateNotPast(date: string) {
-    if (new Date(date) < new Date()) {
-      throw new ValidationError('Past dates not allowed');
+class QuantityValidator {
+  validatePositive(quantity: number) {
+    if (quantity < 0) {
+      throw new ValidationError('Quantity must be positive');
     }
   }
 }
@@ -283,36 +276,36 @@ class DateValidator {
 
 ```typescript
 // RED: API test
-it('POST /bookings should return 201', async () => {
-  const response = await app.request('/api/bookings', {
+it('POST /api/orders should return 201', async () => {
+  const response = await app.request('/api/orders', {
     method: 'POST',
-    body: JSON.stringify(validBooking)
+    body: JSON.stringify(validOrder)
   });
 
   expect(response.status).toBe(201);
 });
 
 // GREEN: Implement route
-app.post('/api/bookings', async (c) => {
+app.post('/api/orders', async (c) => {
   const data = await c.req.json();
-  const booking = await service.create(data);
-  return c.json(booking, 201);
+  const order = await service.create(data);
+  return c.json(order, 201);
 });
 
 // REFACTOR: Add validation
-app.post('/api/bookings', 
-  zValidator('json', createBookingSchema),
+app.post('/api/orders',
+  validator('json', createOrderSchema),
   async (c) => {
     const data = c.req.valid('json');
-    const booking = await service.create(data);
-    return c.json(booking, 201);
+    const order = await service.create(data);
+    return c.json(order, 201);
   }
 );
 ```
 
 ## Coverage Goals
 
-- **Unit Tests**: >= 90%
+- **Unit Tests**: >= {{COVERAGE_TARGET}}
 - **Integration Tests**: All critical paths
 - **E2E Tests**: Happy paths
 
@@ -320,32 +313,30 @@ app.post('/api/bookings',
 
 1. **Start Simple**: Test simplest case first
 2. **One Assert**: One logical assertion per test
-3. **Clear Names**: Test name explains what's tested
-4. **Fast Feedback**: Keep tests fast (< 5s total)
+3. **Clear Names**: Test name explains behavior
+4. **Fast Feedback**: Keep tests fast
 5. **Isolated**: Tests don't depend on each other
 6. **Deterministic**: Always same result
 7. **Readable**: Tests as documentation
 8. **Maintainable**: Refactor tests too
 
+## Output
+
+**Produces:**
+- Test files written before implementation
+- Well-designed, modular code
+- Coverage >= {{COVERAGE_TARGET}}
+- Living documentation through tests
+
+**Success Criteria:**
+- All tests passing
+- Coverage meets target
+- Code well-designed and maintainable
+- Tests serve as documentation
+
 ## Related Skills
 
-- `api-app-testing` - API-specific testing patterns
-- `performance-testing` - Performance validation
-- `security-testing` - Security testing approach
-
-## Notes
-
-- TDD is a design discipline, not just testing
-- Slower at first, faster long-term
-- Reduces debugging time significantly
-- Makes refactoring safe and confident
-- Tests become living documentation
-- 90% coverage minimum for all code
-
----
-
-## Changelog
-
-| Version | Date | Changes | Author | Related |
-|---------|------|---------|--------|---------|
-| 1.0.0 | 2025-10-31 | Initial version | @tech-lead | P-004 |
+- `api-app-testing` - API-specific testing
+- `web-app-testing` - Frontend testing
+- `security-testing` - Security testing
+- `performance-testing` - Performance testing

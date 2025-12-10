@@ -1,300 +1,302 @@
-# Markdown Formatter Skill
+---
+name: markdown-formatter
+category: documentation
+description: Automatically format and lint markdown files to ensure consistent documentation standards
+usage: When formatting documentation, fixing markdown violations, or maintaining doc quality
+input: Markdown files, formatting rules, quality criteria
+output: Formatted markdown files, lint reports, quality metrics
+config_required:
+  - rules_enabled: "List of markdown rules to enforce"
+  - indentation_spaces: "List indentation size"
+  - max_blank_lines: "Maximum consecutive blank lines"
+  - code_language_default: "Default language for code blocks"
+  - line_length: "Maximum line length"
+---
 
-**Purpose**: Comprehensive markdown formatting and linting skill that automatically detects and fixes all common markdown format violations across documentation files.
+# Markdown Formatter
 
-## Overview
+## ⚙️ Configuration
 
-This skill provides automated markdown formatting capabilities to ensure consistent, clean, and standards-compliant markdown documentation throughout the project. It addresses all major markdown linting rules and maintains documentation quality.
+| Setting | Description | Example |
+|---------|-------------|---------|
+| `rules_enabled` | Active lint rules | `['MD007', 'MD040', 'MD022']` |
+| `indentation_spaces` | List indent | `2` |
+| `max_blank_lines` | Max consecutive blanks | `1` |
+| `code_language_default` | Default code language | `text` |
+| `line_length` | Max line length | `100` |
+| `heading_style` | Heading format | `atx` (#) or `setext` (===) |
+
+## Purpose
+
+Comprehensive markdown formatting and linting to ensure consistent, clean, and standards-compliant documentation.
 
 ## Capabilities
 
-### Supported Markdown Rules
+- Fix list indentation (MD007)
+- Remove excessive blank lines (MD012)
+- Add heading blank lines (MD022)
+- Resolve duplicate headings (MD024)
+- Remove heading punctuation (MD026)
+- Fix ordered list numbering (MD029)
+- Add code block blank lines (MD031)
+- Add list blank lines (MD032)
+- Convert emphasis to headings (MD036)
+- Add code block languages (MD040)
+- Validate link fragments (MD051)
+- Add table blank lines (MD058)
 
-#### **MD007** - Unordered List Indentation
+## Key Rules
 
-- Ensures consistent 2-space indentation for nested lists
-- Fixes mixed indentation patterns
-- Maintains proper hierarchy structure
+### MD007 - List Indentation
 
-#### **MD012** - Multiple Consecutive Blank Lines
+Ensures consistent indentation for nested lists.
 
-- Removes excessive blank lines (more than 1 consecutive)
-- Preserves single blank lines for readability
-- Maintains proper document structure
+**Before:**
+```markdown
+- Item 1
+    - Nested (4 spaces)
+      - Deep nested (6 spaces)
+```
 
-#### **MD022** - Headings Surrounded by Blank Lines
+**After:**
+```markdown
+- Item 1
+  - Nested (2 spaces)
+    - Deep nested (4 spaces)
+```
 
-- Adds blank lines before and after headings
-- Ensures proper heading separation
-- Maintains document flow and readability
+### MD040 - Code Block Language
 
-#### **MD024** - Duplicate Heading Content
+Adds language specification to code blocks.
 
-- Detects and resolves duplicate heading text
-- Suggests contextual alternatives
-- Maintains heading hierarchy uniqueness
+**Before:**
+````markdown
+```
+function hello() {
+  console.log('hello');
+}
+```
+````
 
-#### **MD026** - Trailing Punctuation in Headings
+**After:**
+````markdown
+```typescript
+function hello() {
+  console.log('hello');
+}
+```
+````
 
-- Removes trailing punctuation (., !, ?, :) from headings
-- Preserves heading clarity and consistency
-- Follows markdown best practices
+### MD022 - Heading Blank Lines
 
-#### **MD029** - Ordered List Item Prefix
+Adds blank lines around headings.
 
-- Ensures consistent ordered list numbering
-- Fixes incorrect or inconsistent numbering
-- Maintains proper sequence order
+**Before:**
+```markdown
+Some text
+## Heading
+More text
+```
 
-#### **MD031** - Fenced Code Blocks Surrounded by Blank Lines
+**After:**
+```markdown
+Some text
 
-- Adds blank lines before and after code blocks
-- Ensures proper code block isolation
-- Improves readability and parsing
+## Heading
 
-#### **MD032** - Lists Surrounded by Blank Lines
+More text
+```
 
-- Adds blank lines before and after list blocks
-- Ensures proper list separation from content
-- Maintains document structure
+### MD012 - Multiple Blank Lines
 
-#### **MD036** - Emphasis Used Instead of Heading
+Removes excessive blank lines.
 
-- Converts bold/italic emphasis to proper headings
-- Maintains document hierarchy
-- Improves accessibility and structure
+**Before:**
+```markdown
+Text
 
-#### **MD040** - Fenced Code Blocks Language Specification
 
-- Adds language identifiers to code blocks
-- Improves syntax highlighting
-- Enhances code readability
+Too many blanks
+```
 
-#### **MD051** - Valid Link Fragments
+**After:**
+```markdown
+Text
 
-- Validates internal anchor links
-- Fixes broken fragment references
-- Ensures navigation functionality
+One blank line
+```
 
-#### **MD058** - Tables Surrounded by Blank Lines
+## Usage
 
-- Adds blank lines before and after tables
-- Ensures proper table separation
-- Improves document structure
+### Format Single File
 
-## Usage Patterns
+```bash
+# Format file
+pnpm format:md path/to/file.md
 
-### Automated Fixing
+# Validate only
+pnpm lint:md path/to/file.md
+```
+
+### Format Directory
+
+```bash
+# Format all markdown
+pnpm format:md "**/*.md"
+
+# Exclude patterns
+pnpm format:md "**/*.md" --ignore "node_modules/**"
+```
+
+### Integration
+
+#### Pre-commit Hook
+
+```yaml
+# .husky/pre-commit
+#!/bin/sh
+pnpm lint:md --staged
+```
+
+#### CI/CD
+
+```yaml
+# .github/workflows/docs.yml
+- name: Lint Markdown
+  run: pnpm lint:md "**/*.md"
+```
+
+## Configuration File
+
+```yaml
+# .markdownlint.json
+{
+  "MD007": { "indent": 2 },
+  "MD012": { "maximum": 1 },
+  "MD013": false,
+  "MD024": { "siblings_only": true },
+  "MD040": { "allowed_languages": ["typescript", "bash", "json"] },
+  "MD041": false
+}
+```
+
+## Common Patterns
+
+### Documentation Structure
+
+```markdown
+# Title
+
+Brief introduction.
+
+## Section 1
+
+Content with proper spacing.
+
+### Subsection
+
+- List item 1
+  - Nested item
+  - Another nested
+- List item 2
+
+### Code Example
 
 ```typescript
-// Fix single file
-await formatMarkdownFile(filePath, options)
-
-// Fix directory recursively  
-await formatMarkdownDirectory(directoryPath, options)
-
-// Fix with specific rules only
-await formatMarkdownFile(filePath, { 
-  rules: ['MD040', 'MD031', 'MD022'] 
-})
+const example = 'with language';
 ```
 
-### Validation Only
+## Section 2
 
-```typescript
-// Validate without fixing
-const issues = await validateMarkdown(filePath)
-
-// Get detailed report
-const report = await generateMarkdownReport(directoryPath)
+More content.
 ```
 
-## Implementation Strategy
+### Tables
 
-### File Processing Pipeline
-
-1. **Parse**: Read and tokenize markdown content
-2. **Analyze**: Detect rule violations using AST analysis
-3. **Plan**: Generate fix operations for detected issues
-4. **Apply**: Execute fixes while preserving content integrity
-5. **Validate**: Verify fixes and ensure no regressions
-
-### Context-Aware Fixes
-
-#### Language Detection for Code Blocks
-
-- Analyze surrounding content for context clues
-- Use file extension mapping for language hints
-- Default to `text` for ambiguous blocks
-- Maintain existing valid language specifications
-
-#### Heading Duplicate Resolution
-
-- Add contextual prefixes/suffixes to duplicates
-- Consider document section context
-- Preserve semantic meaning
-- Suggest manual review for complex cases
-
-#### List Indentation Normalization
-
-- Detect existing indentation patterns
-- Normalize to 2-space standard
-- Preserve nested list relationships
-- Handle mixed list types appropriately
-
-## Configuration Options
-
-### Rule Selection
-
-```yaml
-rules:
-  enabled:
-    - MD007  # List indentation
-    - MD012  # Multiple blank lines
-    - MD022  # Heading blank lines
-    - MD024  # Duplicate headings
-    - MD026  # Heading punctuation
-    - MD029  # Ordered list prefix
-    - MD031  # Code block blank lines
-    - MD032  # List blank lines  
-    - MD036  # Emphasis as heading
-    - MD040  # Code block language
-    - MD051  # Link fragments
-    - MD058  # Table blank lines
+```markdown
+| Column 1 | Column 2 |
+|----------|----------|
+| Data 1   | Data 2   |
+| Data 3   | Data 4   |
 ```
 
-### Formatting Preferences
+## Best Practices
 
-```yaml
-formatting:
-  indentation: 2          # Spaces for list indentation
-  line_length: 100        # Max line length
-  blank_lines_max: 1      # Max consecutive blank lines
-  code_language_default: "text"  # Default code block language
-  heading_style: "atx"    # Heading style preference
+| Practice | Description |
+|----------|-------------|
+| **Consistent Indentation** | Use configured spaces for lists |
+| **Language Specification** | Always add language to code blocks |
+| **Blank Lines** | Surround headings, tables, code |
+| **No Trailing Punctuation** | Remove from headings |
+| **Unique Headings** | Avoid duplicate heading text |
+| **Link Validation** | Ensure fragment links work |
+
+## Automation
+
+### Watch Mode
+
+```bash
+# Auto-format on change
+pnpm format:md --watch
 ```
 
-### File Patterns
+### Editor Integration
 
-```yaml
-files:
-  include: ["**/*.md", "**/*.markdown"]
-  exclude: ["node_modules/**", "dist/**", "build/**"]
-  respect_gitignore: true
+```json
+// .vscode/settings.json
+{
+  "editor.formatOnSave": true,
+  "[markdown]": {
+    "editor.defaultFormatter": "markdownlint"
+  }
+}
 ```
-
-## Integration Points
-
-### CLI Integration
-
-- Integrate with project's lint/format commands
-- Support for CI/CD pipeline checks
-- Git pre-commit hook compatibility
-- Watch mode for development
-
-### Editor Integration  
-
-- VS Code extension compatibility
-- Real-time formatting on save
-- Inline error highlighting
-- Quick fix suggestions
-
-### Build Process
-
-- Automated formatting in build pipeline
-- Documentation generation integration
-- Quality gate enforcement
-- Reporting and metrics
-
-## Quality Assurance
-
-### Testing Strategy
-
-- Unit tests for each rule implementation
-- Integration tests with real documentation
-- Performance benchmarks for large files
-- Regression testing for edge cases
-
-### Validation
-
-- Before/after content comparison
-- Semantic preservation verification
-- Link integrity checking
-- Manual review checkpoints
 
 ## Error Handling
 
 ### Graceful Degradation
 
-- Continue processing on individual rule failures
-- Detailed error reporting with context
-- Backup creation before modifications
+- Continue on individual rule failures
+- Create backups before modifications
+- Detailed error reporting
 - Rollback capabilities
 
 ### Edge Cases
 
 - Malformed markdown handling
-- Binary file detection and skipping
-- Large file performance optimization
-- Unicode and encoding support
+- Binary file detection
+- Large file optimization
+- Unicode support
 
 ## Reporting
 
 ### Fix Summary
 
-- Number of files processed
-- Rules applied and violations fixed
-- Files requiring manual attention
-- Performance metrics
+```text
+Processed: 45 files
+Fixed: 127 violations
+  - MD007: 23 (list indentation)
+  - MD040: 56 (code languages)
+  - MD022: 48 (heading blanks)
+Manual review: 3 files
+```
 
-### Detailed Reports
+### Detailed Report
 
-- File-by-file breakdown
-- Rule violation statistics
-- Before/after comparisons
-- Suggested improvements
+```text
+file.md
+  ✓ MD007 Fixed list indentation (5 instances)
+  ✓ MD040 Added code languages (2 instances)
+  ✗ MD024 Duplicate headings require manual review
+```
 
-## Best Practices
+## Checklist
 
-### Usage Guidelines
-
-1. Always run on clean git state for easy rollback
-2. Review changes before committing
-3. Configure rules based on project needs
-4. Use validation mode first on new codebases
-5. Integrate with existing workflow tools
-
-### Maintenance
-
-- Regular rule configuration updates
-- Performance monitoring and optimization
-- Community feedback integration
-- Documentation synchronization
-
-## Dependencies
-
-### Core Requirements
-
-- Node.js runtime environment
-- Markdown parsing library (unified/remark)
-- File system utilities
-- Pattern matching capabilities
-
-### Optional Enhancements
-
-- Git integration for change tracking
-- Advanced language detection
-- Custom rule plugin system
-- Reporting dashboard integration
-
----
-
-**Note**: This skill should be used as part of the documentation quality assurance process and integrated into the project's development workflow for consistent markdown formatting across all documentation files.
-
----
-
-## Changelog
-
-| Version | Date | Changes | Author | Related |
-|---------|------|---------|--------|---------|
-| 1.0.0 | 2025-10-31 | Initial version | @tech-lead | P-004 |
+- [ ] Rules configured for project
+- [ ] Integration with workflow
+- [ ] CI/CD validation enabled
+- [ ] Editor integration setup
+- [ ] Pre-commit hook active
+- [ ] All violations fixed
+- [ ] Documentation tested
+- [ ] Team guidelines updated

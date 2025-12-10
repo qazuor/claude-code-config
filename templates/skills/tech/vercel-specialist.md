@@ -1,241 +1,297 @@
 ---
-name: vercel-specialist
+name: deployment-platform-specialist
 category: tech
-description: Vercel deployment, configuration, and optimization specialist for both apps (web/admin)
-usage: Use when deploying, configuring environments, optimizing builds, or troubleshooting Vercel deployments
-input: Deployment configuration, environment variables, build settings, app type
-output: Vercel configuration files, deployment strategy, optimization recommendations
+description: Configure and optimize deployment platform settings for optimal performance and reliability
+usage: When deploying applications, configuring environments, optimizing builds, or troubleshooting deployments
+input: Deployment configuration, environment variables, build settings, platform type
+output: Platform configuration files, deployment strategy, optimization recommendations
+config_required:
+  - platform_name: "Deployment platform (e.g., Vercel, Netlify, AWS Amplify)"
+  - project_framework: "Framework being deployed (Astro, Next.js, etc.)"
+  - build_command: "Command to build the project"
+  - output_directory: "Build output directory"
+  - node_version: "Node.js version requirement"
 ---
 
-# Vercel Specialist
+# Deployment Platform Specialist
+
+## ⚙️ Configuration
+
+| Setting | Description | Example |
+|---------|-------------|---------|
+| `platform_name` | Deployment platform | `Vercel`, `Netlify`, `AWS Amplify` |
+| `project_framework` | Framework | `Astro`, `Next.js`, `TanStack Start` |
+| `build_command` | Build command | `pnpm build`, `npm run build` |
+| `output_directory` | Output folder | `dist`, `.next`, `build` |
+| `install_command` | Install command | `pnpm install`, `npm install` |
+| `node_version` | Node version | `18.x`, `20.x` |
+| `environment` | Target environment | `production`, `preview`, `development` |
+
+## Purpose
+
+Expert guidance on deployment platform configuration, environment management, build optimization, and production best practices.
+
+## Capabilities
+
+- Platform configuration and setup
+- Environment variable management
+- Build performance optimization
+- Preview and production deployments
+- Custom domain configuration
+- Edge function implementation
+- Monitoring and analytics setup
+
+## Project Configuration
+
+### Platform Config File
+
+```json
+{
+  "framework": "astro",
+  "buildCommand": "pnpm build",
+  "outputDirectory": "dist",
+  "installCommand": "pnpm install",
+  "devCommand": "pnpm dev",
+  "nodeVersion": "20.x",
+  "regions": ["iad1"],
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "/api/:path*" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "X-XSS-Protection", "value": "1; mode=block" }
+      ]
+    }
+  ]
+}
+```
+
+## Environment Variables
+
+### Setup
+
+Configure via platform dashboard or CLI:
+
+```bash
+# Add variable
+platform-cli env add DATABASE_URL production
+
+# Pull variables locally
+platform-cli env pull .env.local
+
+# Set variable for all environments
+platform-cli env add API_KEY
+```
+
+### Organization
+
+| Environment | Purpose | Examples |
+|-------------|---------|----------|
+| `production` | Live site | Production DB, live API keys |
+| `preview` | PR previews | Staging DB, test API keys |
+| `development` | Local dev | Local DB, dev API keys |
+
+### Security
+
+- Never commit secrets to git
+- Use platform secret storage
+- Rotate keys regularly
+- Scope variables appropriately
+
+## Build Optimization
+
+### Caching Strategy
+
+```json
+{
+  "caching": {
+    "dependencies": true,
+    "buildOutputs": true,
+    "staticAssets": "max-age=31536000, immutable"
+  },
+  "build": {
+    "env": {
+      "NEXT_TELEMETRY_DISABLED": "1",
+      "NODE_ENV": "production"
+    }
+  }
+}
+```
 
-## Overview
+### Performance Targets
 
-**Purpose**: Expert guidance on Vercel deployment, configuration, and optimization for Astro (web app) and TanStack Start (admin) applications
-
-**Category**: Tech
-**Primary Users**: deployment-engineer, tech-lead, astro-engineer, tanstack-start-engineer
-
-## When to Use This Skill
-
-- When deploying applications to Vercel
-- Configuring environment variables
-- Optimizing build performance
-- Setting up preview deployments
-- Troubleshooting deployment issues
-- Configuring custom domains
-- Setting up serverless functions
-- Implementing edge middleware
-
-## Prerequisites
-
-**Required:**
-
-- Vercel account and project created
-- Application code ready for deployment
-- Environment variables documented
-- Git repository connected to Vercel
-
-**Optional:**
-
-- Custom domain DNS access
-- Team collaboration setup
-- Analytics enabled
-
-## Workflow
-
-### Step 1: Project Configuration
-
-**Objective**: Configure Vercel project for optimal deployment
-
-**Actions:**
-
-1. Create vercel.json configuration
-2. Configure for Astro or TanStack Start
-3. Set build commands and output directories
-4. Test configuration locally
-
-**Validation:**
-
-- [ ] Build command executes successfully
-- [ ] Output directory correct
-- [ ] Install command works with monorepo
-- [ ] Framework detection accurate
-
-**Output**: Optimized vercel.json configuration
-
-### Step 2: Environment Variables Setup
-
-**Objective**: Configure environment variables for all environments
-
-**Actions:**
-
-1. Identify required variables
-2. Set variables in Vercel dashboard
-3. Configure variable scopes
-4. Create .env.example
-
-**Validation:**
-
-- [ ] All required variables configured
-- [ ] Variables scoped correctly
-- [ ] Sensitive data not in git
-- [ ] .env.example documented
-
-**Output**: Complete environment configuration
-
-### Step 3: Build Optimization
-
-**Objective**: Optimize build performance and output
-
-**Actions:**
-
-1. Configure build settings
-2. Enable build caching
-3. Optimize dependencies
-4. Configure concurrent builds
-
-**Validation:**
-
-- [ ] Build time < 3 minutes
-- [ ] Cache hit rate > 80%
-- [ ] Only necessary files included
-- [ ] Output size optimized
-
-**Output**: Optimized build configuration
-
-### Step 4: Deployment Configuration
-
-**Objective**: Configure automatic and manual deployments
-
-**Actions:**
-
-1. Configure Git integration
-2. Set up preview deployments
-3. Configure production deployments
-4. Test deployment pipeline
-
-**Validation:**
-
-- [ ] Main branch deploys to production
-- [ ] PRs create preview deployments
-- [ ] Deployment checks configured
-- [ ] Rollback works correctly
-
-**Output**: Complete deployment configuration
-
-### Step 5: Performance Optimization
-
-**Objective**: Optimize deployed application performance
-
-**Actions:**
-
-1. Configure security headers
-2. Configure redirects and rewrites
-3. Enable Edge Functions if needed
-4. Optimize caching strategy
-
-**Validation:**
-
-- [ ] Security headers set
-- [ ] Caching configured
-- [ ] Redirects working
-- [ ] Performance score > 90
-
-**Output**: Optimized deployment configuration
-
-### Step 6: Monitoring & Analytics
-
-**Objective**: Set up monitoring and analytics
-
-**Actions:**
-
-1. Enable Vercel Analytics
-2. Configure Web Vitals tracking
-3. Set up error tracking (Sentry)
-4. Configure logs
-
-**Validation:**
-
-- [ ] Analytics tracking
-- [ ] Error reporting working
-- [ ] Logs accessible
-- [ ] Performance monitored
-
-**Output**: Complete monitoring setup
-
-### Step 7: Custom Domain Configuration
-
-**Objective**: Configure custom domains
-
-**Actions:**
-
-1. Add domain in Vercel
-2. Configure DNS records
-3. Verify SSL certificate
-4. Set up environment-specific domains
-
-**Validation:**
-
-- [ ] Domain resolves correctly
-- [ ] SSL certificate active
-- [ ] HTTPS enforced
-- [ ] Redirects working
-
-**Output**: Production domain configured
-
-## Output
-
-**Produces:**
-
-- vercel.json configuration file
-- Environment variables configured
-- Deployment pipeline active
-- Performance optimizations applied
-- Monitoring and analytics enabled
-
-**Success Criteria:**
-
-- Successful production deployment
-- Build time < 3 minutes
-- Performance score > 90
-- Zero deployment errors
-- Custom domain working with SSL
+| Metric | Target |
+|--------|--------|
+| Build time | < 3 minutes |
+| Cache hit rate | > 80% |
+| Bundle size | Optimized and analyzed |
+| Build success rate | > 99% |
+
+## Deployment Workflow
+
+### Git Integration
+
+```yaml
+# Auto-deploy configuration
+production_branch: main
+preview_branches:
+  - develop
+  - feature/*
+  - fix/*
+
+ignore_paths:
+  - "docs/**"
+  - "*.md"
+  - ".github/**"
+```
+
+### Preview Deployments
+
+- Automatic on PRs
+- Unique URL per deployment
+- Comment on PR with preview link
+- Run deployment checks
+
+## Edge Functions
+
+### Middleware Example
+
+```typescript
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+
+export function middleware(request: NextRequest) {
+  // Authentication check
+  const token = request.cookies.get('auth-token');
+
+  if (!token && request.nextUrl.pathname.startsWith('/dashboard')) {
+    return NextResponse.redirect(new URL('/login', request.url));
+  }
+
+  return NextResponse.next();
+}
+
+export const config = {
+  matcher: '/dashboard/:path*',
+};
+```
+
+## Custom Domains
+
+### DNS Configuration
+
+| Type | Name | Value | TTL |
+|------|------|-------|-----|
+| A | @ | Platform IP | 3600 |
+| CNAME | www | Platform domain | 3600 |
+
+### SSL/TLS
+
+- Automatic SSL certificate
+- Force HTTPS redirect
+- HTTP/2 enabled
+- Certificate auto-renewal
+
+## Monitoring
+
+### Analytics Setup
+
+```typescript
+// Enable platform analytics
+export const config = {
+  runtime: 'edge',
+  analytics: true,
+};
+```
+
+### Metrics to Track
+
+- Page load time
+- Core Web Vitals (LCP, FID, CLS)
+- Error rate
+- Build success rate
+- Bandwidth usage
+
+## Performance Optimization
+
+### Headers Configuration
+
+```json
+{
+  "headers": [
+    {
+      "source": "/static/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-DNS-Prefetch-Control", "value": "on" },
+        { "key": "Strict-Transport-Security", "value": "max-age=63072000" }
+      ]
+    }
+  ]
+}
+```
+
+### Redirects
+
+```json
+{
+  "redirects": [
+    {
+      "source": "/old-path",
+      "destination": "/new-path",
+      "permanent": true
+    },
+    {
+      "source": "/blog/:slug",
+      "destination": "/articles/:slug",
+      "permanent": false
+    }
+  ]
+}
+```
 
 ## Best Practices
 
-1. **Use Preview Deployments**: Test changes before production
-2. **Environment Separation**: Different vars for prod/preview
-3. **Enable Analytics**: Monitor real user performance
-4. **Configure Caching**: Optimize static assets
-5. **Use Edge Functions**: For authentication/routing
-6. **Set Security Headers**: Protect against common attacks
-7. **Monitor Logs**: Track errors and performance
-8. **Automate Deployments**: CI/CD with Git integration
-9. **Test Builds Locally**: Use vercel build before pushing
-10. **Document Configuration**: Keep vercel.json in git
+| Practice | Description |
+|----------|-------------|
+| **Preview First** | Test in preview before production |
+| **Environment Separation** | Different variables per environment |
+| **Build Caching** | Enable for faster builds |
+| **Security Headers** | Set proper security headers |
+| **Analytics** | Monitor real user performance |
+| **Edge Functions** | Use for auth and routing |
+| **Automatic Deployments** | CI/CD with git integration |
+| **Domain Management** | Configure DNS and SSL properly |
 
-## Related Skills
+## Troubleshooting
 
-- astro-engineer - Astro-specific deployment
-- tanstack-start-engineer - TanStack Start deployment
-- deployment-engineer - General deployment strategies
+### Common Issues
 
-## Notes
+| Issue | Solution |
+|-------|----------|
+| Build timeout | Optimize dependencies, enable caching |
+| Environment variable missing | Check scope (production/preview) |
+| Function timeout | Optimize code or upgrade plan |
+| Cache not working | Verify cache headers configuration |
 
-- Vercel free tier includes 100GB bandwidth
-- Build time limit: 45 min (hobby), 8 hours (pro)
-- Serverless function timeout: 10s (hobby), 60s (pro)
-- Always test deployments in preview first
-- Use environment variables for secrets
-- Enable automatic previews for all PRs
-- Configure build caching for faster builds
-- Monitor analytics for performance insights
+## Checklist
 
----
-
-## Changelog
-
-| Version | Date | Changes | Author | Related |
-|---------|------|---------|--------|---------|
-| 1.0.0 | 2025-10-31 | Initial version | @tech-lead | P-004 |
+- [ ] Build command configured
+- [ ] Output directory correct
+- [ ] Environment variables set
+- [ ] Git integration active
+- [ ] Preview deployments enabled
+- [ ] Security headers configured
+- [ ] Custom domain configured (if needed)
+- [ ] SSL certificate active
+- [ ] Analytics enabled
+- [ ] Build time < 3 minutes

@@ -1,18 +1,40 @@
+---
+name: tanstack-query-patterns
+category: state
+description: TanStack Query (React Query) server state management patterns
+usage: Use when managing server state with automatic caching, refetching, and optimistic updates
+input: API endpoints, query keys, mutation operations
+output: Query hooks, mutation hooks, cache management
+config_required:
+  stale_time: "Time until data is considered stale"
+  cache_time: "Time until inactive data is garbage collected"
+  retry_config: "Retry strategy for failed requests"
+  refetch_on_window_focus: "Whether to refetch on window focus"
+  api_base_url: "Base URL for API requests"
+---
+
 # TanStack Query Patterns
 
-Expert patterns for **TanStack Query (React Query)** server state management.
+## ⚙️ Configuration
 
-## Core Concepts
+| Setting | Description | Example |
+|---------|-------------|---------|
+| `stale_time` | Time until data is stale | `5 * 60 * 1000` (5 minutes) |
+| `cache_time` | Time until inactive data GC | `30 * 60 * 1000` (30 minutes) |
+| `retry_config` | Failed request retry strategy | `3`, exponential backoff |
+| `refetch_on_window_focus` | Refetch when window regains focus | `true`, `false` |
+| `api_base_url` | API base URL | `/api`, `https://api.example.com` |
 
-- Server state management (not client state)
-- Automatic caching and refetching
-- Background updates and stale-while-revalidate
+## Purpose
+
+Manage server state with:
+- Automatic caching and background refetching
+- Stale-while-revalidate pattern
 - Optimistic updates
 - Infinite queries and pagination
+- Minimal boilerplate
 
 ## Setup
-
-### Query Client
 
 ```typescript
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -22,11 +44,10 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 1000 * 60 * 5, // 5 minutes
-      gcTime: 1000 * 60 * 30, // 30 minutes (formerly cacheTime)
+      gcTime: 1000 * 60 * 30, // 30 minutes
       retry: 3,
       retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
       refetchOnWindowFocus: true,
-      refetchOnReconnect: true,
     },
     mutations: {
       retry: 1,
@@ -51,17 +72,9 @@ function App() {
 ```typescript
 import { useQuery } from '@tanstack/react-query';
 
-interface User {
-  id: string;
-  name: string;
-  email: string;
-}
-
 async function fetchUser(userId: string): Promise<User> {
   const response = await fetch(`/api/users/${userId}`);
-  if (!response.ok) {
-    throw new Error('Failed to fetch user');
-  }
+  if (!response.ok) throw new Error('Failed to fetch user');
   return response.json();
 }
 
@@ -69,7 +82,7 @@ function useUser(userId: string) {
   return useQuery({
     queryKey: ['user', userId],
     queryFn: () => fetchUser(userId),
-    enabled: !!userId, // Only run if userId exists
+    enabled: !!userId,
   });
 }
 
@@ -80,47 +93,11 @@ function UserProfile({ userId }: { userId: string }) {
   if (isLoading) return <Spinner />;
   if (error) return <Error message={error.message} />;
 
-  return (
-    <div>
-      <h1>{user?.name}</h1>
-      <p>{user?.email}</p>
-      <button onClick={() => refetch()}>Refresh</button>
-    </div>
-  );
+  return <div>{user?.name}</div>;
 }
 ```
 
-### Query with Dependencies
-
-```typescript
-function useUserPosts(userId: string) {
-  const userQuery = useUser(userId);
-
-  return useQuery({
-    queryKey: ['posts', 'user', userId],
-    queryFn: () => fetchUserPosts(userId),
-    // Only fetch posts after user is loaded
-    enabled: !!userQuery.data,
-  });
-}
-```
-
-### Parallel Queries
-
-```typescript
-import { useQueries } from '@tanstack/react-query';
-
-function useMultipleUsers(userIds: string[]) {
-  return useQueries({
-    queries: userIds.map((id) => ({
-      queryKey: ['user', id],
-      queryFn: () => fetchUser(id),
-    })),
-  });
-}
-```
-
-### Infinite Query (Pagination)
+### Infinite Query
 
 ```typescript
 import { useInfiniteQuery } from '@tanstack/react-query';
@@ -128,12 +105,6 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 interface PostsPage {
   posts: Post[];
   nextCursor: string | null;
-}
-
-async function fetchPosts(cursor?: string): Promise<PostsPage> {
-  const url = cursor ? `/api/posts?cursor=${cursor}` : '/api/posts';
-  const response = await fetch(url);
-  return response.json();
 }
 
 function useInfinitePosts() {
@@ -147,28 +118,17 @@ function useInfinitePosts() {
 
 // Usage
 function PostList() {
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = useInfinitePosts();
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfinitePosts();
 
   return (
     <div>
       {data?.pages.map((page, i) => (
         <Fragment key={i}>
-          {page.posts.map((post) => (
-            <PostCard key={post.id} post={post} />
-          ))}
+          {page.posts.map((post) => <PostCard key={post.id} post={post} />)}
         </Fragment>
       ))}
-
       {hasNextPage && (
-        <button
-          onClick={() => fetchNextPage()}
-          disabled={isFetchingNextPage}
-        >
+        <button onClick={() => fetchNextPage()} disabled={isFetchingNextPage}>
           {isFetchingNextPage ? 'Loading...' : 'Load More'}
         </button>
       )}
@@ -184,23 +144,13 @@ function PostList() {
 ```typescript
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-async function createPost(data: CreatePostInput): Promise<Post> {
-  const response = await fetch('/api/posts', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
-  });
-  if (!response.ok) throw new Error('Failed to create post');
-  return response.json();
-}
-
 function useCreatePost() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: createPost,
     onSuccess: (newPost) => {
-      // Invalidate and refetch posts list
+      // Invalidate and refetch
       queryClient.invalidateQueries({ queryKey: ['posts'] });
 
       // Or update cache directly
@@ -227,7 +177,6 @@ function CreatePostForm() {
 
   return (
     <form onSubmit={handleSubmit}>
-      {/* form fields */}
       <button type="submit" disabled={createPost.isPending}>
         {createPost.isPending ? 'Creating...' : 'Create Post'}
       </button>
@@ -261,7 +210,6 @@ function useUpdatePost() {
         });
       }
 
-      // Return context with snapshot
       return { previousPost };
     },
 
@@ -270,7 +218,6 @@ function useUpdatePost() {
       if (context?.previousPost) {
         queryClient.setQueryData(['post', variables.id], context.previousPost);
       }
-      toast.error('Update failed');
     },
 
     onSettled: (data, error, variables) => {
@@ -281,41 +228,7 @@ function useUpdatePost() {
 }
 ```
 
-### Delete with Optimistic Update
-
-```typescript
-function useDeletePost() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: deletePost,
-
-    onMutate: async (postId) => {
-      await queryClient.cancelQueries({ queryKey: ['posts'] });
-
-      const previousPosts = queryClient.getQueryData<Post[]>(['posts']);
-
-      queryClient.setQueryData<Post[]>(['posts'], (old) =>
-        old?.filter((post) => post.id !== postId)
-      );
-
-      return { previousPosts };
-    },
-
-    onError: (err, postId, context) => {
-      queryClient.setQueryData(['posts'], context?.previousPosts);
-    },
-
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['posts'] });
-    },
-  });
-}
-```
-
 ## Query Key Patterns
-
-### Query Key Factory
 
 ```typescript
 export const queryKeys = {
@@ -334,9 +247,6 @@ useQuery({
 
 // Invalidate all posts
 queryClient.invalidateQueries({ queryKey: queryKeys.all });
-
-// Invalidate just lists
-queryClient.invalidateQueries({ queryKey: queryKeys.lists() });
 ```
 
 ## Prefetching
@@ -350,7 +260,7 @@ function PostLink({ postId }: { postId: string }) {
     queryClient.prefetchQuery({
       queryKey: ['post', postId],
       queryFn: () => fetchPost(postId),
-      staleTime: 1000 * 60, // Only prefetch if data older than 1 min
+      staleTime: 1000 * 60,
     });
   };
 
@@ -360,31 +270,30 @@ function PostLink({ postId }: { postId: string }) {
     </Link>
   );
 }
-
-// Prefetch in route loader
-export const loader = async ({ params }: LoaderFunctionArgs) => {
-  await queryClient.ensureQueryData({
-    queryKey: ['post', params.id],
-    queryFn: () => fetchPost(params.id!),
-  });
-  return null;
-};
 ```
 
 ## Best Practices
 
-1. **Query Keys**: Use consistent, structured query keys
-2. **Stale Time**: Set appropriate stale times per query type
-3. **Enabled**: Use `enabled` to control query execution
-4. **Error Handling**: Handle errors at query and component level
-5. **Optimistic Updates**: Use for better UX on mutations
-6. **Prefetching**: Prefetch data on hover or route transitions
-7. **DevTools**: Use React Query DevTools for debugging
+| Practice | Description |
+|----------|-------------|
+| **Structured Query Keys** | Use consistent, hierarchical query keys |
+| **Appropriate Stale Times** | Set stale times per query type based on data volatility |
+| **Enabled Option** | Control query execution with `enabled` |
+| **Error Handling** | Handle errors at both query and component level |
+| **Optimistic Updates** | Improve UX with optimistic updates on mutations |
+| **Prefetching** | Prefetch data on hover or route transitions |
+| **DevTools** | Use React Query DevTools for debugging |
 
 ## When to Use
 
 - Any application with server data
 - REST or GraphQL APIs
-- Real-time data with polling/refetching
+- Real-time data with polling
 - Complex caching requirements
-- When you need automatic background updates
+- Background data synchronization
+
+## Related Skills
+
+- `redux-toolkit-patterns` - For client state
+- `zustand-patterns` - For client state
+- `api-app-testing` - Test queries and mutations

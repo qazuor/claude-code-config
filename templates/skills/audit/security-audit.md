@@ -5,306 +5,143 @@ description: Comprehensive security audit covering OWASP Top 10, authentication,
 usage: Use for comprehensive security review before deployment, after major changes, or as part of regular security assessments
 input: Codebase, API endpoints, authentication system, database schema, infrastructure configuration
 output: Security audit report with severity-categorized findings, remediation steps, and compliance status
+config_required:
+  - target_environment: "Environment to audit (dev/staging/production)"
+  - compliance_requirements: "GDPR, PCI-DSS, HIPAA, SOC2, etc."
+  - security_tools: "OWASP ZAP, Snyk, npm audit, etc."
+  - authentication_system: "JWT, OAuth, Session-based, etc."
+  - scan_depth: "quick (30min), standard (60min), comprehensive (90min)"
 ---
 
 # Security Audit
 
-## Overview
+## Purpose
 
-**Purpose**: Comprehensive security audit combining vulnerability assessment, code review, and penetration testing simulation
+Comprehensive security audit combining vulnerability assessment, code review, and penetration testing simulation.
 
 **Category**: Audit
 **Primary Users**: tech-lead
 **Coordinates**: Security reviews and vulnerability assessments
 
-## When to Use This Skill
+## When to Use
 
 - Before production deployment
 - After implementing security-critical features
-- As part of regular security assessments (quarterly)
+- Regular security assessments (quarterly recommended)
 - After security incidents or breaches
 - Before handling sensitive data (PII, payments)
-- When compliance requirements mandate security audits
+- When compliance requirements mandate audits
 
-## Prerequisites
+## Configuration
 
-**Required:**
+| Setting | Description | Example |
+|---------|-------------|---------|
+| target_environment | Environment to audit | `production`, `staging` |
+| compliance_requirements | Required compliance standards | `GDPR, PCI-DSS, HIPAA` |
+| security_tools | Tools available for scanning | `npm audit, Snyk, OWASP ZAP` |
+| authentication_system | Auth implementation type | `JWT, OAuth2, session-based` |
+| scan_depth | Audit thoroughness level | `quick`, `standard`, `comprehensive` |
+| previous_audit_date | Last audit date for comparison | `2024-09-15` |
 
-- Complete application codebase access
-- Running application (dev/staging environment)
-- API documentation
-- Authentication/authorization system
-- Database schema and access controls
+## Audit Areas
 
-**Optional:**
-
-- Security scanning tools (OWASP ZAP, Snyk)
-- Previous audit reports for comparison
-- Compliance requirements (GDPR, PCI-DSS, etc.)
-
-## Input
-
-**What the skill needs:**
-
-- Application URLs and endpoints
-- Source code repository access
-- Database schema documentation
-- Authentication flow diagrams
-- API documentation
-- Infrastructure configuration
-- Third-party integrations list
-
-## Audit Areas (8 Comprehensive Checks)
-
-### 1. Authentication & Authorization
-
-**Checks:**
-
-- Password policies and hashing (bcrypt, scrypt)
-- Session management and timeout
-- Token security (JWT signing, rotation)
-- Multi-factor authentication implementation
-- OAuth/SSO configuration
-- Role-Based Access Control (RBAC) enforcement
-- Principle of least privilege
-- Account lockout and brute-force protection
-
-**Output:** Authentication security score, vulnerabilities found, recommendations
-
-### 2. Input Validation & Sanitization
-
-**Checks:**
-
-- Zod schema validation coverage
-- SQL injection prevention (parameterized queries)
-- XSS prevention (output encoding)
-- Path traversal protection
-- Command injection prevention
-- File upload validation
-- CSRF token implementation
-- Content-Type validation
-
-**Output:** Input validation coverage %, vulnerabilities, gaps
-
-### 3. Data Protection & Privacy
-
-**Checks:**
-
-- Encryption at rest (database, files)
-- Encryption in transit (TLS/HTTPS)
-- API key and secret management
-- PII handling and GDPR compliance
-- Data retention policies
-- Secure data deletion
-- Logging sensitive data (avoid)
-- Database field-level encryption
-
-**Output:** Data protection compliance %, privacy issues, encryption gaps
-
-### 4. API Security
-
-**Checks:**
-
-- Rate limiting implementation
-- API authentication (API keys, tokens)
-- CORS configuration
-- API versioning
-- Error message information leakage
-- HTTP security headers
-- API input/output validation
-- GraphQL security (if applicable)
-
-**Output:** API security score, exposed endpoints, header analysis
-
-### 5. Infrastructure & Configuration
-
-**Checks:**
-
-- Environment variable security
-- Secrets management (not in code)
-- Docker/container security
-- Dependency vulnerabilities (npm audit)
-- TLS/SSL configuration
-- HTTP security headers (CSP, HSTS, etc.)
-- HTTPS enforcement
-- Database connection security
-
-**Output:** Infrastructure security score, configuration issues, dependencies audit
-
-### 6. Code Security Patterns
-
-**Checks:**
-
-- Error handling (no stack traces in production)
-- Secure coding practices
-- Hardcoded secrets detection
-- Security linting rules
-- Type safety enforcement
-- Safe deserialization
-- Secure random number generation
-- Timing attack prevention
-
-**Output:** Code security score, pattern violations, recommendations
-
-### 7. Frontend Security
-
-**Checks:**
-
-- XSS prevention (React auto-escaping)
-- Content Security Policy (CSP)
-- Subresource Integrity (SRI)
-- Third-party script security
-- Local storage security
-- Cookie security (HttpOnly, Secure, SameSite)
-- Clickjacking protection (X-Frame-Options)
-- Client-side validation (as UX, not security)
-
-**Output:** Frontend security score, browser vulnerabilities, CSP report
-
-### 8. Penetration Testing Simulation
-
-**Tests:**
-
-- Authentication bypass attempts
-- Authorization escalation tests
-- SQL injection probes
-- XSS injection attempts
-- CSRF attack simulation
-- Session hijacking tests
-- API abuse scenarios
-- Business logic flaws
-
-**Output:** Penetration test results, exploitable vulnerabilities, risk assessment
+| Area | Key Checks | Output |
+|------|------------|--------|
+| **Authentication & Authorization** | Password hashing, session management, token security, RBAC, MFA, brute-force protection | Auth security score, vulnerabilities, recommendations |
+| **Input Validation** | Schema validation, SQL injection prevention, XSS prevention, CSRF protection, file upload validation | Coverage %, vulnerabilities, gaps |
+| **Data Protection** | Encryption at rest/transit, secrets management, PII handling, GDPR compliance, secure deletion | Compliance %, privacy issues, encryption gaps |
+| **API Security** | Rate limiting, authentication, CORS, versioning, error messages, security headers | API security score, exposed endpoints |
+| **Infrastructure** | Environment variables, secrets management, container security, dependency vulnerabilities, TLS/SSL | Configuration issues, dependencies audit |
+| **Code Security** | Error handling, hardcoded secrets, secure patterns, type safety, safe deserialization | Code security score, pattern violations |
+| **Frontend Security** | XSS prevention, CSP, SRI, third-party scripts, cookie security, clickjacking protection | Frontend security score, browser vulnerabilities |
+| **Penetration Testing** | Auth bypass, privilege escalation, injection probes, CSRF simulation, session hijacking | Exploitable vulnerabilities, risk assessment |
 
 ## Workflow
 
-### Phase 1: Preparation (10 minutes)
+### 1. Preparation (10min)
 
-1. **Gather Information:**
-   - Review codebase structure
-   - Identify critical endpoints
-   - Map authentication flows
-   - List third-party integrations
+- Review codebase structure and critical endpoints
+- Map authentication flows
+- List third-party integrations
+- Configure security scanners
 
-2. **Setup Tools:**
-   - Configure security scanners
-   - Prepare test accounts
-   - Setup monitoring
+### 2. Automated Scanning (15min)
 
-### Phase 2: Automated Scanning (15 minutes)
+```bash
+# Dependency audit
+npm audit --audit-level moderate
+pnpm audit --audit-level moderate
 
-1. **Dependency Audit:**
+# Code scanning
+# Run ESLint security rules
+# Check for hardcoded secrets
+# Analyze dependencies
+```
 
-   ```bash
-   pnpm audit --audit-level moderate
-   npm audit --audit-level moderate
-   ```
+### 3. Manual Review (30min)
 
-2. **Code Scanning:**
-   - Run ESLint security rules
-   - Check for hardcoded secrets
-   - Analyze dependencies (Snyk, Socket)
+**Authentication Review:**
+- Inspect password hashing
+- Review session management
+- Validate RBAC implementation
 
-3. **Infrastructure Scan:**
-   - Review environment configs
-   - Check TLS/SSL certificates
-   - Validate HTTP headers
+**API Security Review:**
+- Check rate limiting and CORS
+- Validate input validation
+- Test error handling
 
-### Phase 3: Manual Review (30 minutes)
+**Data Protection Review:**
+- Verify encryption usage
+- Check secrets management
+- Review logging practices
 
-1. **Authentication Review:**
-   - Inspect password hashing
-   - Review session management
-   - Test token security
-   - Validate RBAC implementation
+### 4. Penetration Testing (20min)
 
-2. **API Security Review:**
-   - Check rate limiting
-   - Review CORS configuration
-   - Validate input validation
-   - Test error handling
+**Authentication Tests:**
+- Try common passwords, session fixation, token manipulation
 
-3. **Data Protection Review:**
-   - Verify encryption usage
-   - Check secrets management
-   - Review logging practices
-   - Validate PII handling
+**Injection Tests:**
+- SQL injection, XSS payloads, command injection
 
-### Phase 4: Penetration Testing (20 minutes)
+**Authorization Tests:**
+- Privilege escalation, direct object reference, path traversal
 
-1. **Authentication Tests:**
-   - Try common passwords
-   - Test session fixation
-   - Attempt token manipulation
+### 5. Reporting (15min)
 
-2. **Injection Tests:**
-   - SQL injection attempts
-   - XSS payloads
-   - Command injection
+**Categorize Findings:**
+- **Critical:** Immediate fix required (RCE, SQLi, auth bypass)
+- **High:** Fix before deployment (XSS, sensitive data leak)
+- **Medium:** Fix soon (weak encryption, missing headers)
+- **Low:** Best practice improvements
 
-3. **Authorization Tests:**
-   - Privilege escalation
-   - Direct object reference
-   - Path traversal
-
-### Phase 5: Reporting (15 minutes)
-
-1. **Categorize Findings:**
-   - **Critical:** Immediate fix required (RCE, SQLi, auth bypass)
-   - **High:** Fix before deployment (XSS, sensitive data leak)
-   - **Medium:** Fix soon (weak encryption, missing headers)
-   - **Low:** Best practice improvements (logging, monitoring)
-
-2. **Generate Report:**
-   - Executive summary
-   - Findings by severity
-   - Remediation steps with priority
-   - Compliance status
-   - Trend analysis (if previous audits exist)
-
-## Output
-
-**Security Audit Report** (saved as `security-audit-report.md`):
+## Report Template
 
 ```markdown
 # Security Audit Report
 
 **Date:** YYYY-MM-DD
-**Auditor:** tech-lead
-**Application:** [App Name]
-**Environment:** [dev/staging/production]
+**Environment:** [environment]
+**OWASP Compliance Target:** Top 10 2021
 
 ## Executive Summary
 
-- **Overall Security Score:** X/100
-- **Critical Issues:** X
-- **High Issues:** X
-- **Medium Issues:** X
-- **Low Issues:** X
+- Overall Security Score: X/100
+- Critical Issues: X
+- High Issues: X
+- Medium Issues: X
+- Low Issues: X
 
 ## Findings by Severity
 
 ### Critical (Immediate Action Required)
 
 1. **[Finding Title]**
-   - **Severity:** Critical
-   - **Location:** [File/Endpoint]
-   - **Description:** [Details]
-   - **Impact:** [Security risk]
-   - **Remediation:** [Fix steps]
-   - **References:** [OWASP link, CVE, etc.]
-
-### High (Fix Before Deployment)
-
-[...]
-
-### Medium (Fix Soon)
-
-[...]
-
-### Low (Improvements)
-
-[...]
+   - Severity: Critical
+   - Location: [File/Endpoint]
+   - Description: [Details]
+   - Impact: [Security risk]
+   - Remediation: [Fix steps]
+   - References: [OWASP/CVE links]
 
 ## OWASP Top 10 Compliance
 
@@ -317,30 +154,44 @@ output: Security audit report with severity-categorized findings, remediation st
 - [ ] A07:2021 - Identification & Authentication Failures
 - [ ] A08:2021 - Software & Data Integrity Failures
 - [ ] A09:2021 - Security Logging & Monitoring Failures
-- [ ] A10:2021 - Server-Side Request Forgery (SSRF)
+- [ ] A10:2021 - Server-Side Request Forgery
 
 ## Recommendations
 
 1. **Immediate Actions** (Critical/High)
-   - [Action 1]
-   - [Action 2]
-
 2. **Short-term Improvements** (Medium)
-   - [Action 1]
-   - [Action 2]
-
 3. **Long-term Enhancements** (Low)
-   - [Action 1]
-   - [Action 2]
 
 ## Next Steps
 
 1. Address critical issues immediately
-2. Schedule high-priority fixes for next sprint
-3. Create GitHub issues for medium/low items
-4. Re-audit after fixes are deployed
-5. Schedule next audit (quarterly recommended)
+2. Schedule high-priority fixes
+3. Create issues for medium/low items
+4. Re-audit after fixes
+5. Schedule next audit (quarterly)
 ```
+
+## Severity Definitions
+
+| Severity | Definition | Examples | Timeframe |
+|----------|------------|----------|-----------|
+| **Critical** | Allows unauthorized access or data breach | RCE, SQL injection, auth bypass | Immediate |
+| **High** | Significant security impact | XSS, sensitive data leak, broken access control | Before deployment |
+| **Medium** | Moderate security risk | Weak encryption, missing headers, info disclosure | Next sprint |
+| **Low** | Best practice violation | Logging issues, monitoring gaps, hardening | Backlog |
+
+## OWASP Top 10 Checklist
+
+1. **Broken Access Control** - RBAC enforcement, direct object references
+2. **Cryptographic Failures** - Strong encryption, secure key management
+3. **Injection** - Input validation, parameterized queries, output encoding
+4. **Insecure Design** - Threat modeling, secure architecture patterns
+5. **Security Misconfiguration** - Secure defaults, minimal features enabled
+6. **Vulnerable Components** - Dependency updates, CVE monitoring
+7. **Authentication Failures** - Strong passwords, session security, MFA
+8. **Data Integrity Failures** - Secure deserialization, signed updates
+9. **Logging Failures** - Comprehensive logging, tamper-proof logs
+10. **SSRF** - URL validation, network segmentation
 
 ## Success Criteria
 
@@ -352,58 +203,15 @@ output: Security audit report with severity-categorized findings, remediation st
 
 ## Best Practices
 
-1. **Run audits regularly** - Not just before deployment
-2. **Track remediation** - Create GitHub issues for findings
-3. **Trend analysis** - Compare with previous audits
-4. **Automate** - Integrate security scans in CI/CD
-5. **Document exceptions** - If findings are accepted risks
-6. **Re-audit after fixes** - Verify remediation effectiveness
-
-## Common Security Vulnerabilities to Check
-
-### OWASP Top 10 (2021)
-
-1. **Broken Access Control** - RBAC, direct object references
-2. **Cryptographic Failures** - Weak encryption, exposed secrets
-3. **Injection** - SQL, XSS, command injection
-4. **Insecure Design** - Architecture flaws, threat modeling
-5. **Security Misconfiguration** - Default configs, unnecessary features
-6. **Vulnerable Components** - Outdated dependencies, CVEs
-7. **Authentication Failures** - Weak passwords, session management
-8. **Data Integrity Failures** - Insecure deserialization, unsigned updates
-9. **Logging Failures** - Insufficient monitoring, log tampering
-10. **SSRF** - Unvalidated URLs, internal network access
-
-### Additional Checks
-
-- Business logic flaws
-- Race conditions
-- Timing attacks
-- Denial of service vectors
-- Social engineering vulnerabilities
-
-## Tools Integration
-
-**Automated Scanners:**
-
-- `pnpm audit` - Dependency vulnerabilities
-- Socket Security - Supply chain security
-- ESLint security plugins - Code analysis
-- Snyk - Vulnerability scanning
-
-**Manual Tools:**
-
-- OWASP ZAP - Penetration testing
-- Burp Suite - API security testing
-- Browser DevTools - Frontend security
+1. Run audits regularly, not just before deployment
+2. Track remediation with issues/tickets
+3. Compare with previous audits for trend analysis
+4. Automate security scans in CI/CD
+5. Document accepted risks and exceptions
+6. Re-audit after fixes to verify effectiveness
 
 ## Related Skills
 
-- [security-testing](../testing/security-testing.md) - For development testing
-- [qa-criteria-validator](../qa/qa-criteria-validator.md) - For acceptance validation
-- [tdd-methodology](../patterns/tdd-methodology.md) - For secure development
-
-## Related Commands
-
-- `/security-audit` - Invoke this skill for comprehensive security review
-- `/quality-check` - Includes automated security checks
+- [security-testing](../testing/security-testing.md) - Development testing
+- [qa-criteria-validator](../qa/qa-criteria-validator.md) - Acceptance validation
+- [tdd-methodology](../patterns/tdd-methodology.md) - Secure development

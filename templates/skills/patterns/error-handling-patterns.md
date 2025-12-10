@@ -1,25 +1,40 @@
 ---
 name: error-handling-patterns
 category: patterns
-description: Comprehensive error handling patterns for database, API, and frontend layers with type-safe error hierarchies
-usage: Use when implementing error handling to ensure consistent, informative error responses across the application
-input: Error scenarios, application layers (DB, API, frontend), error types
-output: Error handling code, custom error classes, error documentation
+description: Standardized error handling patterns for database, API, and frontend layers
+usage: Use when implementing error handling across application layers
+input: Error scenarios, application context, error types
+output: Error handling code, custom error classes
+config_required:
+  database_error_codes: "Database-specific error codes mapping (e.g., PostgreSQL, MySQL)"
+  http_status_codes: "HTTP status codes used in API responses"
+  error_logging_service: "Error logging service (e.g., Sentry, LogRocket, console)"
+  frontend_framework: "Frontend framework (React, Vue, Angular, etc.)"
 ---
 
 # Error Handling Patterns
 
-## Overview
+## ⚙️ Configuration
 
-**Purpose**: Standardized error handling patterns ensuring consistent, informative, and secure error management
+| Setting | Description | Example |
+|---------|-------------|---------|
+| `database_error_codes` | Database-specific error codes for constraint violations | PostgreSQL: `23505` (unique), `23503` (foreign key) |
+| `http_status_codes` | HTTP status codes for different error types | `400` (validation), `404` (not found), `500` (server) |
+| `error_logging_service` | Service for logging unexpected errors | Sentry, LogRocket, console |
+| `frontend_framework` | Framework for UI error boundaries | React, Vue, Angular |
 
-**Category**: Patterns
-**Primary Users**: All engineers
+## Purpose
+
+Provide consistent, type-safe error handling across database, service, API, and frontend layers with:
+- Custom error class hierarchy
+- Secure error messages (no internal leaks)
+- Operational vs programming error distinction
+- Proper error propagation
 
 ## Error Class Hierarchy
 
 ```typescript
-// Base Error
+// Base application error
 export class AppError extends Error {
   constructor(
     message: string,
@@ -33,7 +48,7 @@ export class AppError extends Error {
   }
 }
 
-// Domain-specific Errors
+// Domain-specific errors
 export class ValidationError extends AppError {
   constructor(message: string, public fields?: Record<string, string>) {
     super(message, 400, 'VALIDATION_ERROR');
@@ -42,23 +57,13 @@ export class ValidationError extends AppError {
 
 export class NotFoundError extends AppError {
   constructor(resource: string, id?: string) {
-    super(
-      `${resource}${id ? ` with id ${id}` : ''} not found`,
-      404,
-      'NOT_FOUND'
-    );
+    super(`${resource}${id ? ` with id ${id}` : ''} not found`, 404, 'NOT_FOUND');
   }
 }
 
 export class UnauthorizedError extends AppError {
   constructor(message = 'Unauthorized') {
     super(message, 401, 'UNAUTHORIZED');
-  }
-}
-
-export class ForbiddenError extends AppError {
-  constructor(message = 'Forbidden') {
-    super(message, 403, 'FORBIDDEN');
   }
 }
 
@@ -69,79 +74,73 @@ export class ConflictError extends AppError {
 }
 ```
 
-## Database Layer Errors
+## Layer-Specific Patterns
+
+### Database Layer
+
+| Pattern | When to Use | Example |
+|---------|-------------|---------|
+| Resource Not Found | Record doesn't exist | Throw `NotFoundError` |
+| Constraint Violation | Unique, FK violations | Map DB codes to `ConflictError`/`ValidationError` |
+| Unexpected Error | Unknown DB errors | Throw `AppError` with `isOperational: false` |
 
 ```typescript
 try {
-  const booking = await db.bookings.findFirst({ 
-    where: eq(bookings.id, id) 
-  });
-  
-  if (!booking) {
-    throw new NotFoundError('Booking', id);
-  }
-  
-  return booking;
+  const record = await db.table.findFirst({ where: eq(table.id, id) });
+  if (!record) throw new NotFoundError('Resource', id);
+  return record;
 } catch (error) {
   if (error instanceof AppError) throw error;
-  
-  // PostgreSQL unique violation
+
+  // Map database-specific codes
   if (error.code === '23505') {
     throw new ConflictError('Resource already exists');
   }
-  
-  // PostgreSQL foreign key violation
-  if (error.code === '23503') {
-    throw new ValidationError('Referenced resource does not exist');
-  }
-  
-  // Unexpected database error
+
   throw new AppError('Database operation failed', 500, 'DATABASE_ERROR', false);
 }
 ```
 
-## Service Layer Errors
+### Service Layer
 
 ```typescript
-export class BookingService {
-  async create(data: CreateBookingInput): Promise<Booking> {
-    // Validate business rules
-    if (data.checkIn >= data.checkOut) {
-      throw new ValidationError('Check-out must be after check-in', {
-        checkIn: 'Must be before check-out',
-        checkOut: 'Must be after check-in'
-      });
-    }
-    
-    // Check entity availability
-    const isAvailable = await this.checkAvailability(data);
-    if (!isAvailable) {
-      throw new ConflictError('Entity not available for selected dates');
-    }
-    
-    try {
-      return await this.model.create(data);
-    } catch (error) {
-      if (error instanceof AppError) throw error;
-      throw new AppError('Failed to create booking', 500, 'CREATE_FAILED', false);
-    }
+async create(data: Input): Promise<Output> {
+  // Validate business rules
+  if (data.startDate >= data.endDate) {
+    throw new ValidationError('End date must be after start date', {
+      startDate: 'Must be before end date',
+      endDate: 'Must be after start date'
+    });
+  }
+
+  // Check availability
+  const isAvailable = await this.checkAvailability(data);
+  if (!isAvailable) {
+    throw new ConflictError('Resource not available');
+  }
+
+  try {
+    return await this.repository.create(data);
+  } catch (error) {
+    if (error instanceof AppError) throw error;
+    throw new AppError('Create failed', 500, 'CREATE_FAILED', false);
   }
 }
 ```
 
-## API Layer Error Handling
+### API Layer
 
 ```typescript
-// Global error handler middleware
-export const errorHandler = async (err: Error, c: Context) => {
-  // Log error
+// Global error handler
+export const errorHandler = async (err: Error, context: Context) => {
+  // Log non-operational errors
   if (err instanceof AppError && !err.isOperational) {
     console.error('Non-operational error:', err);
   }
-  
-  // Operational errors
+
+  // Handle operational errors
   if (err instanceof AppError) {
-    return c.json({
+    return context.json({
       error: {
         code: err.code,
         message: err.message,
@@ -149,10 +148,10 @@ export const errorHandler = async (err: Error, c: Context) => {
       }
     }, err.statusCode);
   }
-  
-  // Zod validation errors
+
+  // Schema validation errors
   if (err instanceof ZodError) {
-    return c.json({
+    return context.json({
       error: {
         code: 'VALIDATION_ERROR',
         message: 'Invalid request data',
@@ -160,115 +159,84 @@ export const errorHandler = async (err: Error, c: Context) => {
       }
     }, 400);
   }
-  
-  // Unknown errors (don't leak details)
+
+  // Unknown errors (sanitized)
   console.error('Unexpected error:', err);
-  return c.json({
+  return context.json({
     error: {
       code: 'INTERNAL_ERROR',
       message: 'An unexpected error occurred'
     }
   }, 500);
 };
-
-// Usage in routes
-app.post('/api/bookings', async (c) => {
-  try {
-    const data = await c.req.json();
-    const booking = await bookingService.create(data);
-    return c.json(booking, 201);
-  } catch (error) {
-    throw error; // Caught by global error handler
-  }
-});
-
-// Register error handler
-app.onError(errorHandler);
 ```
 
-## Frontend Error Handling
+### Frontend Layer
 
 ```typescript
-// React Error Boundary
+// Error Boundary (React)
 export class ErrorBoundary extends React.Component<Props, State> {
   state = { hasError: false, error: null };
-  
+
   static getDerivedStateFromError(error: Error) {
     return { hasError: true, error };
   }
-  
+
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('Error caught by boundary:', error, errorInfo);
+    console.error('Error boundary caught:', error, errorInfo);
   }
-  
+
   render() {
     if (this.state.hasError) {
       return <ErrorFallback error={this.state.error} />;
     }
-    
     return this.props.children;
   }
 }
 
-// TanStack Query error handling
+// Query error handling
 const { data, error } = useQuery({
-  queryKey: ['bookings'],
   queryFn: async () => {
-    const response = await fetch('/api/bookings');
-    
+    const response = await fetch('/api/resource');
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.error.message);
     }
-    
     return response.json();
   },
   retry: (failureCount, error) => {
     // Don't retry client errors
-    if (error.message.includes('400')) return false;
-    if (error.message.includes('404')) return false;
-    
+    if (error.message.includes('400') || error.message.includes('404')) {
+      return false;
+    }
     // Retry server errors up to 3 times
     return failureCount < 3;
   }
 });
-
-// Display errors
-if (error) {
-  return <Alert variant="destructive">{error.message}</Alert>;
-}
 ```
 
 ## Best Practices
 
-1. **Use Custom Error Classes**: Create domain-specific errors
-2. **Fail Fast**: Validate early, throw errors immediately
-3. **Preserve Stack Traces**: Use Error.captureStackTrace
-4. **Don't Leak Internals**: Sanitize errors in production
-5. **Log Unexpected Errors**: Log non-operational errors
-6. **Type-Safe Errors**: Use TypeScript for error types
-7. **Consistent Format**: Standard error response structure
-8. **Operational vs Programming**: Distinguish error types
-9. **Don't Catch Everything**: Only catch what you can handle
-10. **Use Error Boundaries**: React error boundaries for UI errors
+| Practice | Description |
+|----------|-------------|
+| **Custom Error Classes** | Use domain-specific errors for clarity |
+| **Fail Fast** | Validate early, throw errors immediately |
+| **Preserve Stack Traces** | Use `Error.captureStackTrace` |
+| **Don't Leak Internals** | Sanitize error messages in production |
+| **Log Unexpected Errors** | Always log non-operational errors |
+| **Type-Safe Errors** | Use TypeScript for error types |
+| **Operational vs Programming** | Distinguish between expected and unexpected errors |
+| **Error Boundaries** | Catch UI errors with error boundaries |
+
+## Anti-Patterns to Avoid
+
+- ❌ Catching all errors without handling them
+- ❌ Exposing stack traces in production
+- ❌ Generic error messages without context
+- ❌ Silently swallowing errors
+- ❌ Using error codes inconsistently
 
 ## Related Skills
 
 - `tdd-methodology` - Test error scenarios
 - `api-app-testing` - Test error responses
-
-## Notes
-
-- Never expose stack traces in production
-- Always log unexpected errors for debugging
-- Error messages should be user-friendly
-- Use HTTP status codes correctly
-- Errors are part of API contract
-
----
-
-## Changelog
-
-| Version | Date | Changes | Author | Related |
-|---------|------|---------|--------|---------|
-| 1.0.0 | 2025-10-31 | Initial version | @tech-lead | P-004 |
