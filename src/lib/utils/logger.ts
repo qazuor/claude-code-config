@@ -2,7 +2,7 @@
  * Logger utility with colored output
  */
 
-import pc from 'picocolors';
+import chalk from 'chalk';
 
 export type LogLevel = 'debug' | 'info' | 'success' | 'warn' | 'error';
 
@@ -12,13 +12,13 @@ interface LoggerOptions {
 }
 
 const SYMBOLS = {
-  info: pc.blue('ℹ'),
-  success: pc.green('✔'),
-  warn: pc.yellow('⚠'),
-  error: pc.red('✖'),
-  debug: pc.gray('●'),
-  arrow: pc.cyan('→'),
-  bullet: pc.dim('•'),
+  info: chalk.blue('ℹ'),
+  success: chalk.green('✔'),
+  warn: chalk.yellow('⚠'),
+  error: chalk.red('✖'),
+  debug: chalk.gray('●'),
+  arrow: chalk.cyan('→'),
+  bullet: chalk.dim('•'),
 };
 
 class Logger {
@@ -39,16 +39,16 @@ class Logger {
 
     switch (level) {
       case 'error':
-        console.error(`${prefix} ${pc.red(formattedMessage)}`);
+        console.error(`${prefix} ${chalk.red(formattedMessage)}`);
         break;
       case 'warn':
-        console.warn(`${prefix} ${pc.yellow(formattedMessage)}`);
+        console.warn(`${prefix} ${chalk.yellow(formattedMessage)}`);
         break;
       case 'success':
-        console.log(`${prefix} ${pc.green(formattedMessage)}`);
+        console.log(`${prefix} ${chalk.green(formattedMessage)}`);
         break;
       case 'debug':
-        console.log(`${prefix} ${pc.gray(formattedMessage)}`);
+        console.log(`${prefix} ${chalk.gray(formattedMessage)}`);
         break;
       default:
         console.log(`${prefix} ${formattedMessage}`);
@@ -88,8 +88,8 @@ class Logger {
   title(text: string): void {
     if (this.silent) return;
     console.log();
-    console.log(pc.bold(pc.cyan(text)));
-    console.log(pc.dim('─'.repeat(Math.min(text.length + 4, 60))));
+    console.log(chalk.bold(chalk.cyan(text)));
+    console.log(chalk.dim('─'.repeat(Math.min(text.length + 4, 60))));
   }
 
   /**
@@ -98,7 +98,7 @@ class Logger {
   subtitle(text: string): void {
     if (this.silent) return;
     console.log();
-    console.log(pc.bold(text));
+    console.log(chalk.bold(text));
   }
 
   /**
@@ -106,7 +106,7 @@ class Logger {
    */
   step(stepNumber: number, totalSteps: number, message: string): void {
     if (this.silent) return;
-    const progress = pc.dim(`[${stepNumber}/${totalSteps}]`);
+    const progress = chalk.dim(`[${stepNumber}/${totalSteps}]`);
     console.log(`${progress} ${message}`);
   }
 
@@ -125,7 +125,7 @@ class Logger {
   keyValue(key: string, value: string, indent = 0): void {
     if (this.silent) return;
     const spaces = '  '.repeat(indent);
-    console.log(`${spaces}${pc.dim(`${key}:`)} ${value}`);
+    console.log(`${spaces}${chalk.dim(`${key}:`)} ${value}`);
   }
 
   /**
@@ -147,13 +147,13 @@ class Logger {
     const border = '─'.repeat(width - 2);
 
     console.log();
-    console.log(pc.cyan(`┌${border}┐`));
-    console.log(pc.cyan('│') + pc.bold(` ${title.padEnd(width - 3)}`) + pc.cyan('│'));
-    console.log(pc.cyan(`├${border}┤`));
+    console.log(chalk.cyan(`┌${border}┐`));
+    console.log(chalk.cyan('│') + chalk.bold(` ${title.padEnd(width - 3)}`) + chalk.cyan('│'));
+    console.log(chalk.cyan(`├${border}┤`));
     for (const line of content) {
-      console.log(`${pc.cyan('│')} ${line.padEnd(width - 3)}${pc.cyan('│')}`);
+      console.log(`${chalk.cyan('│')} ${line.padEnd(width - 3)}${chalk.cyan('│')}`);
     }
-    console.log(pc.cyan(`└${border}┘`));
+    console.log(chalk.cyan(`└${border}┘`));
     console.log();
   }
 
@@ -170,9 +170,9 @@ class Logger {
     });
 
     // Print header
-    const headerRow = headers.map((h, i) => pc.bold(h.padEnd(colWidths[i]))).join('  ');
+    const headerRow = headers.map((h, i) => chalk.bold(h.padEnd(colWidths[i]))).join('  ');
     console.log(headerRow);
-    console.log(pc.dim(colWidths.map((w) => '─'.repeat(w)).join('  ')));
+    console.log(chalk.dim(colWidths.map((w) => '─'.repeat(w)).join('  ')));
 
     // Print rows
     for (const row of rows) {
@@ -187,11 +187,11 @@ class Logger {
   status(label: string, status: 'success' | 'error' | 'warn' | 'pending' | 'skip'): void {
     if (this.silent) return;
     const statusColors = {
-      success: pc.green('✔ done'),
-      error: pc.red('✖ failed'),
-      warn: pc.yellow('⚠ warning'),
-      pending: pc.blue('◯ pending'),
-      skip: pc.dim('○ skipped'),
+      success: chalk.green('✔ done'),
+      error: chalk.red('✖ failed'),
+      warn: chalk.yellow('⚠ warning'),
+      pending: chalk.blue('◯ pending'),
+      skip: chalk.dim('○ skipped'),
     };
     console.log(`  ${label}: ${statusColors[status]}`);
   }
@@ -202,10 +202,10 @@ class Logger {
   instructions(title: string, steps: string[]): void {
     if (this.silent) return;
     console.log();
-    console.log(pc.bold(pc.cyan(title)));
+    console.log(chalk.bold(chalk.cyan(title)));
     console.log();
     steps.forEach((step, index) => {
-      console.log(`  ${pc.dim(`${index + 1}.`)} ${step}`);
+      console.log(`  ${chalk.dim(`${index + 1}.`)} ${step}`);
     });
     console.log();
   }
@@ -215,7 +215,7 @@ class Logger {
    */
   note(text: string): void {
     if (this.silent) return;
-    console.log(pc.dim(`   ${text}`));
+    console.log(chalk.dim(`   ${text}`));
   }
 
   /**
@@ -232,12 +232,12 @@ export const logger = new Logger();
 
 // Export color utilities for direct use
 export const colors = {
-  primary: pc.cyan,
-  secondary: pc.blue,
-  success: pc.green,
-  warning: pc.yellow,
-  error: pc.red,
-  muted: pc.dim,
-  bold: pc.bold,
-  underline: pc.underline,
+  primary: chalk.cyan,
+  secondary: chalk.blue,
+  success: chalk.green,
+  warning: chalk.yellow,
+  error: chalk.red,
+  muted: chalk.dim,
+  bold: chalk.bold,
+  underline: chalk.underline,
 };
