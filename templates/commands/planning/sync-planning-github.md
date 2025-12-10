@@ -1,251 +1,133 @@
+---
+name: sync-planning-github
+description: Synchronize planning session to GitHub Issues
+type: planning
+category: planning
+config_required:
+  github_token_env: "Environment variable for GitHub token (e.g., GITHUB_TOKEN)"
+  github_owner_env: "Environment variable for repository owner"
+  github_repo_env: "Environment variable for repository name"
+  planning_path: "Base path for planning sessions"
+  tracking_file: "GitHub tracking file path"
+---
+
 # Sync Planning to GitHub
 
-**Purpose**: Synchronizes the current planning session to GitHub Issues, creating a parent issue and sub-issues for all tasks.
+Synchronize planning session to GitHub Issues, creating parent and sub-issues for all tasks.
+
+## ⚙️ Configuration
+
+| Setting | Description | Example |
+|---------|-------------|---------|
+| `github_token_env` | GitHub token environment variable | `{{GITHUB_TOKEN}}` |
+| `github_owner_env` | Repository owner env variable | `{{GITHUB_OWNER}}` |
+| `github_repo_env` | Repository name env variable | `{{GITHUB_REPO}}` |
+| `planning_path` | Planning sessions directory | `{{PLANNING_PATH}}` |
+| `tracking_file` | GitHub tracking data file | `{{TRACKING_FILE}}` |
+
+## Usage
+
+```bash
+/sync-planning-github [session_path]
+```
 
 ## When to Use
 
-- After completing Phase 1: Planning and getting user approval
-- When you want to sync planning progress to GitHub for team visibility
-- To create trackable issues for the current feature planning
-- When working across multiple devices and need centralized tracking
+- After completing planning phase with user approval
+- To create trackable GitHub issues
+- When working across multiple devices
+- Before starting implementation
 
 ## Process
 
-### Step 1: Identify Planning Session
+### Step 1: Identify Session
 
-Ask the user which planning session to sync if not obvious from context.
+Auto-detect or ask user for session path.
 
-The session path should be: `.claude/sessions/planning/P-XXX-{feature-name}/`
+**Expected:** `{{PLANNING_PATH}}/{session-name}/`
 
-You can auto-detect the session if the user is currently in a planning directory.
+### Step 2: Verify Files
 
-### Step 2: Verify Required Files
+Required files:
 
-Check that the following files exist:
+- PDR.md
+- TODOs.md
 
-- `PDR.md` - Product Requirements Document
-- `TODOs.md` - Tasks breakdown
+### Step 3: Get Configuration
 
-If files are missing, inform the user and stop.
+Required environment variables:
 
-### Step 3: Get GitHub Configuration
-
-You need the following environment variables:
-
-- `GITHUB_TOKEN` - GitHub Personal Access Token with repo and project permissions
-- `GITHUB_OWNER` - Repository owner (e.g., 'your-org')
-- `GITHUB_REPO` - Repository name (e.g., 'main')
-
-Check if these are available in the environment. If not, ask the user to provide them.
+- `{{GITHUB_TOKEN}}` - Personal Access Token with repo permissions
+- `{{GITHUB_OWNER}}` - Repository owner
+- `{{GITHUB_REPO}}` - Repository name
 
 ### Step 4: Execute Sync
 
-Use the `@repo/github-workflow` package to synchronize:
-
-```typescript
-import { executeSyncCommand } from '@repo/github-workflow/commands';
-
-const result = await executeSyncCommand({
-  sessionPath: '.claude/sessions/planning/P-XXX-feature-name',
-  githubConfig: {
-    token: process.env.GITHUB_TOKEN!,
-    owner: process.env.GITHUB_OWNER || 'your-org',
-    repo: process.env.GITHUB_REPO || 'main',
-  },
-  updateExisting: true, // Update existing issues instead of creating duplicates
-});
-```
+- Create parent issue
+- Create sub-issues for tasks
+- Update existing issues (idempotent)
+- Add labels and metadata
 
 ### Step 5: Report Results
 
-Present the results to the user in a clear, formatted output:
+```text
+✅ Planning synced to GitHub!
 
+Parent Issue: {title}
+   URL: {url}
+   Number: #{number}
+
+Statistics:
+   • {n} tasks created
+   • {n} tasks updated
+   • {n} skipped
+   • {n} failed
+
+Next Steps:
+   1. TODOs.md updated with issue links
+   2. Commit changes (TODOs.md, {{TRACKING_FILE}})
+   3. View: {repo_url}/issues
+   4. Use /check-completed when done
 ```
-✅ Planning synced to GitHub successfully!
-
-📋 Parent Issue: {result.parentIssue.title}
-   URL: {result.parentIssue.url}
-   Number: #{result.parentIssue.number}
-
-📊 Statistics:
-   • {result.statistics.created} tasks created
-   • {result.statistics.updated} tasks updated
-   • {result.statistics.skipped} tasks skipped
-   • {result.statistics.failed} tasks failed
-
-💡 Next Steps:
-   1. TODOs.md has been updated with GitHub issue links
-   2. Commit and push the changes (TODOs.md, .github-workflow/tracking.json)
-   3. View issues in GitHub: https://github.com/{owner}/{repo}/issues
-   4. You can now track progress across all devices
-```
-
-### Step 6: Update TODOs.md
-
-The sync process automatically updates `TODOs.md` with GitHub issue links:
-
-```markdown
-### T-003-012: Claude Code commands
-
-**Status:** [ ] Pending
-**GitHub Issue:** [#123](https://github.com/your-org/your-repo/issues/123)
-```
-
-Inform the user that TODOs.md has been updated and should be committed.
-
-### Step 7: Suggest Next Actions
-
-Remind the user:
-
-1. **Commit changes**: `git add .claude/sessions/planning/P-XXX-* .github-workflow/tracking.json`
-2. **Push to remote**: `git push origin main`
-3. **View in GitHub**: Issues are now visible in the GitHub Issues tab
-4. **Update status**: As you complete tasks, use `/check-completed` to auto-close issues
 
 ## Error Handling
 
-### Missing Environment Variables
-
-```
-❌ GitHub configuration missing.
-
-Please set the following environment variables:
-- GITHUB_TOKEN: Your GitHub Personal Access Token
-  → Get it from: https://github.com/settings/tokens
-  → Required scopes: repo, project
-
-- GITHUB_OWNER: Repository owner (default: 'your-org')
-- GITHUB_REPO: Repository name (default: 'main')
-
-Add them to your .env file or export them in your shell.
-```
-
-### File Not Found
-
-```
-❌ Planning files not found at {sessionPath}
-
-Required files:
-- PDR.md (Product Requirements Document)
-- TODOs.md (Tasks breakdown)
-
-Please ensure you've completed the planning phase first using:
-  /start-feature-plan
-```
-
-### API Errors
-
-```
-❌ Failed to sync with GitHub: {error.message}
-
-Possible causes:
-1. Invalid or expired GitHub token
-2. Missing repository permissions (need: repo, project)
-3. Rate limit exceeded (wait a few minutes)
-4. Network connectivity issues
-
-Troubleshooting:
-- Verify token: https://github.com/settings/tokens
-- Check permissions on repository
-- Try again in a few minutes if rate limited
-```
-
-### Duplicate Issues
-
-```
-⚠️ Some tasks already have GitHub issues.
-
-The sync will UPDATE existing issues instead of creating duplicates.
-This is safe and preserves issue history.
-
-Existing issues found:
-- T-003-001 → Issue #120
-- T-003-002 → Issue #121
-
-Continue with sync? (yes/no)
-```
+| Error | Message | Solution |
+|-------|---------|----------|
+| Missing config | Configuration missing | Set environment variables |
+| Files not found | Planning files not found | Run /start-feature-plan first |
+| API error | Failed to sync | Check token, permissions, rate limits |
 
 ## Advanced Options
 
-### Dry Run Mode
-
-Preview changes without actually creating issues:
+### Dry Run
 
 ```typescript
-const result = await executeSyncCommand({
-  sessionPath: '...',
-  githubConfig: { ... },
-  dryRun: true, // Preview only, no actual changes
-});
+{ dryRun: true }
 ```
 
-### Custom Tracking Path
-
-Use a custom location for tracking data:
+### Custom Tracking
 
 ```typescript
-const result = await executeSyncCommand({
-  sessionPath: '...',
-  githubConfig: { ... },
-  trackingPath: '.custom-tracking/github.json',
-});
+{ trackingPath: '.custom/tracking.json' }
 ```
 
-### Skip Existing Issues
-
-Only create new issues, don't update existing ones:
+### Skip Updates
 
 ```typescript
-const result = await executeSyncCommand({
-  sessionPath: '...',
-  githubConfig: { ... },
-  updateExisting: false, // Skip existing issues
-});
+{ updateExisting: false }
 ```
 
 ## Important Notes
 
-- **Idempotent**: You can run sync multiple times safely - existing issues are updated, not duplicated
-- **Tracking**: The `.github-workflow/tracking.json` file stores the mapping between tasks and GitHub issues
-- **Commit tracking.json**: Always commit this file so syncs work across machines and team members
-- **Status sync**: Task status in TODOs.md determines GitHub issue state (open/closed)
-- **Enrichment**: Issues are automatically enriched with planning context and implementation hints
-- **Labels**: Auto-generated labels based on task type, priority, and phase
+- **Idempotent:** Safe to run multiple times
+- **Tracking:** {{TRACKING_FILE}} maps tasks to issues
+- **Labels:** Auto-generated from task metadata
+- **Enrichment:** Issues include planning context
 
-## Integration with Other Commands
+## Related Commands
 
-- **After planning**: Use this command after `/start-feature-plan`
-- **Before implementation**: Sync before starting Phase 2: Implementation
-- **During work**: Use `/check-completed` after each task completion
-- **Code TODOs**: Use `/sync-todos` to sync TODO comments from code
-- **Cleanup**: Use `/cleanup-issues` to close stale issues
-
-## Example Workflow
-
-```
-User: "I just finished planning P-005 for the AI mockup generation feature. Can you sync it to GitHub?"
-Assistant: "I'll sync P-005 to GitHub now."
-
-[Executes sync command]
-
-✅ Planning synced to GitHub successfully\!
-
-📋 Parent Issue: P-005: AI Mockup Generation
-   URL: https://github.com/your-org/your-repo/issues/150
-   Number: #150
-
-📊 Statistics:
-   • 15 tasks created
-   • 0 tasks updated
-   • 0 tasks skipped
-   • 0 tasks failed
-
-```
-
----
-
-## Changelog
-
-| Version | Date | Changes | Author | Related |
-|---------|------|---------|--------|---------|
-| 2.0.0 | 2025-11-01 | GitHub integration (replaces Linear) | @tech-lead | P-003 |
+- `/start-feature-plan` - Create planning
+- `/check-completed` - Auto-close completed
+- `/sync-todos-github` - Sync code TODOs
+- `/cleanup-issues` - Clean stale issues

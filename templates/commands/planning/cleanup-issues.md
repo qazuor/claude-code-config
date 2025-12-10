@@ -1,344 +1,248 @@
-# Cleanup GitHub Issues
+---
+name: cleanup-issues
+description: Clean up stale, closed, or orphaned issues from workflow automation
+type: planning
+category: planning
+config_required:
+  issue_tracker: "Issue tracking system name"
+  issue_tracker_token_env: "Auth token environment variable"
+  issue_tracker_owner_env: "Owner/org environment variable"
+  issue_tracker_repo_env: "Repository environment variable"
+  tracking_file: "Issue tracking data file"
+  closed_days_default: "Default days for closed issue cleanup (e.g., 30)"
+  stale_days_default: "Default days for stale issue detection (e.g., 90)"
+---
 
-**Purpose**: Clean up stale, closed, or orphaned GitHub issues created by the workflow automation system.
+# Cleanup Issues
+
+Clean up stale, closed, or orphaned issues created by workflow automation.
+
+## ⚙️ Configuration
+
+| Setting | Description | Example |
+|---------|-------------|---------|
+| `issue_tracker` | Issue tracking system | `{{ISSUE_TRACKER}}` |
+| `issue_tracker_token_env` | Auth token variable | `{{ISSUE_TRACKER_TOKEN}}` |
+| `issue_tracker_owner_env` | Owner variable | `{{ISSUE_TRACKER_OWNER}}` |
+| `issue_tracker_repo_env` | Repository variable | `{{ISSUE_TRACKER_REPO}}` |
+| `tracking_file` | Tracking data file | `{{TRACKING_FILE}}` |
+| `closed_days_default` | Days for closed cleanup | `{{CLOSED_DAYS}}` |
+| `stale_days_default` | Days for stale detection | `{{STALE_DAYS}}` |
+
+## Usage
+
+```bash
+/cleanup-issues [--closed-days N] [--stale-days N]
+```
 
 ## When to Use
 
-- After completing a major feature or planning session
-- To remove stale issues that are no longer relevant
-- When cleaning up after cancelled features
-- During project maintenance and organization
-- Before project milestones or releases
+- After completing major feature
+- To remove stale/obsolete issues
+- When cleaning up cancelled features
+- During project maintenance
+- Before milestones or releases
 
 ## Process
 
-### Step 1: Identify Cleanup Scope
+### Step 1: Identify Scope
 
-Determine what to clean up:
+Cleanup options:
 
-- **Closed issues**: Remove issues that have been closed for X days
-- **Orphaned issues**: Issues with no corresponding planning session or TODO
-- **Stale issues**: Issues with no activity for X days
-- **Specific session**: Clean up issues from a specific planning session
-- **All issues**: Full cleanup (requires confirmation)
+- **Closed issues:** Closed > N days ago
+- **Orphaned issues:** No planning session/TODO
+- **Stale issues:** No activity for N days
+- **Specific session:** Single planning session
+- **All issues:** Full cleanup (requires confirmation)
 
-Ask the user which scope to use.
+### Step 2: Get Configuration
 
-### Step 2: Get GitHub Configuration
+Required:
 
-You need the following environment variables:
+- `{{ISSUE_TRACKER_TOKEN}}`
+- `{{ISSUE_TRACKER_OWNER}}`
+- `{{ISSUE_TRACKER_REPO}}`
 
-- `GITHUB_TOKEN` - GitHub Personal Access Token
-- `GITHUB_OWNER` - Repository owner (default: 'your-org')
-- `GITHUB_REPO` - Repository name (default: 'main')
+### Step 3: Scan Candidates
 
-Check if these are available. If not, ask the user to provide them.
+Scan for cleanup candidates:
 
-### Step 3: Scan for Cleanup Candidates
-
-Scan GitHub and local tracking for cleanup candidates:
-
-```typescript
-import { cleanupGitHubIssues } from '@repo/github-workflow/commands';
-
-const candidates = await cleanupGitHubIssues({
-  githubConfig: {
-    token: process.env.GITHUB_TOKEN!,
-    owner: process.env.GITHUB_OWNER || 'your-org',
-    repo: process.env.GITHUB_REPO || 'main',
-  },
-  closedDays: 30, // Issues closed >30 days ago
-  staleDays: 90, // Issues with no activity for 90 days
-  includeOrphaned: true, // Include orphaned issues
-  dryRun: true, // Preview first
-});
-```
+- Closed issues older than threshold
+- Stale issues with no activity
+- Orphaned issues (no source)
 
 ### Step 4: Preview Cleanup
 
-Show the user what will be cleaned up:
-
-```
+```text
 🔍 Cleanup Preview
 
-Issues to be cleaned up:
-   • 15 closed issues (closed >30 days ago)
-   • 3 stale issues (no activity for >90 days)
-   • 2 orphaned issues (no planning session)
+Issues to clean:
+   • {n} closed (>{n} days ago)
+   • {n} stale (no activity >{n} days)
+   • {n} orphaned (no source)
 
-📋 Details:
+Details:
 
 Closed Issues:
-   • #120: T-001-005 - Old task from P-001
-     Closed: 2024-10-01 (31 days ago)
-   • #121: T-001-006 - Completed feature
-     Closed: 2024-09-15 (47 days ago)
+   • #{n}: Task name (closed {n} days ago)
 
 Stale Issues:
-   • #145: TODO in old file (no updates for 92 days)
-   • #146: HACK comment (no updates for 95 days)
+   • #{n}: TODO in old file (no updates {n} days)
 
 Orphaned Issues:
-   • #150: Task with deleted planning session
-   • #151: TODO from removed code
+   • #{n}: Task with deleted session
+   • #{n}: TODO from removed code
 
-⚠️  WARNING: This will permanently remove issue references from tracking.
-The GitHub issues themselves will remain in the repository (can be manually deleted).
+⚠️ WARNING: Permanently removes issue references from tracking.
+Issues remain in {{ISSUE_TRACKER}} (can be manually deleted).
 
-Continue with cleanup? (yes/no)
+Continue? (yes/no)
 ```
 
 ### Step 5: Execute Cleanup
 
-If user confirms, proceed with cleanup:
+If confirmed:
 
-```typescript
-const result = await cleanupGitHubIssues({
-  githubConfig: { ... },
-  closedDays: 30,
-  staleDays: 90,
-  includeOrphaned: true,
-  dryRun: false, // Actually perform cleanup
-  archiveIssues: true, // Archive instead of delete
-});
-```
+- Remove references from tracking
+- Archive issue data
+- Update tracking file
 
 ### Step 6: Report Results
 
-Present cleanup results:
+```text
+✅ Cleanup completed!
 
-```
-✅ Cleanup completed successfully!
+Statistics:
+   • {n} references removed
+   • {n} issues archived
+   • {n} skipped
+   • {n} failed
 
-📊 Statistics:
-   • {result.statistics.removed} issue references removed from tracking
-   • {result.statistics.archived} issues archived
-   • {result.statistics.skipped} issues skipped
-   • {result.statistics.failed} failures
+Updated Files:
+   • {{TRACKING_FILE}} (updated)
+   • {{TRACKING_FILE}}.archive (archived)
 
-📝 Updated Files:
-   • .github-workflow/tracking.json (updated)
-   • .github-workflow/tracking-archive.json (archived references)
-
-💡 Next Steps:
-   1. Review archived references in tracking-archive.json
-   2. Manually delete GitHub issues if needed
-   3. Commit updated tracking files
+Next Steps:
+   1. Review archived references
+   2. Manually delete issues if needed
+   3. Commit tracking files
 ```
 
 ## Error Handling
 
-### Missing Environment Variables
-
-```
-❌ GitHub configuration missing.
-
-Required environment variables:
-- GITHUB_TOKEN: GitHub Personal Access Token
-- GITHUB_OWNER: Repository owner
-- GITHUB_REPO: Repository name
-
-Set these in your .env file.
-```
-
-### No Issues Found
-
-```
-ℹ️  No issues match cleanup criteria.
-
-Criteria used:
-- Closed >30 days ago
-- No activity for >90 days
-- Orphaned issues
-
-Your issue tracker is clean!
-```
-
-### Confirmation Required
-
-```
-⚠️  Destructive operation requires confirmation.
-
-This will remove {count} issue references from tracking.
-Type 'yes' to confirm or 'no' to cancel.
-
-User confirmation: __
-```
-
-### API Errors
-
-```
-❌ Failed to cleanup issues: {error.message}
-
-Some issues may have been cleaned up before the error.
-Check tracking.json for current state.
-
-Troubleshooting:
-- Verify GitHub token permissions
-- Check network connectivity
-- Review error details above
-```
+| Error | Solution |
+|-------|----------|
+| Missing config | Set environment variables |
+| No issues found | Issue tracker is clean |
+| Confirmation required | Type 'yes' to confirm |
+| API errors | Check token and permissions |
 
 ## Advanced Options
 
-### Cleanup Specific Session
+### Specific Session
 
 ```typescript
-const result = await cleanupGitHubIssues({
-  githubConfig: { ... },
-  sessionPath: '.claude/sessions/planning/P-001-old-feature',
-  force: true, // Skip confirmation
-});
+{ sessionPath: '{{PLANNING_PATH}}/{session}' }
 ```
 
 ### Archive Instead of Delete
 
 ```typescript
-const result = await cleanupGitHubIssues({
-  githubConfig: { ... },
-  closedDays: 30,
-  archiveIssues: true, // Move to archive instead of delete
-});
+{ archiveIssues: true }
 ```
 
-### Custom Time Ranges
+### Custom Thresholds
 
 ```typescript
-const result = await cleanupGitHubIssues({
-  githubConfig: { ... },
-  closedDays: 7, // More aggressive cleanup
-  staleDays: 60, // Shorter stale threshold
-});
+{
+  closedDays: 7,
+  staleDays: 60
+}
 ```
 
-### Delete GitHub Issues
+### Delete from Tracker
 
 ```typescript
-const result = await cleanupGitHubIssues({
-  githubConfig: { ... },
-  closedDays: 30,
-  deleteFromGitHub: true, // Actually delete issues from GitHub
-  requireConfirmation: true, // Confirm each deletion
-});
+{
+  deleteFromTracker: true,
+  requireConfirmation: true
+}
 ```
 
 ## Cleanup Strategies
 
-### Conservative Cleanup
+### Conservative
 
-For projects with important issue history:
+For important history:
 
 ```typescript
-const result = await cleanupGitHubIssues({
-  githubConfig: { ... },
-  closedDays: 180, // 6 months
-  staleDays: 365, // 1 year
-  includeOrphaned: false, // Keep orphaned issues
-  archiveIssues: true, // Archive, don't delete
-});
+{
+  closedDays: 180,    // 6 months
+  staleDays: 365,     // 1 year
+  includeOrphaned: false,
+  archiveIssues: true
+}
 ```
 
-### Aggressive Cleanup
+### Aggressive
 
-For active projects with frequent cleanups:
+For active projects:
 
 ```typescript
-const result = await cleanupGitHubIssues({
-  githubConfig: { ... },
-  closedDays: 14, // 2 weeks
-  staleDays: 30, // 1 month
+{
+  closedDays: 14,     // 2 weeks
+  staleDays: 30,      // 1 month
   includeOrphaned: true,
-  deleteFromGitHub: true, // Actually remove from GitHub
-});
+  deleteFromTracker: true
+}
 ```
 
-### Orphan-Only Cleanup
-
-Clean up only orphaned issues:
+### Orphan-Only
 
 ```typescript
-const result = await cleanupGitHubIssues({
-  githubConfig: { ... },
-  orphanedOnly: true, // Only clean orphaned issues
-});
+{ orphanedOnly: true }
 ```
-
-## Important Notes
-
-- **Dry run first**: Always preview with `dryRun: true` before cleanup
-- **Archive by default**: References are archived, not permanently deleted
-- **GitHub issues remain**: GitHub issues themselves are not deleted unless specified
-- **Recoverable**: Archived references can be restored from `tracking-archive.json`
-- **Safe operation**: Will not delete issues with recent activity
-- **Backup first**: Consider backing up tracking.json before major cleanups
-- **Team coordination**: Coordinate with team before cleaning shared issues
 
 ## What Gets Cleaned
 
 ### Closed Issues
 
-Issues that meet ALL criteria:
+Must meet ALL:
 
-- Issue is closed
-- Closed more than X days ago (configurable)
-- No recent comments or updates
-- Not pinned or locked
+- Issue closed
+- Closed > N days ago
+- No recent activity
+- Not pinned/locked
 
 ### Stale Issues
 
-Issues that meet ALL criteria:
+Must meet ALL:
 
-- Issue is open
-- No activity for X days (configurable)
-- Not labeled as `keep` or `important`
-- Not assigned to active milestone
+- Issue open
+- No activity > N days
+- Not labeled 'keep' or 'important'
+- Not in active milestone
 
 ### Orphaned Issues
 
-Issues that meet ANY criteria:
+Must meet ANY:
 
-- Planning session no longer exists
-- TODO comment removed from code
+- Planning session deleted
+- TODO comment removed
 - Tracking reference corrupted
 - Source file deleted
 
-## Integration with Other Commands
+## Important Notes
 
-- **After completion**: Run after project completion
-- **Before milestones**: Clean up before releases
-- **With sync**: Run after `/sync-planning` or `/sync-todos` to remove old issues
-- **Maintenance**: Regular cleanup as part of project maintenance
+- **Dry run first:** Always preview before cleanup
+- **Archive by default:** References archived, not deleted
+- **Issues remain:** Tracker issues not deleted unless specified
+- **Recoverable:** Archives can be restored
+- **Safe:** Won't delete issues with recent activity
+- **Backup:** Consider backing up tracking file first
 
-## Example Workflow
+## Related Commands
 
-```
-User: "The P-001 feature is complete and deployed. Can you clean up the old issues?"
-Assistant: "I'll analyze the P-001 issues and clean up closed/stale ones."
-
-[Executes cleanup with dry-run first]
-
-🔍 Found 12 issues to clean up:
-   • 10 closed >30 days ago
-   • 2 orphaned (session deleted)
-
-Proceed with cleanup? (yes/no)
-
-User: "yes"
-
-[Executes cleanup]
-
-✅ Cleanup completed successfully\!
-
-📊 Statistics:
-   • 12 issue references removed from tracking
-   • 12 references archived
-
-```
-
----
-
-## Changelog
-
-| Version | Date | Changes | Author | Related |
-|---------|------|---------|--------|---------|
-| 1.0.0 | 2025-11-01 | Initial version for GitHub integration | @tech-lead | P-003 |
+- `/sync-planning` - Sync planning to tracker
+- `/sync-todos` - Sync code TODOs
+- `/check-completed` - Auto-close completed

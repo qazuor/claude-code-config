@@ -2,28 +2,35 @@
 name: help
 type: meta
 category: system
-description: Interactive help system providing guidance on commands, agents, skills, workflow, and project structure
+description: Interactive help system for commands, agents, skills, and workflows
+config_required:
+  - help_topics: "Define available help topics"
+  - doc_locations: "Configure documentation paths"
+  - display_limits: "Set display limits for lists"
 ---
 
 # Help Command
 
 ## Purpose
 
-Provides comprehensive, context-aware help for the project workflow system. This command offers interactive assistance on commands, agents, skills, workflow phases, and project structure, helping developers quickly find the information they need.
+Comprehensive, context-aware help system providing guidance on commands, agents, skills, workflow, and project structure.
 
-## When to Use
+## ⚙️ Configuration
 
-- **Getting Started**: When first working with the project
-- **Command Discovery**: When looking for a specific command
-- **Agent Information**: When wanting to know which agent to invoke
-- **Workflow Guidance**: When unsure about workflow phases
-- **Troubleshooting**: When encountering issues or errors
+| Setting | Description | Example |
+|---------|-------------|---------|
+| `help_topics` | Available topics | `commands, agents, skills, workflow, quick-start` |
+| `doc_locations.base` | Documentation root | `.claude/docs/` |
+| `doc_locations.agents` | Agents directory | `.claude/agents/` |
+| `doc_locations.commands` | Commands directory | `.claude/commands/` |
+| `display_limits.list` | Max items in list | `20` |
+| `search_enabled` | Enable search | `true` |
 
 ## Usage
 
 ```bash
 /help [topic] [options]
-```text
+```
 
 ### Topics
 
@@ -37,628 +44,263 @@ Provides comprehensive, context-aware help for the project workflow system. This
 
 ### Options
 
-- `--search <query>`: Search across all documentation
+- `--search <query>`: Search across documentation
 - `--category <cat>`: Filter by category
 - `--details`: Show detailed information
 - `--examples`: Show usage examples
 
-### Examples
+## When to Use
 
-```bash
-/help                                    # Interactive help menu
-/help commands                           # List all commands
-/help commands --search test             # Search test-related commands
-/help agents --category engineering      # Show engineering agents
-/help workflow --details                 # Detailed workflow guide
-/help quick-start                        # Quick start guide
-```text
+- Getting started
+- Command discovery
+- Agent information
+- Workflow guidance
+- Troubleshooting
 
 ## Help System Structure
 
-### Main Help Menu
+### Main Menu
 
 ```text
-🎯 Project - Help System
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Welcome to the project workflow system!
+🎯 Help System
 
 📚 Available Topics:
-
-  1. commands   - Available slash commands (16 commands)
-  2. agents     - Specialized AI agents (14 agents)
-  3. skills     - Reusable workflows (16 skills)
-  4. workflow   - Development workflow phases
-  5. quick-start - 15-minute getting started guide
-  6. architecture - Project structure overview
-  7. glossary   - Terminology and concepts
+1. commands - Available slash commands
+2. agents - Specialized AI agents
+3. skills - Reusable workflows
+4. workflow - Development workflow
+5. quick-start - Getting started guide
+6. architecture - Project structure
+7. glossary - Terminology
 
 🔍 Search: /help --search <query>
-📖 Documentation: .claude/docs/
-🆘 Issues: <!-- Configure your repo URL: https://github.com/your-org/your-repo/issues -->
-
-Select topic (1-7) or press Enter for quick start:
-```text
+```
 
 ### Commands Help
 
 ```text
-📜 Available Commands (13)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📜 Available Commands
 
-🔧 Development & Workflow (3)
-  /add-new-entity       Create complete CRUD entity (db, service, API, UI)
-  /code-check           Run linting and type checking
-  /run-tests            Execute test suite with coverage
+🔧 Development & Workflow ({count})
+{command_list}
 
-📋 Planning & Project Management (2)
-  /start-feature-plan   Initialize Level 2 feature planning
-  /start-refactor-plan  Initialize Level 2 refactor planning
+📋 Planning ({count})
+{command_list}
 
-✅ Quality & Validation (1)
-  /quality-check        Comprehensive quality validation
+✅ Quality ({count})
+{command_list}
 
-🔍 Audit (3)
-  /security-audit       Security vulnerability assessment
-  /performance-audit    Performance optimization analysis
-  /accessibility-audit  WCAG 2.1 AA compliance validation
+[Additional categories...]
 
-⚙️ Meta & System (4)
-  /create-agent         Create new specialized AI agent
-  /create-command       Create new slash command
-  /create-skill         Create new skill workflow
-  /help                 Interactive help system
-
-📝 Git Operations (1)
-  /commit               Generate conventional commit messages
-
-📚 Documentation (1)
-  /update-docs          Update project documentation
-
-Use /help commands <name> for detailed information
-Example: /help commands security-audit
-```text
+Use /help commands <name> for details
+```
 
 ### Agents Help
 
 ```text
-🤖 Available Agents (14)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🤖 Available Agents
 
-📦 Product & Planning (2)
-  product-functional    Creates PDRs with user stories
-  product-technical     Performs technical analysis
+📦 Product & Planning ({count})
+{agent_list}
 
-👔 Technical Leadership (1)
-  tech-lead            Architectural oversight, reviews, security, performance
+🛠️ Backend Development ({count})
+{agent_list}
 
-🛠️ Backend Development (2)
-  hono-engineer        API routes and middleware with Hono
-  db-drizzle-engineer  Database schemas and Drizzle models
+[Additional categories...]
 
-🎨 Frontend Development (3)
-  astro-engineer       Public web app with Astro
-  react-senior-dev     React 19 components and hooks
-  tanstack-start-engineer  Admin dashboard with TanStack Start
-
-🎨 Design & Content (2)
-  ux-ui-designer       UI design and user flows
-  content-writer       Bilingual web copywriting (EN/ES)
-
-✅ Quality Assurance (2)
-  qa-engineer          Testing and acceptance validation
-  debugger             Bug investigation and root cause analysis
-
-🔧 Specialized (4)
-  tech-writer          Documentation, dependencies, changelogs
-  i18n-specialist      Internationalization and translations
-  enrichment-agent     GitHub issue enrichment
-  seo-ai-specialist    SEO, Core Web Vitals, AI optimization
-
-Use /help agents <name> for detailed information
-Example: /help agents tech-lead
-```text
+Use /help agents <name> for details
+```
 
 ### Skills Help
 
 ```text
-🎯 Available Skills (4)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 Available Skills
 
-🧪 Testing
-  web-app-testing         E2E testing workflow for web applications
+🧪 Testing ({count})
+{skill_list}
 
-🔧 Development
-  git-commit-helper       Git commit message generation
+🔧 Development ({count})
+{skill_list}
 
-✅ Validation
-  qa-criteria-validator   Validate against PDR acceptance criteria
+[Additional categories...]
 
-🎨 Design
-  brand-guidelines        Brand consistency validation
-
-Use /help skills <name> for detailed information
-Example: /help skills qa-criteria-validator
-```text
+Use /help skills <name> for details
+```
 
 ### Workflow Help
 
 ```text
 🔄 Development Workflow
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 📋 Phase 1: Planning
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Goal: Create comprehensive, atomic plan
-
-Steps:
-1. Initialize planning session
-   Command: /start-feature-plan
-   Creates: .claude/sessions/planning/{feature-name}/
-
-2. Create Product Design Requirements
-   Agent: product-functional
-   Deliverable: PDR.md (user stories, mockups, acceptance criteria)
-
-3. Create Technical Analysis
-   Agent: product-technical
-   Deliverable: tech-analysis.md (architecture, stack, risks)
-
-4. Break down into atomic tasks
-   Deliverable: TODOs.md (1-2 hour tasks with dependencies)
-
-5. Get user approval
-
-⏱️ Time: 2-4 hours
-📄 Deliverables: PDR.md, tech-analysis.md, TODOs.md
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Goal: {goal}
+Steps: {steps}
+Time: {estimate}
+Deliverables: {deliverables}
 
 🛠️ Phase 2: Implementation
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Goal: Implement feature following TDD
-
-Process:
-1. Review PDR.md and tech-analysis.md
-2. For each task:
-   - RED: Write failing test
-   - GREEN: Implement minimum code
-   - REFACTOR: Improve while tests green
-3. Continuous verification:
-   - /code-check (lint + typecheck)
-   - /run-tests
-4. Update TODOs.md progress
-
-Agents Used:
-- db-drizzle-engineer (database layer)
-- hono-engineer (API layer)
-- react-senior-dev (components)
-- astro-engineer (pages)
-- tanstack-start-engineer (admin)
-
-⏱️ Time: Varies by feature
-📄 Deliverables: Working code + tests
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[Similar structure...]
 
 ✅ Phase 3: Validation
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Goal: Ensure quality standards
-
-Steps:
-1. QA validation
-   Agent: qa-engineer
-   Skill: qa-criteria-validator
-
-2. Quality checks
-   Command: /quality-check
-   Includes: lint, typecheck, tests, reviews
-
-3. Audits (as needed)
-   Commands:
-   - /security-audit
-   - /performance-audit
-   - /accessibility-audit
-
-4. Tech lead review
-   Agent: tech-lead
-
-5. User approval
-
-⏱️ Time: 1-2 hours
-📄 Deliverables: Validation reports
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[Similar structure...]
 
 📝 Phase 4: Finalization
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Goal: Document and prepare commits
-
-Steps:
-1. Update documentation
-   Agent: tech-writer
-   Command: /update-docs
-
-2. Generate commits
-   Command: /commit
-
-3. User reviews and stages commits
-
-4. Final checklist verification
-
-⏱️ Time: 30-60 minutes
-📄 Deliverables: Documentation + commits
-
-Use /help workflow --details for comprehensive guide
-```text
+[Similar structure...]
+```
 
 ## Detailed Help Output
 
 ### Command Details
 
 ```text
-Command: /security-audit
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Command: /{command-name}
 
-Type: audit
-Category: quality
+Type: {type}
+Category: {category}
 
-Description:
-Comprehensive security audit combining vulnerability assessment,
-penetration testing, and security best practices validation.
+Description: {description}
 
 When to Use:
-- Before Production Deployment
-- After Security-Related Changes
-- Regular Security Reviews (Quarterly)
-- Post-Incident Analysis
+{scenarios}
 
-Usage:
-  /security-audit [options]
+Usage: {syntax}
 
-Options:
-  --scope <area>     Focus on: auth, api, database, frontend, all
-  --depth <level>    Analysis depth: quick, standard, thorough
-  --report           Generate detailed security-audit-report.md
-  --fix-suggestions  Include automated fix suggestions
+Options: {options}
 
-Examples:
-  /security-audit
-  /security-audit --scope auth --depth thorough --report
-  /security-audit --scope api --fix-suggestions
+Examples: {examples}
 
-Audit Areas: 8
-- Authentication & Authorization
-- Input Validation & Sanitization
-- Data Protection & Privacy
-- API Security
-- Infrastructure & Configuration
-- Code Security Patterns
-- Frontend Security
-- Penetration Testing Simulation
+Related Commands: {related}
 
-Output:
-- Terminal report with categorized issues
-- Optional: .claude/reports/security-audit-report.md
-
-Related Commands:
-- /quality-check
-- /performance-audit
-- /accessibility-audit
-
-Documentation:
-- .claude/commands/audit/security-audit.md
-- .claude/docs/standards/security-standards.md
-```text
+Documentation: {file_path}
+```
 
 ### Agent Details
 
 ```text
-Agent: tech-lead
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Agent: {agent-name}
 
-Category: Technical Leadership
-Model: Claude 3.5 Sonnet
+Category: {category}
+Model: {model}
 
-Description:
-Provides architectural oversight, coordinates technical decisions,
-ensures code quality standards, performs security audits, validates
-performance, manages CI/CD, and oversees deployments.
+Description: {description}
 
-Primary Responsibilities:
-1. Architectural Oversight & Validation
-2. Code Quality Leadership & Review
-3. Security & Vulnerability Management
-4. Performance Optimization & Monitoring
-5. Deployment & Infrastructure Management
-6. CI/CD Pipeline Management
-7. Technical Coordination
-8. Risk Management
+Responsibilities: {responsibilities}
 
-Tools: Read, Write, Edit, Glob, Grep, Bash, Task
+Tools: {tools}
 
-Phases: All Phases
+Phases: {phases}
 
-Invocation Examples:
-"Use the tech-lead to review the overall architecture"
-"Invoke tech-lead for final code quality review"
-"Call tech-lead to validate deployment strategy"
+Invocation Examples: {examples}
 
-Works With:
-- All agents (provides oversight)
-- product-technical (architecture decisions)
-- qa-engineer (quality validation)
+Works With: {agents}
 
-Documentation:
-- .claude/agents/engineering/tech-lead.md
-- CLAUDE.md (Team Organization section)
-```text
+Documentation: {file_path}
+```
 
 ## Search Functionality
 
-### Search Across All Documentation
-
 ```bash
 /help --search "testing"
-```text
+```
 
-**Output:**
+**Output**:
 
 ```text
 🔍 Search Results for "testing"
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-📜 Commands (1)
-  /run-tests - Execute test suite with coverage
+📜 Commands ({count})
+{matching_commands}
 
-🤖 Agents (1)
-  qa-engineer - Testing and acceptance validation
+🤖 Agents ({count})
+{matching_agents}
 
-🎯 Skills (1)
-  web-app-testing - E2E testing workflow
+🎯 Skills ({count})
+{matching_skills}
 
-📚 Documentation (3)
-  .claude/docs/standards/testing-standards.md
-  .claude/docs/workflows/testing-workflow.md
-  CLAUDE.md (Testing Strategy section)
-
-Use /help <type> <name> for details
-```text
+📚 Documentation ({count})
+{matching_docs}
+```
 
 ## Quick Start
 
-### Interactive Quick Start
-
-```bash
-/help quick-start
 ```text
+🚀 Quick Start Guide
 
-**Output:**
+Step 1: Understand Structure
+{overview}
 
-```text
-🚀 Quick Start Guide (15 minutes)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Step 2: Basic Commands
+{essential_commands}
 
-Welcome! This guide gets you productive in 15 minutes.
-
-Step 1: Understand the Structure (5 min)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-This is a TurboRepo monorepo with:
-- apps/ - 3 applications (web, admin, api)
-- packages/ - 10 shared packages
-- .claude/ - Workflow system (agents, commands, skills)
-
-Key Files:
-- CLAUDE.md - Main project guide
-- .claude/agents/README.md - Agent system
-- .claude/commands/README.md - Available commands
-- .claude/docs/quick-start.md - Full quick start
-
-Step 2: Basic Commands (5 min)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Essential commands:
-  /help              - This help system
-  /help commands     - List all commands
-  /code-check        - Lint + typecheck
-  /run-tests         - Run tests
-  /quality-check     - Full quality validation
-
-Try now:
-  /help commands
-
-Step 3: Understand Workflow (5 min)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-4 Phases:
-1. Planning     - Create PDR and tech analysis
-2. Implementation - Build with TDD
-3. Validation   - Quality checks
-4. Finalization - Documentation and commits
-
-Start a feature:
-  /start-feature-plan
-
-View workflow details:
-  /help workflow
+Step 3: Understand Workflow
+{workflow_overview}
 
 Next Steps:
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-✓ Read CLAUDE.md for comprehensive overview
-✓ Explore .claude/docs/ for detailed guides
-✓ Review existing features in .claude/sessions/
-✓ Try creating a simple feature
-
-Ready to start? Use /start-feature-plan
-```text
+{recommended_actions}
+```
 
 ## Architecture Overview
 
-```bash
-/help architecture
-```text
-
-**Output:**
-
 ```text
 🏗️ Project Architecture
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Monorepo Structure:
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-project/
-├── apps/
-│   ├── api/          # Hono backend API
-│   ├── web/          # Astro + React public site
-│   └── admin/        # TanStack Start admin
-├── packages/
-│   ├── db/           # Drizzle ORM + models
-│   ├── service-core/ # Business logic
-│   ├── schemas/      # Zod validation
-│   └── [7 more...]
-└── .claude/
-    ├── agents/       # AI specialists
-    ├── commands/     # Slash commands
-    ├── skills/       # Reusable workflows
-    └── docs/         # Documentation
+{directory_structure}
 
 Tech Stack:
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Frontend:
-- Astro (web) + TanStack Start (admin)
-- React 19
-- Tailwind CSS + Shadcn UI
-- TanStack Query + Form
-
-Backend:
-- Hono (Node.js)
-- Drizzle ORM
-- PostgreSQL (Neon)
-
-DevOps:
-- PNPM + TurboRepo
-- Vitest
-- GitHub Actions
-- Vercel
+{technology_overview}
 
 Architecture Patterns:
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+{patterns}
 
-Layers: Database → Service → API → Frontend
-Models: Extend BaseModel<T>
-Services: Extend BaseCrudService
-Routes: Use factory patterns
-Validation: Zod schemas (types via z.infer)
-
-Documentation:
-- .claude/docs/standards/architecture-patterns.md
-- .claude/docs/standards/code-standards.md
-```text
+Documentation: {paths}
+```
 
 ## Glossary
 
-```bash
-/help glossary
-```text
-
-**Output:**
-
 ```text
 📖 Glossary
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Agent
-  Specialized AI persona with specific expertise and responsibilities.
-  Invoked during workflow to perform tasks.
-  Example: db-drizzle-engineer, tech-lead
+Agent: {definition}
+Command: {definition}
+Skill: {definition}
+[Additional terms...]
 
-Command
-  User-invoked action via slash notation (e.g., /help).
-  Triggers specific workflow or tooling.
-  Example: /quality-check, /security-audit
+[View full glossary]: {path}
+```
 
-Skill
-  Reusable workflow invoked by agents.
-  Codifies specialized procedures and best practices.
-  Example: qa-criteria-validator, web-app-testing
+## Error Handling
 
-PDR (Product Design Requirements)
-  Document containing user stories, mockups, acceptance criteria.
-  Created in Phase 1 by product-functional agent.
-  Location: .claude/sessions/planning/{feature}/PDR.md
-
-Tech Analysis
-  Technical architecture and implementation plan.
-  Created in Phase 1 by product-technical agent.
-  Location: .claude/sessions/planning/{feature}/tech-analysis.md
-
-TODOs
-  Atomic task breakdown with dependencies and estimates.
-  Created in Phase 1, updated during Phase 2.
-  Location: .claude/sessions/planning/{feature}/TODOs.md
-
-TDD (Test-Driven Development)
-  RED → GREEN → REFACTOR cycle.
-  Minimum 90% coverage required.
-  Write tests first, then implementation.
-
-RO-RO Pattern
-  Receive Object / Return Object.
-  All function parameters and returns are objects.
-  Improves extensibility and readability.
-
-[View full glossary]
-  .claude/docs/glossary.md
-```text
-
-## Error Messages
-
-When help topic not found:
+### Topic Not Found
 
 ```text
 ❌ Help Topic Not Found
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Topic "xyz" not found.
+Topic "{topic}" not found.
 
-Available topics:
-- commands
-- agents
-- skills
-- workflow
-- quick-start
-- architecture
-- glossary
+Available topics: {list}
 
 Try:
-  /help                  - Main help menu
-  /help --search xyz     - Search all documentation
-```text
+  /help - Main menu
+  /help --search {topic}
+```
 
-## Integration with Workflow
+## Integration
 
-The `/help` command is available at all times and integrates with:
+Available at all times for:
 
-- **Onboarding**: First command new developers should use
-- **Discovery**: Finding the right command/agent for a task
-- **Troubleshooting**: Understanding errors and issues
-- **Learning**: Understanding workflow and patterns
+- Onboarding
+- Discovery
+- Troubleshooting
+- Learning
 
 ## Best Practices
 
-1. **Start with /help quick-start**: Get oriented quickly
-2. **Use search**: /help --search is powerful
-3. **Explore categories**: Browse commands and agents by category
-4. **Read details**: Use /help {type} {name} for comprehensive info
-5. **Reference docs**: Help points to detailed documentation
+1. Start with quick-start
+2. Use search feature
+3. Explore by category
+4. Read detailed help
+5. Reference documentation
 
 ## Related Commands
 
@@ -668,19 +310,9 @@ The `/help` command is available at all times and integrates with:
 
 ## Notes
 
-- **Context-Aware**: Help adapts to user experience level
-- **Search**: Full-text search across all documentation
-- **Examples**: Every help topic includes examples
-- **Links**: Direct links to relevant documentation files
-- **Interactive**: Guided navigation through help topics
-- **Up-to-Date**: Auto-generated from actual agent/command/skill files
-
-This comprehensive help system ensures developers can quickly find the information they need, understand the workflow, and be productive from day one.
-
----
-
-## Changelog
-
-| Version | Date | Changes | Author | Related |
-|---------|------|---------|--------|---------|
-| 1.0.0 | 2025-10-31 | Initial version | @tech-lead | P-004 |
+- Context-aware output
+- Full-text search capability
+- Examples included
+- Direct documentation links
+- Interactive navigation
+- Auto-generated from files

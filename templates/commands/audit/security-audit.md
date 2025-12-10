@@ -1,23 +1,30 @@
 ---
 name: security-audit
+description: Comprehensive security audit and vulnerability assessment
 type: audit
 category: quality
-description: Comprehensive security audit combining vulnerability assessment, penetration testing, and security best practices validation
+config_required:
+  - SECURITY_SCAN_COMMAND: "Command to run security scans (e.g., pnpm audit)"
+  - AUTH_PATTERN: "Authentication pattern used (e.g., JWT, OAuth, Clerk)"
+  - DATABASE_ORM: "ORM/Database library (e.g., Drizzle, Prisma)"
+  - VALIDATION_LIBRARY: "Input validation library (e.g., Zod)"
 ---
 
 # Security Audit Command
 
 ## Purpose
 
-Performs a comprehensive security audit of the codebase, combining vulnerability assessment, penetration testing simulation, and security best practices validation. This command replaces the deprecated `/review-security` and `/pen-test` commands with a unified, thorough security analysis.
+Performs comprehensive security audit validating authentication, authorization, input validation, data protection, and security best practices.
 
-## When to Use
+## ⚙️ Configuration
 
-- **Before Production Deployment**: Validate security before going live
-- **After Security-Related Changes**: Audit authentication, authorization, or data handling modifications
-- **Regular Security Reviews**: Quarterly or after significant feature additions
-- **Post-Incident Analysis**: After security incidents or vulnerability reports
-- **Compliance Requirements**: When security documentation is needed
+| Setting | Description | Example |
+|---------|-------------|---------|
+| SECURITY_SCAN_COMMAND | Dependency security scan | `pnpm audit` |
+| AUTH_PATTERN | Authentication method | `JWT`, `OAuth`, `Clerk` |
+| DATABASE_ORM | Database ORM used | `Drizzle`, `Prisma` |
+| VALIDATION_LIBRARY | Input validation | `Zod`, `Joi` |
+| REPORT_OUTPUT | Report file path | `.claude/reports/security-audit-report.md` |
 
 ## Usage
 
@@ -27,236 +34,117 @@ Performs a comprehensive security audit of the codebase, combining vulnerability
 
 ### Options
 
-- `--scope <area>`: Focus audit on specific area (auth, api, database, frontend, all)
+- `--scope <area>`: Focus on specific area (auth, api, database, frontend, all)
 - `--depth <level>`: Analysis depth (quick, standard, thorough)
-- `--report`: Generate detailed security-audit-report.md
+- `--report`: Generate detailed report
 - `--fix-suggestions`: Include automated fix suggestions
 
-### Examples
+## Audit Checklist
 
-```bash
-/security-audit                           # Standard full audit
-/security-audit --scope auth --depth thorough --report
-/security-audit --scope api --fix-suggestions
-```
+### 1. Authentication & Authorization
 
-## Audit Process
-
-### 1. Authentication & Authorization Review
-
-**Checks:**
-
-- [ ] Authentication mechanism properly implemented (Clerk integration)
-- [ ] JWT token validation and expiry handling
-- [ ] Session management security
-- [ ] Password policies (if applicable)
-- [ ] Multi-factor authentication (if applicable)
-- [ ] OAuth flow security
-- [ ] Role-Based Access Control (RBAC) implementation
-- [ ] Permission checks on all protected routes
-- [ ] Authorization bypass vulnerabilities
-- [ ] Privilege escalation risks
-
-**Tools:**
-
-- Static code analysis for auth patterns
-- Route authorization verification
-- Middleware inspection
+| Check | Validation |
+|-------|------------|
+| Authentication implementation | {{AUTH_PATTERN}} properly configured |
+| Token validation | Expiry and signature verification |
+| Session management | Secure session handling |
+| Authorization checks | RBAC/permissions on protected routes |
+| Password policies | Strong password requirements |
 
 ### 2. Input Validation & Sanitization
 
-**Checks:**
+| Check | Validation |
+|-------|------------|
+| Input validation | All inputs validated with {{VALIDATION_LIBRARY}} |
+| SQL injection prevention | {{DATABASE_ORM}} parameterized queries |
+| XSS prevention | Output encoding/escaping |
+| CSRF protection | Token validation on state changes |
+| Path traversal | File access validation |
 
-- [ ] All user inputs validated with Zod schemas
-- [ ] SQL injection prevention (Drizzle ORM usage verified)
-- [ ] XSS prevention in frontend components
-- [ ] CSRF protection on state-changing operations
-- [ ] Command injection risks in system calls
-- [ ] Path traversal vulnerabilities
-- [ ] File upload validation and restrictions
-- [ ] API request validation
-- [ ] Query parameter sanitization
-- [ ] Header injection prevention
+### 3. Data Protection
 
-**Tools:**
-
-- Zod schema coverage analysis
-- Input validation pattern verification
-- Grep for dangerous patterns (eval, innerHTML, etc.)
-
-### 3. Data Protection & Privacy
-
-**Checks:**
-
-- [ ] Sensitive data encryption at rest
-- [ ] Sensitive data encryption in transit (HTTPS)
-- [ ] Database connection security
-- [ ] Environment variable protection
-- [ ] API key and secret management
-- [ ] Personal data handling (GDPR compliance)
-- [ ] Data retention policies
-- [ ] Secure deletion of sensitive data
-- [ ] Logging of sensitive information (prevention)
-- [ ] Data exposure through error messages
-
-**Tools:**
-
-- Scan for hardcoded secrets
-- Environment variable audit
-- Database security configuration review
+| Check | Validation |
+|-------|------------|
+| Encryption at rest | Sensitive data encrypted |
+| Encryption in transit | HTTPS enforced |
+| Secret management | No hardcoded secrets |
+| Environment variables | Proper configuration |
+| Logging | No sensitive data logged |
 
 ### 4. API Security
 
-**Checks:**
-
-- [ ] Rate limiting on all public endpoints
-- [ ] API authentication required where needed
-- [ ] Proper error handling (no information leakage)
-- [ ] CORS configuration security
-- [ ] Request size limits
-- [ ] API versioning strategy
-- [ ] Webhook signature verification
-- [ ] API response information disclosure
-- [ ] GraphQL query depth limits (if applicable)
-- [ ] Mass assignment prevention
-
-**Tools:**
-
-- API endpoint enumeration
-- Rate limit verification
-- CORS configuration review
+| Check | Validation |
+|-------|------------|
+| Rate limiting | Implemented on public endpoints |
+| Authentication | Required where needed |
+| Error handling | No information leakage |
+| CORS configuration | Properly configured |
+| Request validation | Size limits enforced |
 
 ### 5. Infrastructure & Configuration
 
-**Checks:**
-
-- [ ] Security headers configured (CSP, X-Frame-Options, etc.)
-- [ ] HTTP Strict Transport Security (HSTS)
-- [ ] Content Security Policy (CSP)
-- [ ] Dependency vulnerabilities (pnpm audit)
-- [ ] Outdated package versions
-- [ ] Debug mode disabled in production
-- [ ] Error stack traces disabled in production
-- [ ] Source maps disabled in production
-- [ ] Admin interfaces protected
-- [ ] Default credentials changed
-
-**Tools:**
-
-- pnpm audit
-- Security header verification
-- Configuration file review
+| Check | Validation |
+|-------|------------|
+| Security headers | CSP, HSTS, X-Frame-Options |
+| Dependency vulnerabilities | {{SECURITY_SCAN_COMMAND}} passing |
+| Debug mode | Disabled in production |
+| Error stack traces | Hidden in production |
+| Admin interfaces | Protected |
 
 ### 6. Code Security Patterns
 
-**Checks:**
-
-- [ ] No use of dangerous functions (eval, Function constructor)
-- [ ] Secure randomness generation
-- [ ] Proper error handling without information leakage
-- [ ] Secure file operations
-- [ ] Safe deserialization
-- [ ] Regex DoS prevention
-- [ ] Timing attack prevention
-- [ ] Race condition handling
-- [ ] Secure cookie configuration
-- [ ] No commented-out credentials
-
-**Tools:**
-
-- Pattern matching for dangerous code
-- Code complexity analysis
-- Security linting rules
-
-### 7. Frontend Security
-
-**Checks:**
-
-- [ ] XSS prevention in React components
-- [ ] Safe HTML rendering
-- [ ] Client-side validation (defense in depth)
-- [ ] Sensitive data not exposed in client
-- [ ] localStorage/sessionStorage security
-- [ ] postMessage security
-- [ ] iframe security
-- [ ] Third-party script security
-- [ ] CDN integrity verification (SRI)
-- [ ] Clickjacking prevention
-
-**Tools:**
-
-- React security pattern analysis
-- DOM manipulation review
-- Third-party dependency audit
-
-### 8. Penetration Testing Simulation
-
-**Checks:**
-
-- [ ] SQL injection attempts (simulated)
-- [ ] XSS payload tests (simulated)
-- [ ] CSRF token bypass attempts
-- [ ] Authentication bypass tests
-- [ ] Authorization escalation tests
-- [ ] Path traversal tests
-- [ ] File inclusion tests
-- [ ] Business logic vulnerabilities
-- [ ] Rate limit bypass attempts
-- [ ] Session fixation tests
-
-**Tools:**
-
-- Automated security testing
-- Manual code review
-- Attack vector simulation
+| Check | Validation |
+|-------|------------|
+| Dangerous functions | No eval, Function constructor |
+| Secure randomness | Cryptographically secure RNG |
+| Error handling | No information disclosure |
+| File operations | Safe file handling |
+| Cookie security | HttpOnly, Secure, SameSite |
 
 ## Output Format
 
 ### Terminal Output
 
-```
+```text
 🔒 Security Audit Report
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 📋 Summary
-  Total Checks: 95
-  Passed: 82 (86%)
-  Failed: 8 (8%)
-  Warnings: 5 (5%)
+  Total Checks: {{TOTAL}}
+  Passed: {{PASSED}} ({{PERCENTAGE}}%)
+  Failed: {{FAILED}} ({{PERCENTAGE}}%)
+  Warnings: {{WARNINGS}} ({{PERCENTAGE}}%)
 
-🔴 Critical Issues (0)
-  None found
+🔴 Critical Issues ({{COUNT}})
+  {{#each CRITICAL_ISSUES}}
+  {{INDEX}}. {{TITLE}}
+     Location: {{FILE}}:{{LINE}}
+     Fix: {{FIX_SUGGESTION}}
+  {{/each}}
 
-🟠 High Priority Issues (3)
-  1. Missing rate limiting on /api/bookings endpoint
-     Location: apps/api/routes/bookings.ts:45
-     Fix: Add rate limiting middleware
+🟠 High Priority Issues ({{COUNT}})
+  {{#each HIGH_ISSUES}}
+  {{INDEX}}. {{TITLE}}
+     Location: {{FILE}}:{{LINE}}
+     Fix: {{FIX_SUGGESTION}}
+  {{/each}}
 
-  2. Potential SQL injection in search query
-     Location: packages/db/models/entity.model.ts:78
-     Fix: Use parameterized query
-
-  3. Sensitive data logged in error handler
-     Location: apps/api/middleware/error-handler.ts:23
-     Fix: Redact sensitive fields before logging
-
-🟡 Medium Priority Issues (5)
-  [List of medium issues...]
+🟡 Medium Priority Issues ({{COUNT}})
+  {{#each MEDIUM_ISSUES}}
+  {{INDEX}}. {{TITLE}}
+  {{/each}}
 
 🟢 Passed Checks
-  ✓ Authentication properly implemented
-  ✓ All inputs validated with Zod
-  ✓ SQL injection prevented by Drizzle ORM
-  ✓ HTTPS enforced
-  [...]
+  {{#each PASSED_CHECKS}}
+  ✓ {{CHECK_NAME}}
+  {{/each}}
 
 💡 Recommendations
-  1. Implement CSP headers
-  2. Add security monitoring with Sentry
-  3. Schedule regular dependency audits
-  4. Consider implementing WAF
+  {{#each RECOMMENDATIONS}}
+  {{INDEX}}. {{RECOMMENDATION}}
+  {{/each}}
 
-📄 Detailed report: .claude/reports/security-audit-report.md
+📄 Detailed report: {{REPORT_OUTPUT}}
 ```
 
 ### Report File Structure
@@ -264,139 +152,80 @@ Performs a comprehensive security audit of the codebase, combining vulnerability
 ```markdown
 # Security Audit Report
 
-**Date**: 2024-01-15T10:30:00Z
-**Scope**: Full Application
-**Depth**: Standard
-**Auditor**: Claude Code Security Audit
+**Date**: {{AUDIT_DATE}}
+**Scope**: {{SCOPE}}
+**Depth**: {{DEPTH}}
 
 ## Executive Summary
 
-[High-level overview of findings]
+{{SUMMARY}}
 
 ## Critical Issues
 
-### CRIT-001: [Issue Title]
+### CRIT-{{ID}}: {{TITLE}}
 - **Severity**: Critical
-- **Location**: file.ts:line
-- **Description**: [Detailed description]
-- **Impact**: [Security impact]
-- **Fix**: [Step-by-step remediation]
-- **References**: [OWASP, CWE links]
+- **Location**: {{FILE}}:{{LINE}}
+- **Description**: {{DESCRIPTION}}
+- **Impact**: {{IMPACT}}
+- **Fix**: {{FIX_STEPS}}
+- **References**: {{LINKS}}
 
 ## High Priority Issues
 
-[Similar structure]
-
-## Medium Priority Issues
-
-[Similar structure]
-
-## Low Priority Issues
-
-[Similar structure]
+{{#each HIGH_ISSUES}}
+### HIGH-{{ID}}: {{TITLE}}
+{{DETAILS}}
+{{/each}}
 
 ## Passed Checks
 
-[List of all passed security checks]
+{{PASSED_CHECKS_LIST}}
 
 ## Recommendations
 
-[Security improvement suggestions]
-
-## Next Steps
-
-1. Address critical issues immediately
-2. Plan fixes for high priority issues
-3. Review and implement recommendations
-
-## Appendix
-
-### Testing Methodology
-[Detailed testing approach]
-
-### Tools Used
-[List of tools and versions]
-
-### References
-- OWASP Top 10
-- CWE Top 25
-- SANS Top 25
+{{RECOMMENDATIONS_LIST}}
 ```
 
 ## Integration with Workflow
 
 ### Phase 3 - Validation
 
-This command should be run during Phase 3 (Validation) of the feature workflow:
-
-1. After implementation complete
-2. Before deployment
-3. As part of `/quality-check` comprehensive validation
+Run during validation phase:
+- After implementation complete
+- Before deployment
+- As part of `/quality-check`
 
 ### CI/CD Integration
 
-Can be integrated into GitHub Actions for automated security checks:
-
 ```yaml
 - name: Security Audit
-  run: claude /security-audit --report
+  run: {{CLI_TOOL}} /security-audit --report
 ```
-
-## Best Practices
-
-1. **Run Before Every Deployment**: Make security audits mandatory
-2. **Address Critical Issues Immediately**: Never deploy with critical vulnerabilities
-3. **Track Findings Over Time**: Monitor security improvement trends
-4. **Educate Team**: Share findings to improve security awareness
-5. **Regular Audits**: Schedule quarterly comprehensive audits
-6. **Update Regularly**: Keep security patterns current with threats
 
 ## Common Vulnerabilities Detected
 
-### Authentication Issues
-
+### Critical
 - Missing authentication checks
-- Weak token validation
-- Session management flaws
+- SQL injection vulnerabilities
+- XSS vulnerabilities
+- Hardcoded secrets
+- Insecure data exposure
 
-### Authorization Issues
+### High
+- Missing authorization checks
+- Insufficient input validation
+- Weak session management
+- Missing rate limiting
 
-- Missing permission checks
-- Privilege escalation risks
-- Insecure direct object references
-
-### Input Validation
-
-- Missing input validation
-- Inadequate sanitization
-- Type confusion vulnerabilities
-
-### Data Exposure
-
-- Sensitive data in logs
-- Information disclosure in errors
-- Unencrypted sensitive data
+### Medium
+- Missing security headers
+- Outdated dependencies
+- Information disclosure
+- Insecure cookie configuration
 
 ## Related Commands
 
-- `/quality-check` - Comprehensive quality validation (includes security)
-- `/performance-audit` - Performance-specific audits
-- `/accessibility-audit` - Accessibility compliance checks
-- `/code-check` - Code quality and standards
-
-## Notes
-
-This command consolidates functionality from:
-
-- Deprecated `/review-security` command
-- Deprecated `/pen-test` command
-
-It provides a more comprehensive, structured approach to security validation with automated reporting and fix suggestions.
-
----
-
-## Changelog
-
-| Version | Date | Changes | Author | Related |
-|---------|------|---------|--------|---------|
-| 1.0.0 | 2025-10-31 | Initial version | @tech-lead | P-004 |
+- `/quality-check` - Comprehensive validation (includes security)
+- `/performance-audit` - Performance audits
+- `/accessibility-audit` - Accessibility checks
+- `/code-check` - Code quality validation

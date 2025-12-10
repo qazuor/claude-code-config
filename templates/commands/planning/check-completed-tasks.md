@@ -1,308 +1,224 @@
+---
+name: check-completed-tasks
+description: Auto-detect completed tasks from commits and close issues
+type: planning
+category: planning
+config_required:
+  issue_tracker: "Issue tracking system name"
+  issue_tracker_token_env: "Auth token environment variable"
+  issue_tracker_owner_env: "Owner/org environment variable"
+  issue_tracker_repo_env: "Repository environment variable"
+  tracking_file: "Issue tracking data file"
+  task_code_pattern: "Pattern for task codes in commits (e.g., T-XXX-XXX)"
+---
+
 # Check Completed Tasks
 
-**Purpose**: Automatically detect completed tasks from recent git commits and close corresponding GitHub issues.
+Auto-detect completed tasks from git commits and close corresponding issues.
+
+## ⚙️ Configuration
+
+| Setting | Description | Example |
+|---------|-------------|---------|
+| `issue_tracker` | Issue tracking system | `{{ISSUE_TRACKER}}` |
+| `issue_tracker_token_env` | Auth token variable | `{{ISSUE_TRACKER_TOKEN}}` |
+| `issue_tracker_owner_env` | Owner variable | `{{ISSUE_TRACKER_OWNER}}` |
+| `issue_tracker_repo_env` | Repository variable | `{{ISSUE_TRACKER_REPO}}` |
+| `tracking_file` | Tracking data file | `{{TRACKING_FILE}}` |
+| `task_code_pattern` | Task code pattern | `{{TASK_CODE_PATTERN}}` |
+
+## Usage
+
+```bash
+/check-completed [commit_range]
+```
 
 ## When to Use
 
-- After committing code that completes a task
-- As part of the post-commit hook (automated)
-- To bulk-check completions from recent commits
+- After committing code that completes tasks
+- As part of post-commit hook (automated)
+- To bulk-check recent commits
+- Before status meetings
 - When reviewing project progress
-- Before project status meetings
 
 ## Process
 
-### Step 1: Determine Scan Range
+### Step 1: Determine Range
 
-Decide which commits to analyze:
+Scan options:
 
-- **Last commit**: Check only the most recent commit
-- **Last N commits**: Check recent N commits (e.g., last 10)
-- **Since date**: Check all commits since a specific date
-- **Commit range**: Check specific range (e.g., `HEAD~5..HEAD`)
+- **Last commit:** Most recent only
+- **Last N commits:** Recent N commits
+- **Since date:** All since specific date
+- **Commit range:** Specific range (e.g., HEAD~5..HEAD)
 
-Ask the user which range to use if not obvious from context.
+### Step 2: Get Configuration
 
-### Step 2: Get GitHub Configuration
+Required:
 
-You need the following environment variables:
+- `{{ISSUE_TRACKER_TOKEN}}`
+- `{{ISSUE_TRACKER_OWNER}}`
+- `{{ISSUE_TRACKER_REPO}}`
 
-- `GITHUB_TOKEN` - GitHub Personal Access Token
-- `GITHUB_OWNER` - Repository owner (default: 'your-org')
-- `GITHUB_REPO` - Repository name (default: 'main')
+### Step 3: Parse Commits
 
-Check if these are available. If not, ask the user to provide them.
+Match task codes in commit messages:
 
-### Step 3: Parse Commit Messages
+**Supported formats:**
 
-Scan commit messages for task codes matching patterns:
-
-```
-feat(api): implement user authentication [T-003-012]
-fix(db): resolve connection timeout issue T-005-003
-refactor: optimize query performance (T-002-007)
+```text
+feat(api): implement auth [T-003-012]
+fix(db): resolve timeout T-005-003
+refactor: optimize query (T-002-007)
 ```
 
-Supported formats:
+Patterns:
 
-- `[T-XXX-XXX]` - Bracketed task code
-- `T-XXX-XXX` - Bare task code
-- `(T-XXX-XXX)` - Parenthesized task code
+- `[T-XXX-XXX]` - Bracketed
+- `T-XXX-XXX` - Bare
+- `(T-XXX-XXX)` - Parenthesized
 
 ### Step 4: Execute Detection
 
-Use the `@repo/github-workflow` package:
-
-```typescript
-import { detectCompletedTasks } from '@repo/github-workflow/sync';
-
-const result = await detectCompletedTasks({
-  commitRange: 'HEAD~10..HEAD', // Or specific range
-  sessionPath: '.claude/sessions/planning/P-003-*', // Optional: specific session
-  githubConfig: {
-    token: process.env.GITHUB_TOKEN!,
-    owner: process.env.GITHUB_OWNER || 'your-org',
-    repo: process.env.GITHUB_REPO || 'main',
-  },
-  updateTodos: true, // Update TODOs.md with completion status
-  closeIssues: true, // Close corresponding GitHub issues
-});
-```
+- Parse commit messages
+- Identify completed tasks
+- Update TODOs.md status
+- Close corresponding issues
 
 ### Step 5: Report Results
 
-Present results in a clear format:
+```text
+✅ Completed tasks detected!
 
-```
-✅ Completed tasks detected successfully!
+Statistics:
+   • {n} tasks detected
+   • {n} tasks completed
+   • {n} issues closed
+   • {n} failed
 
-📊 Statistics:
-   • {result.statistics.detected} tasks detected in commits
-   • {result.statistics.completed} tasks marked as completed
-   • {result.statistics.closed} GitHub issues closed
-   • {result.statistics.failed} failures
+Completed Tasks:
+   • T-003-012: Task name
+     Commit: {hash} - {message}
+     Issue: #{n} (closed)
 
-✨ Completed Tasks:
-   • T-003-012: Claude Code commands
-     Commit: feat(commands): add planning sync command (a1b2c3d)
-     Issue: #151 (closed)
+Updated Files:
+   • TODOs.md
+   • {{TRACKING_FILE}}
 
-   • T-003-018: Label management system
-     Commit: feat(sync): implement auto-labeling (d4e5f6g)
-     Issue: #152 (closed)
-
-📝 Updated Files:
-   • .claude/sessions/planning/P-003-*/TODOs.md
-   • .github-workflow/tracking.json
-
-💡 Next Steps:
-   1. Review closed issues in GitHub
-   2. Commit updated TODOs.md with completion markers
-   3. Continue with next pending tasks
+Next Steps:
+   1. Review closed issues
+   2. Commit updated TODOs.md
+   3. Continue with next tasks
 ```
 
 ### Step 6: Update TODOs.md
 
-The detection automatically updates task status in `TODOs.md`:
-
 **Before:**
 
 ```markdown
-### T-003-012: Claude Code commands
+### T-003-012: Task name
 
 **Status:** [ ] Pending
-**GitHub Issue:** [#151](https://github.com/your-org/your-repo/issues/151)
+**Issue:** [#{n}]({url})
 ```
 
 **After:**
 
 ```markdown
-### T-003-012: Claude Code commands
+### T-003-012: Task name
 
 **Status:** [x] Completed
-**Completed:** 2025-11-01
-**GitHub Issue:** [#151](https://github.com/your-org/your-repo/issues/151) ✓ Closed
+**Completed:** {date}
+**Issue:** [#{n}]({url}) ✓ Closed
 ```
 
-### Step 7: Close GitHub Issues
+### Step 7: Close Issues
 
-Corresponding GitHub issues are automatically closed with a completion comment:
+Issues automatically closed with completion comment:
 
-```
-🎉 Task completed!
+```text
+Task completed!
 
-This task was completed in commit: a1b2c3d
-Commit message: feat(commands): add planning sync command
+Commit: {hash}
+Message: {message}
 
-Automatically detected and closed by GitHub Workflow Automation.
+Automatically detected and closed.
 ```
 
 ## Error Handling
 
-### Missing Environment Variables
-
-```
-❌ GitHub configuration missing.
-
-Required environment variables:
-- GITHUB_TOKEN: GitHub Personal Access Token
-- GITHUB_OWNER: Repository owner
-- GITHUB_REPO: Repository name
-
-Set these in your .env file.
-```
-
-### No Tasks Detected
-
-```
-ℹ️  No completed tasks found in commit range: {commitRange}
-
-This could mean:
-1. No commits contain task codes
-2. All detected tasks were already completed
-3. Commit range is empty
-
-Tip: Include task codes in commit messages:
-  git commit -m "feat: implement feature [T-XXX-XXX]"
-```
-
-### API Errors
-
-```
-❌ Failed to close GitHub issues: {error.message}
-
-Tasks were marked as completed in TODOs.md, but GitHub sync failed.
-Re-run this command to retry closing issues.
-```
-
-### File Not Found
-
-```
-❌ Planning session not found for task {taskCode}
-
-The task code was found in commits, but the corresponding
-planning session could not be located.
-
-Expected path: .claude/sessions/planning/P-XXX-*/TODOs.md
-```
+| Error | Solution |
+|-------|----------|
+| Missing config | Set environment variables |
+| No tasks detected | Include task codes in commits |
+| API errors | Check token and permissions |
+| File not found | Verify planning session exists |
 
 ## Advanced Options
 
 ### Scan Specific Session
 
 ```typescript
-const result = await detectCompletedTasks({
-  commitRange: 'HEAD~10..HEAD',
-  sessionPath: '.claude/sessions/planning/P-003-planning-automation', // Specific session only
-  githubConfig: { ... },
-});
+{ sessionPath: '{{PLANNING_PATH}}/{session}' }
 ```
 
-### Dry Run Mode
+### Dry Run
 
 ```typescript
-const result = await detectCompletedTasks({
-  commitRange: 'HEAD~10..HEAD',
-  githubConfig: { ... },
-  dryRun: true, // Preview changes without updating files/issues
-});
+{ dryRun: true }
 ```
 
 ### Skip TODOs Update
 
 ```typescript
-const result = await detectCompletedTasks({
-  commitRange: 'HEAD~10..HEAD',
-  githubConfig: { ... },
-  updateTodos: false, // Only close GitHub issues, don't modify TODOs.md
-});
+{ updateTodos: false }
 ```
 
 ### Skip Issue Closure
 
 ```typescript
-const result = await detectCompletedTasks({
-  commitRange: 'HEAD~10..HEAD',
-  githubConfig: { ... },
-  closeIssues: false, // Only update TODOs.md, don't close GitHub issues
-});
+{ closeIssues: false }
 ```
 
-## Commit Message Best Practices
+## Commit Best Practices
 
 ### Include Task Code
 
-Always include the task code in commits that complete tasks:
-
 ```bash
-git commit -m "feat(api): implement authentication [T-003-012]"
+git commit -m "feat(api): implement auth [T-003-012]"
 ```
 
-### Conventional Commits Format
-
-Use conventional commits with task codes:
+### Conventional Commits
 
 ```bash
-git commit -m "feat(api): add user endpoints [T-005-001]"
-git commit -m "fix(db): resolve connection issue [T-005-002]"
-git commit -m "refactor(core): optimize performance [T-005-003]"
+git commit -m "feat(api): add endpoints [T-005-001]"
+git commit -m "fix(db): resolve issue [T-005-002]"
 ```
 
 ### Multiple Tasks
 
-If a commit completes multiple tasks:
-
 ```bash
-git commit -m "feat(api): implement complete auth flow [T-003-012][T-003-013]"
+git commit -m "feat(api): complete flow [T-003-012][T-003-013]"
 ```
 
-### Partial Completion
-
-For partial progress (don't auto-close):
+### Partial Progress
 
 ```bash
-git commit -m "wip(api): partial auth implementation (T-003-012)"
+git commit -m "wip(api): partial auth (T-003-012)"
 # Using 'wip' or '(code)' won't trigger auto-completion
 ```
 
 ## Important Notes
 
-- **Automatic detection**: Runs automatically via post-commit hook if configured
-- **Idempotent**: Safe to run multiple times - already completed tasks are skipped
-- **Validation**: Verifies required files exist before marking task complete
-- **Tracking**: Updates `.github-workflow/tracking.json` with completion data
-- **Notifications**: Team members get GitHub notifications when issues close
-- **Reversible**: Can manually reopen issues if needed
-- **Commit linking**: GitHub issues link back to completion commits
+- **Automatic:** Runs via post-commit hook if configured
+- **Idempotent:** Safe to run multiple times
+- **Validation:** Verifies files exist before marking complete
+- **Tracking:** Updates {{TRACKING_FILE}} with completion data
+- **Reversible:** Can manually reopen issues
+- **Linking:** Issues link to completion commits
 
-## Integration with Other Commands
+## Related Commands
 
-- **Post-commit hook**: Automatically runs after each commit
-- **After sync**: Use after `/sync-planning` to track progress
-- **Before meetings**: Run before standup to update team on progress
-- **With TODOs**: Complements `/sync-todos` for complete workflow
-
-## Example Workflow
-
-```
-User: "I just committed code that completes T-003-012 and T-003-013. Can you check and close the issues?"
-Assistant: "I'll check your recent commits for completed tasks."
-
-[Executes detection command]
-
-✅ Completed tasks detected successfully\!
-
-📊 Statistics:
-   • 2 tasks detected in commits
-   • 2 tasks marked as completed
-   • 2 GitHub issues closed
-
-```
-
----
-
-## Changelog
-
-| Version | Date | Changes | Author | Related |
-|---------|------|---------|--------|---------|
-| 1.0.0 | 2025-11-01 | Initial version for GitHub integration | @tech-lead | P-003 |
+- `/sync-planning` - Sync planning to tracker
+- `/sync-todos` - Sync code TODOs
+- `/cleanup-issues` - Clean stale issues

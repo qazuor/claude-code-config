@@ -9,7 +9,7 @@
       "tags": ["core", "quality", "ci"],
       "longDescription": "Runs a comprehensive quality check pipeline including linting, type checking, tests, and coverage verification. Essential command before commits and PRs.",
       "whatItDoes": [
-        "Runs ESLint/Biome linting",
+        "Runs linting (ESLint/Biome)",
         "Performs TypeScript type checking",
         "Executes test suites with coverage",
         "Validates coverage thresholds",
@@ -57,6 +57,60 @@
       "relatedModules": ["quality-check", "tdd-methodology"]
     },
     {
+      "id": "security-audit",
+      "name": "Security Audit",
+      "description": "Comprehensive security audit for vulnerabilities",
+      "file": "audit/security-audit.md",
+      "tags": ["audit", "security", "owasp"],
+      "longDescription": "Deep security review covering OWASP Top 10, dependency vulnerabilities, authentication, authorization, and data handling.",
+      "whatItDoes": [
+        "Audits for OWASP Top 10 vulnerabilities",
+        "Scans dependencies for CVEs",
+        "Reviews authentication flows",
+        "Checks data handling practices",
+        "Generates security report"
+      ],
+      "whenToUse": "Before production deployment or during security reviews.",
+      "skillLevel": "advanced",
+      "relatedModules": ["security-testing", "security-audit"]
+    },
+    {
+      "id": "performance-audit",
+      "name": "Performance Audit",
+      "description": "Performance analysis and optimization recommendations",
+      "file": "audit/performance-audit.md",
+      "tags": ["audit", "performance", "optimization"],
+      "longDescription": "Performance audit covering Core Web Vitals, bundle analysis, database queries, and rendering performance.",
+      "whatItDoes": [
+        "Analyzes Core Web Vitals",
+        "Reviews bundle size",
+        "Identifies N+1 queries",
+        "Checks rendering performance",
+        "Provides optimization recommendations"
+      ],
+      "whenToUse": "Before major launches or when investigating performance issues.",
+      "skillLevel": "intermediate",
+      "relatedModules": ["performance-testing", "performance-audit"]
+    },
+    {
+      "id": "accessibility-audit",
+      "name": "Accessibility Audit",
+      "description": "WCAG compliance audit for accessibility",
+      "file": "audit/accessibility-audit.md",
+      "tags": ["audit", "accessibility", "wcag"],
+      "longDescription": "Accessibility audit following WCAG 2.1 Level AA guidelines. Covers keyboard navigation, screen readers, and color contrast.",
+      "whatItDoes": [
+        "Audits WCAG 2.1 compliance",
+        "Tests keyboard navigation",
+        "Validates screen reader compatibility",
+        "Checks color contrast",
+        "Reviews ARIA usage"
+      ],
+      "whenToUse": "Before releases and after UI changes.",
+      "skillLevel": "intermediate",
+      "relatedModules": ["accessibility-audit", "ux-ui-designer"]
+    },
+    {
       "id": "start-feature-plan",
       "name": "Start Feature Plan",
       "description": "Initialize Level 3 feature planning workflow",
@@ -101,7 +155,7 @@
       "longDescription": "Synchronizes planning documents (PDR, tech analysis, TODOs) to issue trackers like GitHub Issues or Linear. Creates linked issues from task breakdown.",
       "whatItDoes": [
         "Parses TODOs.md for tasks",
-        "Creates GitHub/Linear issues",
+        "Creates issues in tracker",
         "Links issues to planning docs",
         "Updates task status",
         "Syncs bidirectionally"
@@ -109,6 +163,96 @@
       "whenToUse": "After planning approval to create trackable issues from the task breakdown.",
       "skillLevel": "intermediate",
       "relatedModules": ["start-feature-plan"]
+    },
+    {
+      "id": "sync-planning-github",
+      "name": "Sync Planning to GitHub",
+      "description": "Sync planning to GitHub Issues",
+      "file": "planning/sync-planning-github.md",
+      "tags": ["planning", "github", "issues"],
+      "longDescription": "Syncs planning documents specifically to GitHub Issues. Creates issues with proper labels, milestones, and project board integration.",
+      "whatItDoes": [
+        "Creates GitHub Issues from tasks",
+        "Applies labels and milestones",
+        "Links to project boards",
+        "Updates issue status",
+        "Handles issue comments"
+      ],
+      "whenToUse": "When using GitHub Issues for task tracking.",
+      "skillLevel": "intermediate",
+      "relatedModules": ["sync-planning"]
+    },
+    {
+      "id": "sync-todos-github",
+      "name": "Sync TODOs to GitHub",
+      "description": "Sync TODO comments to GitHub Issues",
+      "file": "planning/sync-todos-github.md",
+      "tags": ["planning", "github", "todos"],
+      "longDescription": "Scans codebase for TODO comments and creates/updates GitHub Issues. Tracks technical debt and pending work items.",
+      "whatItDoes": [
+        "Scans code for TODO comments",
+        "Creates issues for new TODOs",
+        "Updates existing issues",
+        "Links issues to code locations",
+        "Reports on technical debt"
+      ],
+      "whenToUse": "To track and manage TODO comments in the codebase.",
+      "skillLevel": "beginner",
+      "relatedModules": ["sync-planning-github"]
+    },
+    {
+      "id": "check-completed-tasks",
+      "name": "Check Completed Tasks",
+      "description": "Auto-detect and mark completed tasks",
+      "file": "planning/check-completed-tasks.md",
+      "tags": ["planning", "automation", "tracking"],
+      "longDescription": "Automatically detects completed tasks by analyzing code changes and test results. Updates task status in tracking systems.",
+      "whatItDoes": [
+        "Analyzes recent commits",
+        "Detects completed tasks",
+        "Updates task status",
+        "Reports completion status",
+        "Suggests next tasks"
+      ],
+      "whenToUse": "Periodically to keep task tracking in sync with actual progress.",
+      "skillLevel": "beginner",
+      "relatedModules": ["sync-planning"]
+    },
+    {
+      "id": "planning-cleanup",
+      "name": "Planning Cleanup",
+      "description": "Clean up planning artifacts after completion",
+      "file": "planning/planning-cleanup.md",
+      "tags": ["planning", "cleanup", "maintenance"],
+      "longDescription": "Cleans up planning artifacts after a feature is complete. Archives planning docs, closes issues, and updates project state.",
+      "whatItDoes": [
+        "Archives planning documents",
+        "Closes related issues",
+        "Updates project board",
+        "Generates completion summary",
+        "Cleans up temporary files"
+      ],
+      "whenToUse": "After a feature is fully deployed and verified.",
+      "skillLevel": "beginner",
+      "relatedModules": ["sync-planning"]
+    },
+    {
+      "id": "cleanup-issues",
+      "name": "Cleanup Issues",
+      "description": "Clean up stale and outdated issues",
+      "file": "planning/cleanup-issues.md",
+      "tags": ["planning", "cleanup", "issues"],
+      "longDescription": "Identifies and cleans up stale issues. Closes abandoned issues, labels inactive ones, and generates cleanup reports.",
+      "whatItDoes": [
+        "Identifies stale issues",
+        "Closes abandoned issues",
+        "Labels inactive issues",
+        "Generates cleanup report",
+        "Notifies stakeholders"
+      ],
+      "whenToUse": "Periodically for issue hygiene and project maintenance.",
+      "skillLevel": "beginner",
+      "relatedModules": ["sync-planning-github"]
     },
     {
       "id": "add-new-entity",
@@ -144,7 +288,7 @@
       ],
       "whenToUse": "After implementing features or making changes that affect documentation.",
       "skillLevel": "beginner",
-      "relatedModules": ["tech-writer", "documentation-writer"]
+      "relatedModules": ["tech-writer", "markdown-formatter"]
     },
     {
       "id": "five-why",
@@ -183,58 +327,76 @@
       "relatedModules": ["git-commit-helper"]
     },
     {
-      "id": "review-code",
-      "name": "Review Code",
-      "description": "Perform comprehensive code review",
-      "file": "audit/review-code.md",
-      "tags": ["audit", "review", "quality"],
-      "longDescription": "Performs thorough code review covering logic, patterns, readability, maintainability, and project conventions. Provides actionable feedback.",
+      "id": "format-markdown",
+      "name": "Format Markdown",
+      "description": "Format and lint markdown files",
+      "file": "formatting/format-markdown.md",
+      "tags": ["formatting", "markdown", "docs"],
+      "longDescription": "Formats markdown files following consistent style guidelines. Checks for formatting issues, broken links, and style violations.",
       "whatItDoes": [
-        "Reviews code logic and correctness",
-        "Checks pattern adherence",
-        "Evaluates readability/maintainability",
-        "Identifies potential bugs",
-        "Suggests improvements"
+        "Formats markdown consistently",
+        "Fixes heading hierarchy",
+        "Validates link references",
+        "Standardizes list formatting",
+        "Ensures code block languages"
       ],
-      "whenToUse": "Before merging PRs or when wanting feedback on implementation.",
-      "skillLevel": "intermediate",
-      "relatedModules": ["tech-lead"]
+      "whenToUse": "Before committing documentation changes or when cleaning up markdown files.",
+      "skillLevel": "beginner",
+      "relatedModules": ["markdown-formatter", "tech-writer"]
     },
     {
-      "id": "review-security",
-      "name": "Review Security",
-      "description": "Security-focused code review for vulnerabilities",
-      "file": "audit/review-security.md",
-      "tags": ["audit", "security", "owasp"],
-      "longDescription": "Security-focused code review checking for OWASP Top 10 vulnerabilities, injection flaws, authentication issues, and data exposure risks.",
+      "id": "create-agent",
+      "name": "Create Agent",
+      "description": "Create a new specialized agent",
+      "file": "meta/create-agent.md",
+      "tags": ["meta", "agents", "creation"],
+      "longDescription": "Creates a new specialized agent with proper structure, configuration, and documentation. Follows the standard agent template.",
       "whatItDoes": [
-        "Checks for injection vulnerabilities",
-        "Reviews authentication/authorization",
-        "Validates input sanitization",
-        "Identifies data exposure risks",
-        "Reviews security configurations"
+        "Creates agent markdown file",
+        "Adds YAML frontmatter",
+        "Generates configuration section",
+        "Creates standard structure",
+        "Updates registry"
       ],
-      "whenToUse": "Before deploying to production or when handling sensitive data.",
+      "whenToUse": "When adding new capabilities that require a specialized agent.",
       "skillLevel": "advanced",
-      "relatedModules": ["security-audit", "security-testing"]
+      "relatedModules": ["create-command", "create-skill"]
     },
     {
-      "id": "review-performance",
-      "name": "Review Performance",
-      "description": "Performance-focused code review for optimization",
-      "file": "audit/review-performance.md",
-      "tags": ["audit", "performance", "optimization"],
-      "longDescription": "Performance-focused code review identifying potential bottlenecks, memory issues, unnecessary computations, and optimization opportunities.",
+      "id": "create-command",
+      "name": "Create Command",
+      "description": "Create a new workflow command",
+      "file": "meta/create-command.md",
+      "tags": ["meta", "commands", "creation"],
+      "longDescription": "Creates a new command with proper structure, configuration, and documentation. Follows the standard command template.",
       "whatItDoes": [
-        "Identifies performance bottlenecks",
-        "Reviews algorithm complexity",
-        "Checks for memory leaks",
-        "Evaluates database queries",
-        "Suggests optimizations"
+        "Creates command markdown file",
+        "Adds YAML frontmatter",
+        "Generates configuration section",
+        "Creates execution flow",
+        "Updates registry"
       ],
-      "whenToUse": "When performance is critical or when investigating slowdowns.",
+      "whenToUse": "When adding new workflow automation commands.",
       "skillLevel": "advanced",
-      "relatedModules": ["performance-audit", "performance-testing"]
+      "relatedModules": ["create-agent", "create-skill"]
+    },
+    {
+      "id": "create-skill",
+      "name": "Create Skill",
+      "description": "Create a new reusable skill",
+      "file": "meta/create-skill.md",
+      "tags": ["meta", "skills", "creation"],
+      "longDescription": "Creates a new skill with proper structure, configuration, and documentation. Follows the standard skill template.",
+      "whatItDoes": [
+        "Creates skill markdown file",
+        "Adds YAML frontmatter",
+        "Generates configuration section",
+        "Creates standard structure",
+        "Updates registry"
+      ],
+      "whenToUse": "When adding new reusable knowledge or patterns.",
+      "skillLevel": "advanced",
+      "relatedModules": ["create-agent", "create-command"]
     },
     {
       "id": "help",
@@ -253,24 +415,6 @@
       "whenToUse": "When unsure what commands are available or how to use the system.",
       "skillLevel": "beginner",
       "relatedModules": []
-    },
-    {
-      "id": "markdown-format",
-      "name": "Markdown Format",
-      "description": "Format and lint markdown files",
-      "file": "formatting/markdown-format.md",
-      "tags": ["formatting", "markdown", "docs"],
-      "longDescription": "Formats markdown files following consistent style guidelines. Checks for formatting issues, broken links, and style violations.",
-      "whatItDoes": [
-        "Formats markdown consistently",
-        "Fixes heading hierarchy",
-        "Validates link references",
-        "Standardizes list formatting",
-        "Ensures code block languages"
-      ],
-      "whenToUse": "Before committing documentation changes or when cleaning up markdown files.",
-      "skillLevel": "beginner",
-      "relatedModules": ["documentation-writer", "tech-writer"]
     }
   ]
 }

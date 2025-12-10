@@ -1,259 +1,127 @@
+---
+name: code-check
+description: Run linting and type checking validation
+type: quality
+category: validation
+config_required:
+  - TYPECHECK_COMMAND: "Command to run type checking (e.g., pnpm typecheck)"
+  - LINT_COMMAND: "Command to run linting (e.g., pnpm lint)"
+  - PROJECT_ROOT: "Project root directory path"
+---
+
 # Code Check Command
 
 ## Purpose
 
-Run linting and type checking across all packages. STOPS at first error to allow immediate fixing.
+Run linting and type checking validation across the codebase. Stops at first error for immediate fixing.
+
+## ⚙️ Configuration
+
+| Setting | Description | Example |
+|---------|-------------|---------|
+| TYPECHECK_COMMAND | Type checking command | `pnpm typecheck` |
+| LINT_COMMAND | Linting command | `pnpm lint` |
+| PROJECT_ROOT | Project root directory | `/path/to/project` |
+| STOP_ON_ERROR | Stop on first error | `true` |
 
 ## Usage
 
 ```bash
 /code-check
-```text
-
-## Description
-
-Runs comprehensive code quality checks (TypeScript compilation and Biome linting) across the entire monorepo. Uses **STOP on first error** strategy to allow developers to fix issues immediately rather than being overwhelmed with multiple errors.
-
----
+```
 
 ## Execution Flow
 
-### Step 1: TypeScript Validation
+### 1. Type Checking
 
-**Command**: `pnpm typecheck`
+**Process:**
 
-**Process**:
+| Step | Action |
+|------|--------|
+| 1 | Navigate to {{PROJECT_ROOT}} |
+| 2 | Execute {{TYPECHECK_COMMAND}} |
+| 3 | Validate type compilation |
+| 4 | Stop on first error |
 
-- Navigate to project root
-- Execute `pnpm typecheck` (runs turbo typecheck across all packages)
-- Check TypeScript compilation across:
-  - `apps/api/` - Hono backend
-  - `apps/web/` - Astro frontend
-  - `apps/admin/` - TanStack Start admin
-  - All `packages/*` - Shared libraries
-
-**STOP Condition**: First TypeScript error encountered
-
-**Output on Error**:
+**Output on Error:**
 
 ```text
-❌ TypeScript Error Found
+❌ Type Check Failed
 
-File: apps/api/src/routes/entitys/index.ts:45:12
-Error: Property 'id' does not exist on type 'CreateEntityRequest'
+File: {{FILE_PATH}}:{{LINE}}:{{COL}}
+Error: {{ERROR_MESSAGE}}
 
-Please fix this error before proceeding.
-```text
+Fix required before proceeding.
+```
 
-### Step 2: Lint Validation
+### 2. Lint Validation
 
-**Command**: `pnpm lint`
+**Process:**
 
-**Process**:
+| Step | Action |
+|------|--------|
+| 1 | Execute {{LINT_COMMAND}} |
+| 2 | Apply linting rules |
+| 3 | Check code style |
+| 4 | Stop on first error |
 
-- Execute `pnpm lint` (runs turbo lint across all packages)
-- Apply Biome linting rules:
-  - Code style consistency
-  - Import organization
-  - Unused variable detection
-  - Best practice enforcement
-
-**STOP Condition**: First linting error encountered
-
-**Output on Error**:
+**Output on Error:**
 
 ```text
-❌ Lint Error Found
+❌ Lint Failed
 
-File: packages/service-core/src/services/entity/entity.service.ts:23:8
-Error: 'result' is assigned a value but never used
+File: {{FILE_PATH}}:{{LINE}}:{{COL}}
+Rule: {{RULE_NAME}}
+Error: {{ERROR_MESSAGE}}
 
-Please fix this error before proceeding.
-```text
-
----
+Fix required before proceeding.
+```
 
 ## Quality Standards
 
-### TypeScript Standards
-
-- ✅ **Strict Mode**: All packages use TypeScript strict mode
-- ✅ **No Any Types**: Explicit typing required
-- ✅ **Import Resolution**: All imports resolve correctly
-- ✅ **Type Safety**: No type assertion abuse
-
-### Biome Linting Standards
-
-- ✅ **Code Style**: Consistent formatting and structure
-- ✅ **Import Organization**: Sorted and grouped imports
-- ✅ **Unused Code**: No unused variables/imports
-- ✅ **Best Practices**: Following JavaScript/TypeScript conventions
-
----
+| Category | Checks |
+|----------|--------|
+| **Type Safety** | Strict mode, no implicit any, import resolution |
+| **Code Style** | Formatting, import organization, best practices |
+| **Code Quality** | No unused code, proper error handling |
 
 ## Output Format
 
-### Success Case
+### Success
 
 ```text
 ✅ CODE CHECK PASSED
 
-TypeScript:
-✅ All packages compile successfully
+Type Check:
+✅ All files compile successfully
 ✅ No type errors found
-✅ Strict mode compliance verified
 
-Biome Lint:
+Lint:
 ✅ All linting rules passed
 ✅ Code style consistent
-✅ No unused code detected
 
-🚀 Code quality standards met
-```text
+🚀 Ready to proceed
+```
 
-### Failure Case (TypeScript)
-
-```text
-❌ CODE CHECK FAILED - TypeScript Error
-
-Package: apps/api
-File: src/routes/entitys/index.ts
-Line: 45, Column: 12
-Error: Property 'id' does not exist on type 'CreateEntityRequest'
-
-Context:
-  43 | const entity = await entityService.create({
-  44 |   ...validatedData,
-> 45 |   id: nanoid(), // ERROR: 'id' not in CreateEntityRequest
-  46 |   createdAt: new Date()
-  47 | });
-
-Fix Required: Remove 'id' field or update type definition
-```text
-
-### Failure Case (Biome Lint)
+### Failure
 
 ```text
-❌ CODE CHECK FAILED - Lint Error
+❌ CODE CHECK FAILED
 
-Package: packages/service-core
-File: src/services/entity/entity.service.ts
-Line: 23, Column: 8
-Rule: no-unused-vars
-Error: 'result' is assigned a value but never used
+{{ERROR_DETAILS}}
 
-Context:
-  21 | async create(data: CreateEntityData): Promise<Entity> {
-  22 |   const validation = this.validateCreateData(data);
-> 23 |   const result = await this.model.create(validation); // Unused variable
-  24 |   // Missing return statement
-  25 | }
-
-Fix Required: Return 'result' or remove unused variable
-```text
-
----
-
-## Technical Implementation
-
-### Monorepo Integration
-
-**TurboRepo Commands**:
-
-- `pnpm typecheck` → `turbo run typecheck`
-- `pnpm lint` → `turbo run lint`
-
-**Package-Level Execution**:
-
-Each package defines:
-
-```json
-{
-  "scripts": {
-    "typecheck": "tsc --noEmit",
-    "lint": "biome check ."
-  }
-}
-```text
-
-### Error Detection Strategy
-
-**TypeScript Errors**:
-
-- Parse `tsc` output for compilation errors
-- Extract file path, line number, and error message
-- Show code context around error
-
-**Biome Lint Errors**:
-
-- Parse Biome JSON output
-- Extract rule violations
-- Show suggested fixes when available
-
----
-
-## Error Categories
-
-### Critical Errors (STOP execution)
-
-- TypeScript compilation failures
-- Biome rule violations
-- Import resolution errors
-- Type definition conflicts
-
-### Info Messages (Report but continue)
-
-- Biome auto-fix suggestions
-- TypeScript informational messages
-- Performance optimization hints
-
----
+Fix required before proceeding.
+```
 
 ## Related Commands
 
-- `/quality-check` - Includes code-check + tests + reviews
-- `/run-tests` - Test execution validation
-- `/review-code` - Code quality analysis
-
----
+- `/quality-check` - Full quality validation
+- `/run-tests` - Test execution
+- `/review-code` - Code review
 
 ## When to Use
 
-- **During Development**: Before committing changes
-- **Before Reviews**: Ensure clean code for review
-- **CI/CD Pipeline**: Automated quality gate
-- **Required by**: `/quality-check` command
-
----
-
-## Prerequisites
-
-- All code changes saved
-- Dependencies installed (`pnpm install`)
-- No syntax errors in files
-
----
-
-## Post-Command Actions
-
-**If PASSED**: Proceed with development or run `/run-tests`
-
-**If FAILED**: Fix reported error and re-run `/code-check`
-
----
-
-## Performance Notes
-
-- **Parallel Execution**: TurboRepo runs checks in parallel
-- **Incremental**: Only checks changed packages when possible
-- **Cache**: Results cached for unchanged packages
-- **Typical Duration**: 30-60 seconds for full monorepo
-
-
----
-
-## Changelog
-
-| Version | Date | Changes | Author | Related |
-|---------|------|---------|--------|---------|
-| 1.0.0 | 2025-10-31 | Initial version | @tech-lead | P-004 |
+- Before committing changes
+- Before code reviews
+- As part of CI/CD pipeline
+- Required by `/quality-check`

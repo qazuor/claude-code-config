@@ -1,415 +1,244 @@
+---
+name: start-refactor-plan
+description: Plan comprehensive refactoring with risk assessment and incremental steps
+type: planning
+category: planning
+config_required:
+  refactor_path: "Base path for refactor sessions (e.g., .claude/sessions/refactor)"
+  test_coverage_min: "Minimum test coverage percentage (e.g., 90)"
+  issue_tracker: "Issue tracking system name"
+---
+
 # Start Refactor Plan Command
 
-## Purpose
+Plan comprehensive refactoring work safely with risk assessment, incremental steps, and test validation strategy.
 
-Plan comprehensive refactoring work safely with risk assessment, incremental steps, and test validation strategy. Ensures refactoring maintains system stability while improving code quality.
+## ⚙️ Configuration
+
+| Setting | Description | Example |
+|---------|-------------|---------|
+| `refactor_path` | Base directory for refactor sessions | `{{REFACTOR_PATH}}` |
+| `test_coverage_min` | Minimum test coverage required | `{{TEST_COVERAGE_MIN}}%` |
+| `issue_tracker` | Issue tracking system | `{{ISSUE_TRACKER}}` |
 
 ## Usage
 
 ```bash
 /start-refactor-plan {refactor_scope}
-```text
-
-## Description
-
-Orchestrates safe refactoring planning by analyzing current code, identifying issues, creating step-by-step refactoring plan, and establishing validation strategy. Emphasizes incremental changes with continuous testing to maintain system stability.
-
----
+```
 
 ## Execution Flow
 
 ### Step 1: Current Code Analysis
 
-**Agent**: `debugger`
+**Agent:** `debugger`
 
-**Process**:
+**Deliverable:** Current state analysis with:
 
-- Analyze existing codebase in refactor scope
-- Identify code smells and technical debt
-- Map current architecture and dependencies
-- Document existing behavior and edge cases
-- Identify potential breaking points
+- Code smells and technical debt
+- Architecture and dependency mapping
+- Existing behavior documentation
+- Potential breaking points
 
-**Analysis Areas**:
+**Analysis Areas:**
 
-- Code complexity and maintainability
-- Performance bottlenecks
-- Security vulnerabilities
-- Architectural inconsistencies
-- Test coverage gaps
-
-**Deliverable**: Current state analysis with issues categorized by severity
+| Area | Focus |
+|------|-------|
+| Code Quality | Complexity, maintainability |
+| Performance | Bottlenecks, inefficiencies |
+| Security | Vulnerabilities, exposures |
+| Architecture | Pattern violations, inconsistencies |
+| Testing | Coverage gaps, test quality |
 
 ### Step 2: Architecture Validation
 
-**Agent**: `architecture-validator`
+**Agent:** `architecture-validator`
 
-**Process**:
+**Deliverable:** Architecture assessment with:
 
-- Review architectural patterns compliance
-- Identify pattern violations and inconsistencies
-- Assess layering and boundary violations
-- Evaluate dependency management
-- Check adherence to SOLID principles
+- Pattern compliance review
+- Layering violations
+- Dependency management issues
+- SOLID principles adherence
 
-**Validation Areas**:
+### Step 3: Refactor Strategy
 
-- Layer separation (Model → Service → API)
-- Dependency injection consistency
-- Interface abstractions
-- Error handling patterns
-- Type safety implementation
+**Agent:** `product-technical`
 
-**Deliverable**: Architecture assessment with specific violation points
+**Deliverable:** Complete strategy document with:
 
-### Step 3: Refactor Strategy Planning
+- Refactoring objectives and success criteria
+- Safe refactoring boundaries
+- Backwards compatibility strategy
+- Rollback procedures
 
-**Agent**: `product-technical`
+### Step 4: Incremental Steps
 
-**Process**:
+**Agent:** `product-technical`
 
-- Define refactoring objectives and success criteria
-- Create comprehensive refactor plan
-- Identify safe refactoring boundaries
-- Plan backwards compatibility strategy
-- Design rollback procedures
+**Requirements:** Each step must:
 
-**Strategy Components**:
+- Be ≤ 2 hours of work
+- Preserve functionality
+- Pass all tests
+- Allow rollback
+- Have clear validation criteria
 
-- Refactoring scope and boundaries
-- Risk assessment and mitigation
-- Performance impact analysis
-- Deployment strategy
-- User impact assessment
+**Deliverable:** Step-by-step plan with validation points.
 
-**Deliverable**: Complete refactor strategy document
+### Step 5: Test Strategy
 
-### Step 4: Incremental Step Breakdown
+**Agent:** `qa-engineer` with `web-app-testing` skill
 
-**Agent**: `product-technical` (with safety focus)
+**Deliverable:** Testing strategy with:
 
-**Process**:
+- Pre-refactor baseline
+- Step-by-step validation plan
+- Regression test enhancements
+- Performance benchmarks
 
-- Break refactor into safe, atomic steps
-- Ensure each step maintains functionality
-- Plan comprehensive test validation for each step
-- Identify checkpoint and rollback points
-- Create dependency-aware ordering
+### Step 6: Risk Assessment
 
-**Step Requirements**:
+**Agent:** `tech-lead`
 
-- Each step ≤ 2 hours of work
-- Functionality preserved after each step
-- Tests pass after each step
-- Rollback possible from any point
-- Clear validation criteria
-
-**Deliverable**: Detailed step-by-step refactor plan with validation points
-
-### Step 5: Test Strategy Enhancement
-
-**Agent**: `qa-engineer` with `web-app-testing` skill
-
-**Process**:
-
-- Assess current test coverage for refactor scope
-- Identify missing tests that need addition
-- Plan regression test strategy
-- Design integration test improvements
-- Create test execution plan for each refactor step
-
-**Test Strategy Components**:
-
-- Pre-refactor test baseline establishment
-- Step-by-step test validation plan
-- Regression test suite enhancement
-- Performance benchmark testing
-- User acceptance testing plan
-
-**Deliverable**: Comprehensive testing strategy for safe refactoring
-
-### Step 6: Risk Assessment and Approval
-
-**Agent**: `tech-lead`
-
-**Process**:
-
-- Review complete refactor plan
-- Assess technical risks and benefits
-- Validate incremental approach safety
-- Approve refactor strategy
-- Sign off on execution plan
-
-**Risk Assessment**:
+**Deliverable:** Risk assessment and approval covering:
 
 - Business continuity impact
-- Technical complexity assessment
-- Resource requirement validation
-- Timeline feasibility review
+- Technical complexity
+- Resource requirements
+- Timeline feasibility
 - Rollback strategy validation
 
-**Deliverable**: Risk assessment and approval for refactor execution
-
----
-
-## Refactor Planning Structure
+## Refactor Session Structure
 
 ```text
-.claude/sessions/refactor/{refactor_scope}/
-├── current-analysis.md       # Current state analysis
-├── architecture-issues.md    # Architecture violations found
-├── refactor-strategy.md      # Overall refactoring strategy
-├── refactor-steps.md         # Step-by-step execution plan
-├── test-strategy.md          # Testing and validation plan
-├── risk-assessment.md        # Risk analysis and mitigation
-└── checkpoints/              # Rollback and validation points
-    ├── checkpoint-1.md
-    ├── checkpoint-2.md
-    └── final-validation.md
-```text
-
----
+{{REFACTOR_PATH}}/{refactor_scope}/
+├── current-analysis.md
+├── architecture-issues.md
+├── refactor-strategy.md
+├── refactor-steps.md
+├── test-strategy.md
+├── risk-assessment.md
+└── checkpoints/
+```
 
 ## Quality Standards
 
 ### Analysis Requirements
 
-- ✅ **Comprehensive Coverage**: All code in scope analyzed
-- ✅ **Issue Categorization**: Problems grouped by type and severity
-- ✅ **Dependency Mapping**: All dependencies and impacts identified
-- ✅ **Behavior Documentation**: Current functionality clearly documented
-- ✅ **Risk Identification**: Potential failure points identified
+- Comprehensive coverage of all code in scope
+- Issues categorized by type and severity
+- All dependencies mapped
+- Current behavior documented
+- Risk points identified
 
 ### Planning Requirements
 
-- ✅ **Atomic Steps**: Each step ≤ 2 hours, functionality preserved
-- ✅ **Test Validation**: Every step has test validation criteria
-- ✅ **Rollback Strategy**: Clear rollback from any point
-- ✅ **Dependency Order**: Steps ordered by dependencies
-- ✅ **Risk Mitigation**: Each risk has mitigation strategy
+- Atomic steps (≤ 2 hours each)
+- Test validation for every step
+- Clear rollback strategy
+- Dependency-aware ordering
+- Risk mitigation for each risk
 
 ### Safety Requirements
 
-- ✅ **Backwards Compatibility**: No breaking changes for existing users
-- ✅ **Performance Maintenance**: No performance degradation
-- ✅ **Test Coverage**: ≥ 90% coverage maintained throughout
-- ✅ **Continuous Integration**: All steps pass CI/CD validation
-- ✅ **Documentation**: All changes documented
-
----
+- No breaking changes for users
+- No performance degradation
+- ≥ {{TEST_COVERAGE_MIN}}% coverage maintained
+- All steps pass CI/CD
+- All changes documented
 
 ## Output Format
-
-### Success Case
 
 ```text
 ✅ REFACTOR PLANNING COMPLETE
 
-Refactor Scope: Authentication Service Layer
-Planning Session: .claude/sessions/refactor/auth-service/
+Refactor Scope: {refactor_scope}
+Planning Session: {{REFACTOR_PATH}}/{refactor_scope}/
 
-📊 Analysis Summary:
+Analysis Summary:
+- Files Analyzed: {n}
+- Issues Identified: {n} (high/medium/low)
+- Architecture Violations: {n}
+- Test Coverage Gaps: {n}%
 
-- Code Files Analyzed: 23
-- Issues Identified: 18 (6 high, 8 medium, 4 low)
-- Architecture Violations: 5
-- Test Coverage Gaps: 12%
+Refactor Plan:
+- Total Steps: {n} atomic steps
+- Estimated Duration: {hours}
+- Checkpoints: {n} validation points
+- Risk Level: {level}
 
-📋 Refactor Plan:
+Test Strategy:
+- Tests to Add: {n}
+- Regression Tests: {n} enhanced
+- Performance Tests: {n} benchmarks
 
-- Total Steps: 15 atomic steps
-- Estimated Duration: 25-30 hours
-- Checkpoints: 5 major validation points
-- Risk Level: Medium (breaking changes isolated)
-
-🧪 Test Strategy:
-
-- Tests to Add: 12 new test suites
-- Regression Tests: 34 existing tests enhanced
-- Performance Tests: 8 benchmark validations
-
-🚀 Ready for safe, incremental refactoring
-```text
-
-### Risk Assessment Example
-
-```text
-🚨 RISK ASSESSMENT
-
-HIGH RISK AREAS:
-❌ User authentication flow (critical path)
-   Risk: Session invalidation during refactor
-   Mitigation: Feature flag for gradual rollout
-
-⚠️ Database query optimization (performance impact)
-   Risk: Query performance degradation
-   Mitigation: Performance benchmarks at each step
-
-LOW RISK AREAS:
-✅ Internal service abstractions (isolated)
-✅ Type system improvements (compile-time validation)
-✅ Code organization (no runtime impact)
-
-ROLLBACK STRATEGY:
-
-- Checkpoint every 5 steps
-- Feature flags for user-facing changes
-- Database migration rollback scripts
-- Performance monitoring with automatic rollback triggers
-
-```text
-
----
+Ready for safe, incremental refactoring
+```
 
 ## Refactor Categories
 
 ### Architecture Refactoring
 
-**Common Patterns**:
+**Patterns:**
 
 - Layer separation improvements
-- Dependency injection implementation
-- Interface abstraction addition
+- Dependency injection
+- Interface abstraction
 - Error handling standardization
 
-**Safety Measures**:
-
-- Gradual interface migration
-- Adapter pattern for compatibility
-- Step-by-step dependency updates
+**Safety:** Gradual migration, adapter patterns, step-by-step updates
 
 ### Performance Refactoring
 
-**Common Patterns**:
+**Patterns:**
 
-- Database query optimization
-- Caching layer implementation
-- Algorithm efficiency improvements
-- Memory usage optimization
+- Database optimization
+- Caching implementation
+- Algorithm efficiency
+- Memory optimization
 
-**Safety Measures**:
-
-- Performance benchmarks validation
-- Load testing at each step
-- Gradual optimization rollout
-- Automatic rollback on degradation
+**Safety:** Performance benchmarks, load testing, automatic rollback
 
 ### Code Quality Refactoring
 
-**Common Patterns**:
+**Patterns:**
 
 - Code smell elimination
 - Technical debt reduction
 - Test coverage improvements
 - Documentation enhancement
 
-**Safety Measures**:
+**Safety:** Behavior preservation testing, regression validation
 
-- Behavior preservation testing
-- Regression test validation
-- Code review at each step
+## Step Validation
 
----
+All steps must pass:
 
-## Step Validation Criteria
-
-### Functional Validation
-
-- All existing tests pass
-- New functionality works as expected
-- No regressions in user workflows
-- API contracts maintained
-
-### Performance Validation
-
-- Response times maintained or improved
-- Memory usage within acceptable limits
-- Database query performance stable
-- Load test benchmarks met
-
-### Quality Validation
-
-- Code coverage ≥ 90%
-- Linting and type checking pass
-- Security validation successful
-- Architecture patterns followed
-
----
+| Validation Type | Criteria |
+|----------------|----------|
+| Functional | Tests pass, no regressions, API contracts maintained |
+| Performance | Response times maintained, memory acceptable, queries stable |
+| Quality | ≥{{TEST_COVERAGE_MIN}}% coverage, linting passes, patterns followed |
 
 ## Related Commands
 
 - `/start-feature-plan` - Planning for new features
-- `/quality-check` - Validation after refactor steps
+- `/quality-check` - Validation after steps
 - `/review-code` - Code quality analysis
-- `/review-performance` - Performance impact assessment
-
----
+- `/review-performance` - Performance assessment
 
 ## When to Use
 
-- **Required**: Before major architectural changes
-- **Required**: When technical debt is impacting development
-- **Recommended**: Before performance optimization work
-- **Required**: When refactoring affects multiple packages
-
----
-
-## Prerequisites
-
-- Current codebase stable and well-tested
-- Clear refactoring objectives identified
-- Development team alignment on scope
-- Sufficient time allocated for safe execution
-
----
+- **Required:** Before major architectural changes
+- **Required:** When technical debt impacts development
+- **Recommended:** Before performance optimization
+- **Required:** When refactoring affects multiple packages
 
 ## Post-Command Actions
 
-1. **Review Refactor Plan**: Validate completeness and safety
-2. **Team Alignment**: Ensure all developers understand the plan
-3. **Environment Preparation**: Set up monitoring and rollback mechanisms
-4. **Execute Step-by-Step**: Follow incremental plan with validation
-
----
-
-## Integration with Workflow
-
-**Pre-Refactor** → `/start-refactor-plan` → Safe execution strategy
-
-**During Refactor** → Follow step plan → `/quality-check` after each step
-
-**Post-Refactor** → Final validation → Documentation update
-
----
-
-## Common Refactor Scenarios
-
-### Service Layer Refactoring
-
-- Extract business logic from API routes
-- Implement proper dependency injection
-- Add comprehensive error handling
-- Improve type safety
-
-### Database Layer Refactoring
-
-- Optimize query performance
-- Implement proper indexing
-- Add query result caching
-- Improve transaction handling
-
-### Frontend Component Refactoring
-
-- Extract reusable components
-- Implement proper state management
-- Add accessibility improvements
-- Optimize bundle size
-
-
----
-
-## Changelog
-
-| Version | Date | Changes | Author | Related |
-|---------|------|---------|--------|---------|
-| 1.0.0 | 2025-10-31 | Initial version | @tech-lead | P-004 |
+1. Review refactor plan with user
+2. Ensure team alignment on scope
+3. Set up monitoring and rollback mechanisms
+4. Execute step-by-step with validation after each
+5. Offer to sync to {{ISSUE_TRACKER}}

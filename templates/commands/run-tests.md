@@ -1,309 +1,159 @@
+---
+name: run-tests
+description: Execute test suite and validate coverage requirements
+type: quality
+category: validation
+config_required:
+  - TEST_COMMAND: "Command to run tests (e.g., pnpm test)"
+  - COVERAGE_COMMAND: "Command to run coverage (e.g., pnpm test:coverage)"
+  - COVERAGE_THRESHOLD: "Minimum coverage percentage (e.g., 90)"
+  - PROJECT_ROOT: "Project root directory path"
+---
+
 # Run Tests Command
 
 ## Purpose
 
-Execute comprehensive test suite across all packages and validate coverage requirements. STOPS at first test failure or insufficient coverage.
+Execute comprehensive test suite and validate coverage requirements. Stops at first failure.
+
+## ⚙️ Configuration
+
+| Setting | Description | Example |
+|---------|-------------|---------|
+| TEST_COMMAND | Test execution command | `pnpm test` |
+| COVERAGE_COMMAND | Coverage command | `pnpm test:coverage` |
+| COVERAGE_THRESHOLD | Minimum coverage % | `90` |
+| PROJECT_ROOT | Project root directory | `/path/to/project` |
+| STOP_ON_ERROR | Stop on first failure | `true` |
 
 ## Usage
 
 ```bash
 /run-tests
-```text
-
-## Description
-
-Runs the complete test suite across all packages in the monorepo with strict quality requirements. Uses **STOP on first error** strategy to ensure immediate attention to test failures. Validates minimum 90% test coverage requirement.
-
----
+```
 
 ## Execution Flow
 
-### Step 1: Unit Test Execution
+### 1. Test Execution
 
-**Command**: `pnpm test`
+**Process:**
 
-**Process**:
+| Step | Action |
+|------|--------|
+| 1 | Navigate to {{PROJECT_ROOT}} |
+| 2 | Execute {{TEST_COMMAND}} |
+| 3 | Run all test suites |
+| 4 | Stop on first failure |
 
-- Navigate to project root
-- Execute `pnpm test` (runs turbo test across all packages)
-- Run tests across:
-  - `apps/api/` - API endpoint tests, service tests, model tests
-  - `apps/web/` - Component tests, page tests, utility tests
-  - `apps/admin/` - Admin component tests, form tests
-  - All `packages/*` - Library unit tests
+**Test Categories:**
 
-**STOP Condition**: First test failure encountered
+- Unit tests
+- Integration tests
+- API/Endpoint tests
+- Component tests
 
-**Test Categories**:
+**Output on Failure:**
 
-- **Unit Tests**: Individual function/method testing
-- **Integration Tests**: Service-to-model integration
-- **API Tests**: Endpoint behavior validation
-- **Component Tests**: React component functionality
+```text
+❌ TESTS FAILED
 
-### Step 2: Coverage Validation
+Test: {{TEST_NAME}}
+File: {{FILE_PATH}}:{{LINE}}
 
-**Command**: `pnpm test:coverage`
+Expected: {{EXPECTED}}
+Received: {{ACTUAL}}
 
-**Process**:
+Error: {{ERROR_MESSAGE}}
 
-- Execute coverage analysis with Vitest
-- Validate coverage thresholds:
-  - **Statements**: ≥ 90%
-  - **Branches**: ≥ 90%
-  - **Functions**: ≥ 90%
-  - **Lines**: ≥ 90%
+Fix required before proceeding.
+```
 
-**STOP Condition**: Coverage below 90% in any category
+### 2. Coverage Validation
 
-**Coverage Reporting**:
+**Process:**
 
-- Generate HTML coverage reports
-- Identify uncovered code paths
-- Report coverage by package
+| Step | Action |
+|------|--------|
+| 1 | Execute {{COVERAGE_COMMAND}} |
+| 2 | Validate coverage thresholds |
+| 3 | Generate coverage report |
+| 4 | Identify uncovered code |
 
----
+**Coverage Metrics:**
+
+| Metric | Threshold |
+|--------|-----------|
+| Statements | ≥ {{COVERAGE_THRESHOLD}}% |
+| Branches | ≥ {{COVERAGE_THRESHOLD}}% |
+| Functions | ≥ {{COVERAGE_THRESHOLD}}% |
+| Lines | ≥ {{COVERAGE_THRESHOLD}}% |
+
+**Output on Insufficient Coverage:**
+
+```text
+❌ INSUFFICIENT COVERAGE
+
+Coverage Results:
+❌ Statements: {{ACTUAL}}% (target: ≥{{THRESHOLD}}%)
+❌ Branches: {{ACTUAL}}% (target: ≥{{THRESHOLD}}%)
+❌ Functions: {{ACTUAL}}% (target: ≥{{THRESHOLD}}%)
+❌ Lines: {{ACTUAL}}% (target: ≥{{THRESHOLD}}%)
+
+Uncovered Files:
+- {{FILE_PATH}} (Lines: {{UNCOVERED_LINES}})
+
+Add tests for uncovered code paths.
+```
 
 ## Quality Standards
 
-### Test Quality Requirements
-
-- ✅ **Test Structure**: AAA pattern (Arrange, Act, Assert)
-- ✅ **Test Isolation**: No dependencies between tests
-- ✅ **Mocking**: Proper mocks for external dependencies
-- ✅ **Assertions**: Clear, specific assertions
-
-### Coverage Requirements
-
-- ✅ **Minimum 90%**: Across all packages
-- ✅ **Critical Paths**: 100% coverage for business logic
-- ✅ **Edge Cases**: Error conditions tested
-- ✅ **Integration**: Service-layer integration tested
-
----
+| Category | Requirements |
+|----------|--------------|
+| **Test Structure** | AAA pattern (Arrange, Act, Assert) |
+| **Coverage** | Minimum {{COVERAGE_THRESHOLD}}% across all metrics |
+| **Test Isolation** | No dependencies between tests |
+| **Assertions** | Clear, specific assertions |
 
 ## Output Format
 
-### Success Case
+### Success
 
 ```text
 ✅ TESTS PASSED
 
 Test Results:
-✅ Unit Tests: 156/156 passed
-✅ Integration Tests: 43/43 passed
-✅ API Tests: 78/78 passed
-✅ Component Tests: 92/92 passed
+✅ Unit Tests: {{PASSED}}/{{TOTAL}} passed
+✅ Integration Tests: {{PASSED}}/{{TOTAL}} passed
+✅ All test suites passing
 
 Coverage Results:
-✅ Statements: 94.2% (target: ≥90%)
-✅ Branches: 91.8% (target: ≥90%)
-✅ Functions: 96.1% (target: ≥90%)
-✅ Lines: 93.7% (target: ≥90%)
+✅ Statements: {{ACTUAL}}% (target: ≥{{THRESHOLD}}%)
+✅ Branches: {{ACTUAL}}% (target: ≥{{THRESHOLD}}%)
+✅ Functions: {{ACTUAL}}% (target: ≥{{THRESHOLD}}%)
+✅ Lines: {{ACTUAL}}% (target: ≥{{THRESHOLD}}%)
 
-🚀 All tests passing with excellent coverage
-```text
+🚀 All quality standards met
+```
 
-### Failure Case (Test Failure)
+### Failure
 
 ```text
 ❌ TESTS FAILED
 
-Test Failure:
-❌ apps/api/src/services/entity/entity.service.test.ts
+{{ERROR_DETAILS}}
 
-FAIL: should create entity with valid data
-Expected: 201
-Received: 500
-
-  at EntityService.create (entity.service.ts:45:12)
-  at entity.service.test.ts:78:25
-
-Error: Cannot read property 'id' of undefined
-
-Stack Trace:
-  EntityService.create
-  → Model.create
-  → Database insert operation
-
-Fix Required: Check entity data validation before database insertion
-```text
-
-### Failure Case (Coverage)
-
-```text
-❌ TESTS FAILED - Insufficient Coverage
-
-Coverage Results:
-❌ Statements: 87.3% (target: ≥90%) - BELOW THRESHOLD
-✅ Branches: 91.8% (target: ≥90%)
-✅ Functions: 96.1% (target: ≥90%)
-❌ Lines: 89.1% (target: ≥90%) - BELOW THRESHOLD
-
-Uncovered Files:
-
-- packages/service-core/src/services/booking/booking.service.ts
-
-  Lines: 45-52, 67-74 (error handling paths)
-
-- apps/api/src/routes/payments/webhook.ts
-
-  Lines: 23-31 (webhook validation)
-
-Fix Required: Add tests for uncovered code paths
-```text
-
----
-
-## Technical Implementation
-
-### Test Framework Configuration
-
-**Vitest Configuration**:
-
-```javascript
-// vitest.config.ts
-export default {
-  test: {
-    coverage: {
-      thresholds: {
-        statements: 90,
-        branches: 90,
-        functions: 90,
-        lines: 90
-      },
-      exclude: [
-        'dist/**',
-        '**/*.d.ts',
-        '**/*.config.*'
-      ]
-    }
-  }
-}
-```text
-
-### TurboRepo Integration
-
-**Parallel Test Execution**:
-
-- Tests run in parallel across packages
-- Dependency-aware execution order
-- Shared test utilities and mocks
-
-**Test Scripts**:
-
-```json
-{
-  "scripts": {
-    "test": "vitest run --passWithNoTests",
-    "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
-  }
-}
-```text
-
----
-
-## Test Categories by Package
-
-### API Package (`apps/api/`)
-
-- **Route Tests**: HTTP endpoint behavior
-- **Service Tests**: Business logic validation
-- **Model Tests**: Database interaction
-- **Middleware Tests**: Authentication, validation
-- **Integration Tests**: End-to-end request flows
-
-### Web Package (`apps/web/`)
-
-- **Component Tests**: React component rendering
-- **Page Tests**: Astro page functionality
-- **Hook Tests**: Custom React hooks
-- **Utility Tests**: Helper functions
-
-### Admin Package (`apps/admin/`)
-
-- **Form Tests**: TanStack form validation
-- **Table Tests**: Data display components
-- **Auth Tests**: Admin authentication flows
-
-### Shared Packages (`packages/*`)
-
-- **Unit Tests**: Pure function testing
-- **Mock Tests**: Mock implementations
-- **Type Tests**: TypeScript type validation
-
----
-
-## Error Categories
-
-### Critical Errors (STOP execution)
-
-- Test failures (assertions, exceptions)
-- Coverage below 90% threshold
-- Test suite configuration errors
-- Database connection failures (for integration tests)
-
-### Warning Issues (Report but continue)
-
-- Slow test execution (>5s per test)
-- Deprecation warnings in test utilities
-- Memory usage concerns
-
----
+Fix failing tests or add missing coverage.
+```
 
 ## Related Commands
 
-- `/quality-check` - Includes run-tests + code check + reviews
-- `/code-check` - Code quality validation before tests
-- `/review-code` - Code quality analysis
-
----
+- `/quality-check` - Full quality validation
+- `/code-check` - Code quality validation
+- `/review-code` - Code review
 
 ## When to Use
 
-- **Required**: Before every commit
-- **Required**: As part of `/quality-check`
-- **During Development**: After significant code changes
-- **CI/CD Pipeline**: Automated quality gate
-
----
-
-## Prerequisites
-
-- All code changes saved and compiled
-- Database available for integration tests
-- Test data fixtures prepared
-- Dependencies installed (`pnpm install`)
-
----
-
-## Post-Command Actions
-
-**If PASSED**: Proceed with development or quality checks
-
-**If FAILED**:
-
-1. Review test failure details
-2. Fix failing tests or add missing tests for coverage
-3. Re-run `/run-tests`
-4. Consider running specific test suites for faster feedback
-
----
-
-## Performance Notes
-
-- **Parallel Execution**: Tests run concurrently across packages
-- **Test Isolation**: Each package's tests are isolated
-- **Cache**: Test results cached for unchanged files
-- **Typical Duration**: 2-5 minutes for full test suite
-- **Watch Mode**: Available for development (`pnpm test:watch`)
-
-
----
-
-## Changelog
-
-| Version | Date | Changes | Author | Related |
-|---------|------|---------|--------|---------|
-| 1.0.0 | 2025-10-31 | Initial version | @tech-lead | P-004 |
+- Before every commit
+- As part of `/quality-check`
+- After significant changes
+- In CI/CD pipeline
