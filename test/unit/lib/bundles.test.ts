@@ -5,6 +5,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   findBundlesContainingModule,
+  formatBundleDetailedDescription,
   formatBundleForDisplay,
   getAllBundles,
   getBundleById,
@@ -289,6 +290,127 @@ describe('bundle resolver', () => {
 
     it('should return category as-is for unknown category', () => {
       expect(getBundleCategoryName('unknown')).toBe('unknown');
+    });
+  });
+
+  describe('formatBundleDetailedDescription', () => {
+    it('should include description and modules in detailed format', () => {
+      const bundle = getBundleById('react-tanstack-stack');
+      expect(bundle).toBeDefined();
+
+      const description = formatBundleDetailedDescription(bundle!);
+
+      // Should include main description
+      expect(description).toContain('React with TanStack');
+
+      // Should include modules section
+      expect(description).toContain('📦 Includes:');
+      expect(description).toContain('🤖 Agents');
+      expect(description).toContain('⚡ Skills');
+
+      // Should include tech stack
+      expect(description).toContain('🔧 Tech:');
+      expect(description).toContain('React');
+
+      // Should include complexity indicator for enriched bundles
+      expect(description).toContain('Comprehensive');
+    });
+
+    it('should handle bundles without tech stack', () => {
+      const bundle: BundleDefinition = {
+        id: 'test',
+        name: 'Test',
+        description: 'Test description',
+        category: 'testing',
+        modules: [{ id: 'skill1', category: 'skills' }],
+      };
+
+      const description = formatBundleDetailedDescription(bundle);
+
+      // Should have modules section
+      expect(description).toContain('⚡ Skills (1)');
+      expect(description).not.toContain('🔧 Tech:');
+    });
+
+    it('should handle bundles without complexity', () => {
+      const bundle: BundleDefinition = {
+        id: 'test',
+        name: 'Test',
+        description: 'Test description',
+        category: 'testing',
+        modules: [{ id: 'agent1', category: 'agents' }],
+      };
+
+      const description = formatBundleDetailedDescription(bundle);
+
+      // Should not have complexity indicator if not defined
+      expect(description).not.toContain('📊');
+    });
+
+    it('should include all module types when present', () => {
+      const bundle: BundleDefinition = {
+        id: 'test',
+        name: 'Test',
+        description: 'Test description',
+        category: 'testing',
+        techStack: ['Node.js', 'TypeScript'],
+        complexity: 'standard',
+        modules: [
+          { id: 'agent1', category: 'agents' },
+          { id: 'skill1', category: 'skills' },
+          { id: 'cmd1', category: 'commands' },
+          { id: 'doc1', category: 'docs' },
+        ],
+      };
+
+      const description = formatBundleDetailedDescription(bundle);
+
+      // Should have all module types
+      expect(description).toContain('🤖 Agents (1): agent1');
+      expect(description).toContain('⚡ Skills (1): skill1');
+      expect(description).toContain('💻 Commands (1): /cmd1');
+      expect(description).toContain('📚 Docs (1): doc1');
+      // Should have tech stack
+      expect(description).toContain('🔧 Tech: Node.js, TypeScript');
+      // Should have complexity
+      expect(description).toContain('⭐ Standard');
+    });
+
+    it('should show responsibilities when available', () => {
+      const bundle: BundleDefinition = {
+        id: 'test',
+        name: 'Test',
+        description: 'Test',
+        category: 'testing',
+        responsibilities: ['Feature planning from requirements'],
+        modules: [
+          { id: 'agent1', category: 'agents' },
+          { id: 'skill1', category: 'skills' },
+        ],
+      };
+
+      const description = formatBundleDetailedDescription(bundle);
+
+      // Should contain responsibilities section
+      expect(description).toContain('📋 Responsibilities:');
+      expect(description).toContain('Feature planning from requirements');
+    });
+
+    it('should show use cases when no responsibilities', () => {
+      const bundle: BundleDefinition = {
+        id: 'test',
+        name: 'Test',
+        description: 'Test',
+        category: 'testing',
+        useCases: ['Starting a new feature'],
+        modules: [{ id: 'agent1', category: 'agents' }],
+      };
+
+      const description = formatBundleDetailedDescription(bundle);
+
+      // Should contain use cases section
+      expect(description).toContain('🎯 Use cases:');
+      expect(description).toContain('Starting a new feature');
     });
   });
 });
