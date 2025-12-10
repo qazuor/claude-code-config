@@ -9,6 +9,7 @@ import { readConfig } from '../../lib/config/index.js';
 import { loadRegistry } from '../../lib/modules/index.js';
 import { resolvePath } from '../../lib/utils/fs.js';
 import { colors, logger } from '../../lib/utils/logger.js';
+import { getTemplatesPath } from '../../lib/utils/paths.js';
 import type { ModuleCategory } from '../../types/modules.js';
 
 interface ListOptions {
@@ -55,8 +56,8 @@ async function runList(type: string | undefined, options: ListOptions): Promise<
       return;
     }
 
-    // Get templates path
-    const templatesPath = resolvePath(process.cwd(), 'templates');
+    // Get templates path (bundled with package)
+    const templatesPath = getTemplatesPath();
 
     // Load registry
     const registry = await loadRegistry(templatesPath);

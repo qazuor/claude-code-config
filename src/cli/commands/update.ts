@@ -12,6 +12,7 @@ import { installPermissions } from '../../lib/permissions/index.js';
 import { replacePlaceholders } from '../../lib/placeholders/index.js';
 import { resolvePath } from '../../lib/utils/fs.js';
 import { logger } from '../../lib/utils/logger.js';
+import { getTemplatesPath } from '../../lib/utils/paths.js';
 import type { ModuleCategory } from '../../types/modules.js';
 import {
   promptHookConfig,
@@ -72,7 +73,7 @@ async function runUpdate(options: UpdateOptions): Promise<void> {
     }
 
     // Load registry
-    const templatesPath = resolvePath(process.cwd(), 'templates');
+    const templatesPath = getTemplatesPath();
     const registry = await loadRegistry(templatesPath);
 
     // Determine action
@@ -192,7 +193,7 @@ async function handleModuleUpdates(
   updates: Awaited<ReturnType<typeof detectUpdates>>,
   options: UpdateOptions
 ): Promise<void> {
-  const templatesPath = resolvePath(process.cwd(), 'templates');
+  const templatesPath = getTemplatesPath();
 
   // Handle new modules
   if (updates.new.length > 0) {

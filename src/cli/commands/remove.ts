@@ -9,6 +9,7 @@ import { checkRemovalImpact, getModule, loadRegistry } from '../../lib/modules/i
 import { uninstallModule } from '../../lib/modules/installer.js';
 import { resolvePath } from '../../lib/utils/fs.js';
 import { colors, logger } from '../../lib/utils/logger.js';
+import { getTemplatesPath } from '../../lib/utils/paths.js';
 import type { ModuleCategory } from '../../types/modules.js';
 
 interface RemoveOptions {
@@ -63,7 +64,7 @@ async function runRemove(moduleSpec: string, options: RemoveOptions): Promise<vo
     }
 
     // Load registry for module info
-    const templatesPath = resolvePath(process.cwd(), 'templates');
+    const templatesPath = getTemplatesPath();
     const registry = await loadRegistry(templatesPath);
     const module = getModule(registry, category, moduleId);
 

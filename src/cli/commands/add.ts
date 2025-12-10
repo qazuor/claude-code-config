@@ -10,6 +10,7 @@ import { installModules } from '../../lib/modules/installer.js';
 import { replacePlaceholders } from '../../lib/placeholders/index.js';
 import { joinPath, resolvePath } from '../../lib/utils/fs.js';
 import { colors, logger } from '../../lib/utils/logger.js';
+import { getTemplatesPath } from '../../lib/utils/paths.js';
 import type { ModuleCategory } from '../../types/modules.js';
 
 interface AddOptions {
@@ -57,7 +58,7 @@ async function runAdd(moduleSpec: string, options: AddOptions): Promise<void> {
     }
 
     // Load registry
-    const templatesPath = resolvePath(process.cwd(), 'templates');
+    const templatesPath = getTemplatesPath();
     const registry = await loadRegistry(templatesPath);
 
     // Find module

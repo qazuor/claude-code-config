@@ -25,6 +25,7 @@ import {
 } from '../../lib/scaffold/index.js';
 import { joinPath, resolvePath } from '../../lib/utils/fs.js';
 import { colors, logger } from '../../lib/utils/logger.js';
+import { getTemplatesPath } from '../../lib/utils/paths.js';
 import { spinner, withSpinner } from '../../lib/utils/spinner.js';
 import type { ClaudeConfig } from '../../types/config.js';
 import type { ModuleCategory, ModuleDefinition, ModuleRegistry } from '../../types/modules.js';
@@ -405,7 +406,7 @@ async function executeInstallation(
     ];
   }
 
-  // Resolve modules
+  // Resolve modules (tags -> actual module definitions)
   const modulesByCategory: Record<ModuleCategory, ModuleDefinition[]> = {
     agents: filterModules(registry, 'agents', config.modules.agents.selected),
     skills: filterModules(registry, 'skills', config.modules.skills.selected),
@@ -414,11 +415,17 @@ async function executeInstallation(
   };
 
   // Install modules
-  await installAllModules(modulesByCategory, {
+  const installResults = await installAllModules(modulesByCategory, {
     templatesPath,
     targetPath: projectPath,
     overwrite: options.force,
   });
+
+  // Update config with actual installed module IDs (not tags)
+  config.modules.agents.selected = installResults.agents?.installed ?? [];
+  config.modules.skills.selected = installResults.skills?.installed ?? [];
+  config.modules.commands.selected = installResults.commands?.installed ?? [];
+  config.modules.docs.selected = installResults.docs?.installed ?? [];
 
   // Install extras
   await installExtras(
@@ -491,10 +498,3 @@ function showConfigSummary(config: ClaudeConfig): void {
   logger.keyValue('Docs', String(config.modules.docs.selected.length));
 }
 
-/**
- * Get templates path (bundled with package)
- */
-function getTemplatesPath(): string {
-  // For now, use the path relative to the project
-  return resolvePath(process.cwd(), 'templates');
-}
