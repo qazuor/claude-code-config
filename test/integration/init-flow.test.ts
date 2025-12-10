@@ -54,7 +54,15 @@ describe('init flow integration', () => {
       const registry = await loadRegistry(templatesPath);
 
       // Fullstack preset agents tags
-      const presetTags = ['core', 'product', 'backend', 'frontend', 'quality', 'design', 'specialized'];
+      const presetTags = [
+        'core',
+        'product',
+        'backend',
+        'frontend',
+        'quality',
+        'design',
+        'specialized',
+      ];
       const resolvedModules = filterModules(registry, 'agents', presetTags);
 
       // Should include modules from all specified tag categories
@@ -202,7 +210,9 @@ describe('init flow integration', () => {
       // Each category should have a _registry.json
       expect(await fse.pathExists(path.join(templatesPath, 'agents', '_registry.json'))).toBe(true);
       expect(await fse.pathExists(path.join(templatesPath, 'skills', '_registry.json'))).toBe(true);
-      expect(await fse.pathExists(path.join(templatesPath, 'commands', '_registry.json'))).toBe(true);
+      expect(await fse.pathExists(path.join(templatesPath, 'commands', '_registry.json'))).toBe(
+        true
+      );
       expect(await fse.pathExists(path.join(templatesPath, 'docs', '_registry.json'))).toBe(true);
     });
   });

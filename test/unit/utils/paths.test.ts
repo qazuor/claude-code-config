@@ -2,8 +2,9 @@
  * Tests for paths utility
  */
 
+import fs from 'node:fs';
 import path from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { getPackageRoot, getTemplatesPath } from '../../../src/lib/utils/paths.js';
 
 describe('paths utility', () => {
@@ -23,6 +24,20 @@ describe('paths utility', () => {
       const root1 = getPackageRoot();
       const root2 = getPackageRoot();
       expect(root1).toBe(root2);
+    });
+
+    it('should throw an error when package.json cannot be found', () => {
+      // Mock fs.existsSync to always return false
+      const existsSyncSpy = vi.spyOn(fs, 'existsSync').mockReturnValue(false);
+
+      try {
+        expect(() => getPackageRoot()).toThrow(
+          'Could not find package root (no package.json found in parent directories)'
+        );
+      } finally {
+        // Restore the original implementation
+        existsSyncSpy.mockRestore();
+      }
     });
   });
 
