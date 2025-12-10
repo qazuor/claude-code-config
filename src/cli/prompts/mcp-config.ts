@@ -12,10 +12,33 @@ interface McpPromptOptions {
   defaults?: Partial<McpConfig>;
 }
 
+/** Track servers with skipped configuration */
+export interface McpConfigResult {
+  config: McpConfig;
+  skippedConfigs: SkippedMcpConfig[];
+}
+
+/** Information about a skipped MCP server configuration */
+export interface SkippedMcpConfig {
+  serverId: string;
+  serverName: string;
+  skippedFields: SkippedField[];
+  installInstructions?: string;
+}
+
+/** A single skipped configuration field */
+export interface SkippedField {
+  name: string;
+  description: string;
+  envVar?: string;
+  howToGet?: string;
+}
+
 /**
  * Prompt for MCP configuration
+ * Returns both the config and information about any skipped configurations
  */
-export async function promptMcpConfig(options?: McpPromptOptions): Promise<McpConfig> {
+export async function promptMcpConfig(options?: McpPromptOptions): Promise<McpConfigResult> {
   logger.subtitle('MCP Server Configuration');
 
   const enableMcp = await confirm({
@@ -25,8 +48,11 @@ export async function promptMcpConfig(options?: McpPromptOptions): Promise<McpCo
 
   if (!enableMcp) {
     return {
-      level: 'project',
-      servers: [],
+      config: {
+        level: 'project',
+        servers: [],
+      },
+      skippedConfigs: [],
     };
   }
 
@@ -80,13 +106,17 @@ export async function promptMcpConfig(options?: McpPromptOptions): Promise<McpCo
   });
 
   const installations: McpInstallation[] = [];
+  const skippedConfigs: SkippedMcpConfig[] = [];
 
   // Configure selected servers
   for (const serverId of selectedServerIds) {
     const server = getMcpServer(serverId);
     if (server) {
-      const installation = await configureServer(server, level);
-      installations.push(installation);
+      const result = await configureServer(server, level);
+      installations.push(result.installation);
+      if (result.skippedConfig) {
+        skippedConfigs.push(result.skippedConfig);
+      }
     }
   }
 
@@ -99,8 +129,11 @@ export async function promptMcpConfig(options?: McpPromptOptions): Promise<McpCo
   }
 
   return {
-    level,
-    servers: installations,
+    config: {
+      level,
+      servers: installations,
+    },
+    skippedConfigs,
   };
 }
 
@@ -127,73 +160,119 @@ function formatCategory(category: string): string {
   const labels: Record<string, string> = {
     documentation: '📚 Documentation',
     database: '🗄️  Database',
+    cache: '💾 Cache & Key-Value',
     'version-control': '🔄 Version Control',
     deployment: '🚀 Deployment',
     infrastructure: '🏗️  Infrastructure',
     'project-mgmt': '📋 Project Management',
     monitoring: '📊 Monitoring',
+    testing: '🧪 Testing & Browser',
+    security: '🔐 Security',
+    communication: '💬 Communication',
+    design: '🎨 Design',
+    payments: '💳 Payments',
+    search: '🔍 Search',
+    ai: '🤖 AI & ML',
     custom: '⚙️  Custom',
   };
   return labels[category] || category;
 }
 
+/** Result from configuring a single server */
+interface ConfigureServerResult {
+  installation: McpInstallation;
+  skippedConfig: SkippedMcpConfig | null;
+}
+
 /**
  * Configure a single MCP server
+ * Fields are optional - skipped fields are tracked for post-install instructions
  */
 async function configureServer(
   server: McpServerDefinition,
   level: 'user' | 'project'
-): Promise<McpInstallation> {
+): Promise<ConfigureServerResult> {
   const config: Record<string, unknown> = {};
+  const skippedFields: SkippedField[] = [];
 
   if (server.requiresConfig && server.configFields) {
     logger.newline();
     logger.info(`Configuring ${colors.primary(server.name)}...`);
+    logger.info(
+      colors.muted('  (Press Enter to skip optional fields - instructions will be shown at the end)')
+    );
 
     for (const field of server.configFields) {
-      const value = await promptConfigField(field);
-      if (value !== undefined && value !== '') {
-        config[field.name] = value;
+      const result = await promptConfigFieldOptional(field);
+      if (result.value !== undefined && result.value !== '') {
+        config[field.name] = result.value;
+      } else if (result.skipped) {
+        skippedFields.push({
+          name: field.name,
+          description: field.description,
+          envVar: field.envVar,
+        });
       }
     }
   }
 
-  return {
+  const installation: McpInstallation = {
     serverId: server.id,
     level,
     config,
   };
+
+  const skippedConfig: SkippedMcpConfig | null =
+    skippedFields.length > 0
+      ? {
+          serverId: server.id,
+          serverName: server.name,
+          skippedFields,
+          installInstructions: server.installInstructions,
+        }
+      : null;
+
+  return { installation, skippedConfig };
+}
+
+/** Result from prompting a config field */
+interface PromptFieldResult {
+  value: string | boolean | number | undefined;
+  skipped: boolean;
 }
 
 /**
- * Prompt for a config field value
+ * Prompt for a config field value (all fields are optional)
+ * Returns both the value and whether it was skipped
  */
-async function promptConfigField(
-  field: McpConfigField
-): Promise<string | boolean | number | undefined> {
+async function promptConfigFieldOptional(field: McpConfigField): Promise<PromptFieldResult> {
   const envHint = field.envVar ? colors.muted(` (env: ${field.envVar})`) : '';
+  const optionalHint = colors.muted(' [optional]');
 
   // Try to get from environment
   const envValue = field.envVar ? process.env[field.envVar] : undefined;
 
   if (field.type === 'boolean') {
-    return confirm({
+    const value = await confirm({
       message: `${field.description}${envHint}:`,
       default: (field.default as boolean) ?? false,
     });
+    return { value, skipped: false };
   }
 
   if (field.type === 'number') {
     const value = await input({
-      message: `${field.description}${envHint}:`,
+      message: `${field.description}${envHint}${optionalHint}:`,
       default: envValue || (field.default as string) || '',
-      validate: (v) => {
-        if (field.required && !v.trim()) return 'This field is required';
-        if (v && Number.isNaN(Number(v))) return 'Please enter a valid number';
-        return true;
-      },
     });
-    return value ? Number(value) : undefined;
+    if (!value.trim()) {
+      return { value: undefined, skipped: true };
+    }
+    if (Number.isNaN(Number(value))) {
+      logger.warn('Invalid number, skipping field');
+      return { value: undefined, skipped: true };
+    }
+    return { value: Number(value), skipped: false };
   }
 
   // String type - use password input for sensitive fields
@@ -209,26 +288,26 @@ async function promptConfigField(
         message: `Found ${field.envVar} in environment. Use it?`,
         default: true,
       });
-      if (useEnv) return envValue;
+      if (useEnv) return { value: envValue, skipped: false };
     }
 
-    return password({
-      message: `${field.description}${envHint}:`,
-      validate: (v) => {
-        if (field.required && !v.trim()) return 'This field is required';
-        return true;
-      },
+    const value = await password({
+      message: `${field.description}${envHint}${optionalHint}:`,
     });
+    if (!value.trim()) {
+      return { value: undefined, skipped: true };
+    }
+    return { value, skipped: false };
   }
 
-  return input({
-    message: `${field.description}${envHint}:`,
+  const value = await input({
+    message: `${field.description}${envHint}${optionalHint}:`,
     default: envValue || (field.default as string) || '',
-    validate: (v) => {
-      if (field.required && !v.trim()) return 'This field is required';
-      return true;
-    },
   });
+  if (!value.trim()) {
+    return { value: undefined, skipped: true };
+  }
+  return { value, skipped: false };
 }
 
 /**
@@ -335,4 +414,66 @@ export async function confirmMcpConfig(config: McpConfig): Promise<boolean> {
     message: 'Is this MCP configuration correct?',
     default: true,
   });
+}
+
+/**
+ * Show post-install instructions for skipped MCP configurations
+ * This should be called at the end of the installation process
+ */
+export function showSkippedMcpInstructions(
+  skippedConfigs: SkippedMcpConfig[],
+  mcpLevel: 'user' | 'project'
+): void {
+  if (skippedConfigs.length === 0) {
+    return;
+  }
+
+  logger.newline();
+  logger.title('MCP Server Configuration Required');
+  logger.newline();
+  logger.info('Some MCP servers need additional configuration.');
+  logger.info('Add the required values to complete the setup:');
+
+  const configFile =
+    mcpLevel === 'user'
+      ? colors.primary('~/.claude/settings.json')
+      : colors.primary('.claude/settings.local.json');
+
+  logger.newline();
+  logger.keyValue('Config file', configFile);
+
+  for (const skipped of skippedConfigs) {
+    logger.newline();
+    logger.subtitle(skipped.serverName);
+
+    if (skipped.installInstructions) {
+      logger.info(skipped.installInstructions);
+    }
+
+    logger.newline();
+    logger.info('Missing configuration:');
+
+    for (const field of skipped.skippedFields) {
+      const envInfo = field.envVar ? colors.muted(` (or set env: ${field.envVar})`) : '';
+      logger.item(`${colors.warning(field.name)}: ${field.description}${envInfo}`);
+    }
+
+    // Show example JSON snippet
+    logger.newline();
+    logger.info('Add to mcpServers in your config file:');
+    logger.raw(colors.muted('  {'));
+    logger.raw(colors.muted(`    "${skipped.serverId}": {`));
+    for (const field of skipped.skippedFields) {
+      logger.raw(colors.muted(`      "${field.name}": "<your-${field.name}>",`));
+    }
+    logger.raw(colors.muted('    }'));
+    logger.raw(colors.muted('  }'));
+  }
+
+  logger.newline();
+  logger.info(
+    colors.muted(
+      'Tip: You can also use environment variables for sensitive values like tokens and keys.'
+    )
+  );
 }
