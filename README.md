@@ -3,99 +3,131 @@
 [![npm version](https://img.shields.io/npm/v/@qazuor/claude-code-config.svg)](https://www.npmjs.com/package/@qazuor/claude-code-config)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js Version](https://img.shields.io/node/v/@qazuor/claude-code-config.svg)](https://nodejs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
 
-CLI tool to install and manage Claude Code configurations in your projects. Configure AI agents, skills, commands, MCP servers, and permissions with an interactive wizard or preset-based setup.
+A comprehensive CLI tool to install and manage Claude Code configurations in your projects. Configure AI agents, skills, commands, MCP servers, permissions, and template placeholders with an interactive wizard or preset-based setup.
 
 ## Table of Contents
 
 - [Features](#features)
+- [What's Included](#whats-included)
 - [Installation](#installation)
 - [Quick Start](#quick-start)
 - [Commands](#commands)
   - [init](#init-path)
+  - [configure](#configure)
   - [list](#list-type)
   - [add](#add-module)
   - [remove](#remove-module)
   - [status](#status)
   - [update](#update)
 - [Presets](#presets)
+- [Bundles](#bundles)
 - [Modules](#modules)
-  - [Agents](#agents)
-  - [Skills](#skills)
-  - [Commands](#commands-1)
-  - [Documentation](#documentation)
+  - [Agents](#agents-23-available)
+  - [Skills](#skills-25-available)
+  - [Commands](#commands-23-available)
+  - [Documentation](#documentation-18-available)
+- [Template Configuration](#template-configuration)
 - [MCP Servers](#mcp-servers)
 - [Permissions](#permissions)
+- [Code Style](#code-style)
 - [Hooks](#hooks)
 - [Project Structure](#project-structure)
 - [Placeholders](#placeholders)
 - [Programmatic API](#programmatic-api)
 - [Configuration File](#configuration-file)
-- [Templates](#templates)
+- [Custom Templates](#custom-templates)
 - [Requirements](#requirements)
 - [Contributing](#contributing)
 - [License](#license)
 
 ## Features
 
+### Core Capabilities
+
+- **Interactive Wizard**: Step-by-step configuration with intelligent defaults
+- **Auto-Detection**: Automatically detects project type, package manager, and tech stack
 - **7 Presets**: Pre-configured module sets for different project types
-  - `fullstack` - Complete configuration with all agents, skills, and commands
-  - `frontend` - Optimized for React, Astro, TanStack projects
-  - `backend` - Focused on Hono, Drizzle, Node.js APIs
-  - `minimal` - Bare essentials for small projects
-  - `api-only` - Pure API/microservice configuration
-  - `documentation` - Strong documentation capabilities
-  - `quality-focused` - Emphasis on testing and code quality
-
-- **Modular Architecture**: Install only what you need
-  - 14 specialized AI agents
-  - 19 development skills
-  - 15 slash commands
-  - 18 documentation modules
-
-- **Granular Selection**: Choose modules one by one with shortcuts
-  - `[Y/n]` - Accept/reject individual modules
-  - `[a]` - Install all in category
-  - `[n]` - Skip all remaining in category
-  - `[p]` - Use preset for category
-
-- **MCP Servers**: Configure Model Context Protocol servers
-  - Context7, GitHub, PostgreSQL, Neon, Vercel, Docker, Linear, Sentry, Filesystem
-
-- **Permissions System**: Interactive permission configuration
-  - 3 presets: `default`, `trust`, `restrictive`
-  - Fine-grained control over file, git, bash, and web operations
-
-- **Hooks**: Notification system when Claude finishes tasks
-  - Desktop notifications (notify-send)
-  - Audio notifications (Piper TTS, beep sounds)
-  - Custom commands
-
-- **Auto-detection**: Automatically detects project type and suggests presets
-  - Node.js, Monorepo, Astro, Next.js, Vite+React, Hono
-  - Detects package manager (pnpm, npm, yarn, bun)
-
-- **Placeholder System**: Replaces project-specific variables in templates
-  - Project name, description, organization
-  - Entity types, domains, locations
-
+- **Module Bundles**: Grouped modules for specific use cases (frontend-react, api-hono, etc.)
+- **Template Configuration**: Interactive setup for `{{PLACEHOLDER}}` values with smart defaults
+- **MCP Server Integration**: Configure Model Context Protocol servers
+- **Permissions System**: Fine-grained control over Claude's capabilities
+- **Code Style Tools**: EditorConfig, Biome, Prettier, and Commitlint configuration
+- **Hooks System**: Notifications when Claude finishes tasks
 - **Bilingual Support**: Spanish and English interfaces
 
-- **Remote Templates**: Use templates from custom git repositories
+### Modular Architecture
+
+| Category | Count | Description |
+|----------|-------|-------------|
+| **Agents** | 23 | Specialized AI agents for different roles |
+| **Skills** | 25 | Reusable capabilities and knowledge |
+| **Commands** | 23 | Slash commands for workflows |
+| **Docs** | 18 | Reference documentation and guides |
+| **MCP Servers** | 9 | External tool integrations |
+| **Bundles** | 10+ | Pre-grouped module sets |
+
+### Smart Defaults
+
+- **Package Manager Detection**: Automatically detects pnpm, yarn, npm, or bun
+- **Script Detection**: Reads package.json scripts for command defaults
+- **Dependency Detection**: Identifies frameworks and libraries (React, Drizzle, Zod, etc.)
+- **Git Detection**: Checks for git repository and GitHub remotes
+- **Global Defaults**: Save preferences for future projects in `~/.claude/defaults.json`
+
+## What's Included
+
+After running `claude-config init`, your project will have:
+
+```
+.claude/
+├── config.json              # Configuration storage
+├── settings.local.json      # Local permissions & MCP
+├── agents/                  # 23 specialized AI agents
+│   ├── engineering/         # Backend, frontend, DB engineers
+│   ├── product/             # Product functional & technical
+│   ├── quality/             # QA, debugger
+│   ├── design/              # UX/UI designer
+│   └── specialized/         # SEO, i18n, content, tech writer
+├── skills/                  # 25 development skills
+│   ├── testing/             # TDD, security, performance, QA
+│   ├── development/         # Git, Vercel, Shadcn, diagrams
+│   └── design/              # Brand, errors, markdown, PDF
+├── commands/                # 23 slash commands
+│   ├── audit/               # Security, performance, accessibility
+│   ├── planning/            # Feature planning, sync, cleanup
+│   ├── git/                 # Commit helper
+│   ├── meta/                # Create agent/command/skill, help
+│   └── formatting/          # Markdown formatter
+├── docs/                    # 18 documentation files
+│   ├── workflows/           # Decision tree, phases, protocols
+│   ├── standards/           # Code, testing, docs standards
+│   └── templates/           # PDR, tech analysis, TODOs
+├── schemas/                 # JSON schemas (optional)
+├── scripts/                 # Utility scripts (optional)
+├── hooks/                   # Notification hooks (optional)
+└── sessions/                # Planning sessions (optional)
+    └── planning/
+CLAUDE.md                    # Main Claude instructions
+```
 
 ## Installation
 
 ### Global Installation (Recommended)
 
 ```bash
+# Using pnpm (recommended)
+pnpm add -g @qazuor/claude-code-config
+
 # Using npm
 npm install -g @qazuor/claude-code-config
 
-# Using pnpm
-pnpm add -g @qazuor/claude-code-config
-
 # Using yarn
 yarn global add @qazuor/claude-code-config
+
+# Using bun
+bun add -g @qazuor/claude-code-config
 ```
 
 ### Using npx (No Installation)
@@ -104,7 +136,7 @@ yarn global add @qazuor/claude-code-config
 npx @qazuor/claude-code-config init
 ```
 
-### Local Development Installation
+### Local Development
 
 ```bash
 git clone https://github.com/qazuor/claude-code-config.git
@@ -116,40 +148,52 @@ pnpm link --global
 
 ## Quick Start
 
-### Interactive Setup
+### Interactive Setup (Recommended)
 
 ```bash
-# Initialize in current directory with interactive wizard
+# Initialize in current directory
 claude-config init
 
-# Initialize in a specific directory
+# Initialize in specific directory
 claude-config init ./my-project
 ```
+
+The wizard will guide you through:
+
+1. **Project Information** - Name, description, organization, entity types
+2. **Preferences** - Language, co-author settings
+3. **Scaffold Options** - Claude-only or full project structure
+4. **Module Selection** - Choose preset or custom modules
+5. **Hook Configuration** - Desktop/audio notifications
+6. **MCP Servers** - External tool integrations
+7. **Permissions** - What Claude can do
+8. **Code Style** - EditorConfig, Biome, Prettier, Commitlint
+9. **Template Configuration** - Auto-detected command/path/target values
 
 ### Preset-based Setup
 
 ```bash
-# Use a preset for quick setup
+# Quick setup with fullstack preset
 claude-config init --preset fullstack
 
-# Skip prompts with defaults
+# Skip all prompts with defaults
 claude-config init --preset minimal --yes
 
-# Dry run to see what would be created
+# Preview what would be created
 claude-config init --preset frontend --dry-run
 ```
 
-### Adding Modules Later
+### Post-Installation Configuration
 
 ```bash
-# Add a specific agent
-claude-config add agent:tech-lead
+# Reconfigure template placeholders
+claude-config configure
 
-# Add a skill
-claude-config add skill:tdd-methodology
+# Scan for unconfigured placeholders
+claude-config configure --scan
 
-# Add a command
-claude-config add command:commit
+# Preview changes without applying
+claude-config configure --preview
 ```
 
 ## Commands
@@ -166,9 +210,9 @@ claude-config init [options] [path]
 
 | Option | Description |
 |--------|-------------|
-| `--preset <name>` | Use a preset: `fullstack`, `frontend`, `backend`, `minimal`, `api-only`, `documentation`, `quality-focused` |
-| `--template <url>` | Remote git repository URL for custom templates |
-| `--branch <name>` | Branch or tag for remote template (default: `main`) |
+| `-p, --preset <name>` | Use preset: `fullstack`, `frontend`, `backend`, `minimal`, `api-only`, `documentation`, `quality-focused` |
+| `-t, --template <url>` | Remote git repository URL for custom templates |
+| `-b, --branch <name>` | Branch or tag for remote template (default: `main`) |
 | `-y, --yes` | Accept all defaults, skip interactive prompts |
 | `-f, --force` | Overwrite existing configuration |
 | `--dry-run` | Show what would be created without making changes |
@@ -183,25 +227,56 @@ claude-config init [options] [path]
 # Full interactive setup
 claude-config init
 
-# Quick setup with fullstack preset
+# Quick setup with preset
 claude-config init --preset fullstack --yes
 
-# Setup from custom template repository
+# From custom template repository
 claude-config init --template https://github.com/your-org/claude-templates --branch v2.0
 
-# Initialize in a new project directory
-claude-config init ./new-project --preset backend
+# Force overwrite existing
+claude-config init --preset backend --force
+```
 
-# Preview what would be created
-claude-config init --preset minimal --dry-run
+### `configure`
 
-# Force overwrite existing configuration
-claude-config init --preset fullstack --force
+Configure or reconfigure template placeholders interactively.
+
+```bash
+claude-config configure [options] [path]
+```
+
+#### Options
+
+| Option | Description |
+|--------|-------------|
+| `--scan` | Scan for unconfigured placeholders only |
+| `-c, --category <name>` | Configure specific category: `commands`, `paths`, `targets`, `tracking`, `techStack`, `environment`, `brand` |
+| `--preview` | Preview changes without applying |
+| `--show-defaults` | Show global defaults stored in `~/.claude/defaults.json` |
+| `-v, --verbose` | Show detailed output |
+
+#### Examples
+
+```bash
+# Interactive configuration
+claude-config configure
+
+# Scan for unconfigured placeholders
+claude-config configure --scan
+
+# Configure only commands
+claude-config configure --category commands
+
+# Preview what would be replaced
+claude-config configure --preview
+
+# Show global defaults
+claude-config configure --show-defaults
 ```
 
 ### `list [type]`
 
-List available modules, presets, or MCP servers.
+List available modules, presets, bundles, or MCP servers.
 
 ```bash
 claude-config list [options] [type]
@@ -211,13 +286,14 @@ claude-config list [options] [type]
 
 | Type | Description |
 |------|-------------|
-| `agents` | List all available agents |
-| `skills` | List all available skills |
-| `commands` | List all available commands |
-| `docs` | List all available documentation |
-| `presets` | List all presets with their modules |
-| `mcp` | List all MCP servers |
-| *(none)* | List all modules |
+| `agents` | List all 23 available agents |
+| `skills` | List all 25 available skills |
+| `commands` | List all 23 available commands |
+| `docs` | List all 18 documentation modules |
+| `presets` | List all 7 presets with their modules |
+| `bundles` | List all module bundles |
+| `mcp` | List all 9 MCP servers |
+| *(none)* | List summary of all modules |
 
 #### Options
 
@@ -229,17 +305,14 @@ claude-config list [options] [type]
 #### Examples
 
 ```bash
-# List all modules
+# List all modules summary
 claude-config list
 
-# List available agents
-claude-config list agents
+# List agents with details
+claude-config list agents --verbose
 
-# List presets with details
-claude-config list presets --verbose
-
-# List MCP servers
-claude-config list mcp
+# List presets
+claude-config list presets
 
 # Export as JSON
 claude-config list agents --json > agents.json
@@ -261,30 +334,18 @@ claude-config add [options] <module>
 Categories: agent, skill, command, doc
 ```
 
-#### Options
-
-| Option | Description |
-|--------|-------------|
-| `-f, --force` | Overwrite if module exists |
-| `--path <path>` | Project path (default: current directory) |
-
 #### Examples
 
 ```bash
 # Add an agent
 claude-config add agent:tech-lead
-claude-config add agent:hono-engineer
+claude-config add agent:prisma-engineer
 
 # Add a skill
 claude-config add skill:tdd-methodology
-claude-config add skill:security-testing
 
 # Add a command
-claude-config add command:commit
-claude-config add command:quality-check
-
-# Add documentation
-claude-config add doc:architecture-patterns
+claude-config add command:security-audit
 
 # Force overwrite
 claude-config add agent:qa-engineer --force
@@ -298,13 +359,6 @@ Remove a module from the configuration.
 claude-config remove [options] <module>
 ```
 
-#### Options
-
-| Option | Description |
-|--------|-------------|
-| `-f, --force` | Skip confirmation prompt |
-| `--path <path>` | Project path (default: current directory) |
-
 #### Examples
 
 ```bash
@@ -313,9 +367,6 @@ claude-config remove agent:tech-lead
 
 # Remove without confirmation
 claude-config remove skill:tdd-methodology --force
-
-# Remove from specific project
-claude-config remove command:commit --path ./my-project
 ```
 
 ### `status`
@@ -331,21 +382,8 @@ claude-config status [options]
 | Option | Description |
 |--------|-------------|
 | `-v, --verbose` | Show detailed configuration |
-| `--path <path>` | Project path (default: current directory) |
 | `-j, --json` | Output as JSON |
-
-#### Examples
-
-```bash
-# Show status
-claude-config status
-
-# Detailed status
-claude-config status --verbose
-
-# Export configuration as JSON
-claude-config status --json > config.json
-```
+| `--path <path>` | Project path (default: current directory) |
 
 ### `update`
 
@@ -365,223 +403,278 @@ claude-config update [options]
 | `--all` | Update everything |
 | `-f, --force` | Overwrite local changes |
 | `-i, --interactive` | Ask about each change |
-| `--path <path>` | Project path (default: current directory) |
-
-#### Examples
-
-```bash
-# Interactive update
-claude-config update
-
-# Check for available updates
-claude-config update --check
-
-# Update modules only
-claude-config update --modules
-
-# Re-configure (MCP, hooks, preferences)
-claude-config update --config
-
-# Force update everything
-claude-config update --all --force
-```
 
 ## Presets
 
 Presets are pre-configured module sets optimized for different project types.
 
-### Full Stack (`fullstack`)
+| Preset | Description | Agents | Skills | Commands |
+|--------|-------------|--------|--------|----------|
+| `fullstack` | Complete full-stack configuration | 14 | 9 | 8 |
+| `frontend` | React, Astro, TanStack projects | 7 | 4 | 4 |
+| `backend` | Hono, Drizzle, Node.js APIs | 7 | 5 | 5 |
+| `minimal` | Bare essentials | 2 | 2 | 2 |
+| `api-only` | Pure API/microservice | 4 | 3 | 3 |
+| `documentation` | Documentation focus | 3 | 2 | 3 |
+| `quality-focused` | Testing emphasis | 3 | 4 | 4 |
 
-Complete configuration for full-stack applications.
+### Full Stack Preset Details
 
-| Category | Modules |
-|----------|---------|
-| **Agents** | tech-lead, product-functional, product-technical, hono-engineer, db-drizzle-engineer, node-typescript-engineer, astro-engineer, tanstack-start-engineer, react-senior-dev, ux-ui-designer, qa-engineer, debugger, tech-writer, seo-ai-specialist |
-| **Skills** | tdd-methodology, security-testing, performance-testing, api-app-testing, web-app-testing, qa-criteria-validator, git-commit-helper, brand-guidelines, error-handling-patterns |
-| **Commands** | quality-check, code-check, commit, run-tests, review-code, add-new-entity, update-docs, start-feature-plan |
-| **Extras** | schemas, scripts, hooks, sessions |
+**Agents**: tech-lead, product-functional, product-technical, hono-engineer, db-drizzle-engineer, node-typescript-engineer, astro-engineer, tanstack-start-engineer, react-senior-dev, ux-ui-designer, qa-engineer, debugger, tech-writer, seo-ai-specialist
 
-### Frontend (`frontend`)
+**Skills**: tdd-methodology, security-testing, performance-testing, api-app-testing, web-app-testing, qa-criteria-validator, git-commit-helper, brand-guidelines, error-handling-patterns
 
-Optimized for React, Astro, TanStack projects.
+**Commands**: quality-check, code-check, commit, run-tests, review-code, add-new-entity, update-docs, start-feature-plan
 
-| Category | Modules |
-|----------|---------|
-| **Agents** | tech-lead, react-senior-dev, astro-engineer, tanstack-start-engineer, ux-ui-designer, qa-engineer, debugger |
-| **Skills** | tdd-methodology, web-app-testing, qa-criteria-validator, brand-guidelines |
-| **Commands** | quality-check, code-check, commit, run-tests |
-| **Extras** | hooks, sessions |
+**Extras**: schemas, scripts, hooks, sessions
 
-### Backend (`backend`)
+## Bundles
 
-Focused on Hono, Drizzle, Node.js APIs.
+Bundles are pre-grouped modules for specific use cases. They can be selected during setup or added later.
 
-| Category | Modules |
-|----------|---------|
-| **Agents** | tech-lead, product-technical, hono-engineer, db-drizzle-engineer, node-typescript-engineer, qa-engineer, debugger |
-| **Skills** | tdd-methodology, security-testing, api-app-testing, git-commit-helper, error-handling-patterns |
-| **Commands** | quality-check, code-check, commit, run-tests, add-new-entity |
-| **Extras** | schemas, scripts, hooks, sessions |
-
-### Minimal (`minimal`)
-
-Bare essentials for small projects.
-
-| Category | Modules |
-|----------|---------|
-| **Agents** | tech-lead, qa-engineer |
-| **Skills** | tdd-methodology, git-commit-helper |
-| **Commands** | quality-check, commit |
-| **Extras** | *(none)* |
-
-### API Only (`api-only`)
-
-Pure API/microservice configuration.
-
-| Category | Modules |
-|----------|---------|
-| **Agents** | tech-lead, hono-engineer, db-drizzle-engineer, qa-engineer |
-| **Skills** | tdd-methodology, security-testing, api-app-testing |
-| **Commands** | quality-check, commit, run-tests |
-| **Extras** | schemas, hooks |
-
-### Documentation (`documentation`)
-
-Strong documentation capabilities.
-
-| Category | Modules |
-|----------|---------|
-| **Agents** | tech-lead, tech-writer, qa-engineer |
-| **Skills** | git-commit-helper, brand-guidelines |
-| **Commands** | quality-check, update-docs, commit |
-| **Extras** | sessions |
-
-### Quality Focused (`quality-focused`)
-
-Emphasis on testing and code quality.
-
-| Category | Modules |
-|----------|---------|
-| **Agents** | tech-lead, qa-engineer, debugger |
-| **Skills** | tdd-methodology, security-testing, performance-testing, qa-criteria-validator |
-| **Commands** | quality-check, code-check, run-tests, review-code |
-| **Extras** | schemas, scripts, hooks |
+| Bundle | Description | Contents |
+|--------|-------------|----------|
+| `frontend-react` | React development | react-senior-dev, tanstack-start-engineer, web-app-testing |
+| `frontend-astro` | Astro development | astro-engineer, seo-ai-specialist, performance-testing |
+| `api-hono` | Hono API development | hono-engineer, api-app-testing, security-testing |
+| `api-express` | Express API development | express-engineer, api-app-testing, security-testing |
+| `database-drizzle` | Drizzle ORM | db-drizzle-engineer, schemas |
+| `database-prisma` | Prisma ORM | prisma-engineer, schemas |
+| `quality-full` | Complete quality tooling | qa-engineer, debugger, tdd-methodology, all testing skills |
+| `planning-full` | Feature planning | product-functional, product-technical, planning commands |
 
 ## Modules
 
-### Agents
+### Agents (23 Available)
 
-Specialized AI agents for different development tasks.
+Specialized AI agents for different development roles.
+
+#### Engineering Agents
 
 | ID | Name | Description |
 |----|------|-------------|
-| `tech-lead` | Tech Lead | Architecture, coordination, and technical decisions |
-| `product-functional` | Product Functional | PDR creation and functional requirements |
-| `product-technical` | Product Technical | Technical analysis and task breakdown |
+| `tech-lead` | Tech Lead | Architecture, coordination, code review |
 | `hono-engineer` | Hono Engineer | Hono API development |
-| `db-drizzle-engineer` | DB Drizzle Engineer | Database design with Drizzle ORM |
-| `node-typescript-engineer` | Node TypeScript Engineer | Node.js/TypeScript development |
+| `express-engineer` | Express Engineer | Express.js API development |
+| `fastify-engineer` | Fastify Engineer | Fastify API development |
+| `nestjs-engineer` | NestJS Engineer | NestJS framework development |
+| `db-drizzle-engineer` | Drizzle Engineer | Database with Drizzle ORM |
+| `prisma-engineer` | Prisma Engineer | Database with Prisma ORM |
+| `node-typescript-engineer` | Node/TS Engineer | Node.js/TypeScript development |
 | `astro-engineer` | Astro Engineer | Astro framework development |
-| `tanstack-start-engineer` | TanStack Start Engineer | TanStack Router/Query development |
-| `react-senior-dev` | React Senior Dev | React component development |
-| `ux-ui-designer` | UX/UI Designer | UI/UX design and implementation |
+| `tanstack-start-engineer` | TanStack Engineer | TanStack Router/Query |
+| `react-senior-dev` | React Developer | React component development |
+
+#### Product Agents
+
+| ID | Name | Description |
+|----|------|-------------|
+| `product-functional` | Product Functional | PDR and user requirements |
+| `product-technical` | Product Technical | Technical analysis and task breakdown |
+
+#### Quality Agents
+
+| ID | Name | Description |
+|----|------|-------------|
 | `qa-engineer` | QA Engineer | Testing and quality assurance |
 | `debugger` | Debugger | Bug investigation and fixing |
-| `tech-writer` | Tech Writer | Technical documentation |
-| `seo-ai-specialist` | SEO AI Specialist | SEO optimization |
 
-### Skills
-
-Specialized capabilities that can be invoked.
+#### Design Agents
 
 | ID | Name | Description |
 |----|------|-------------|
-| `tdd-methodology` | TDD Methodology | Test-driven development practices |
+| `ux-ui-designer` | UX/UI Designer | UI/UX design and implementation |
+
+#### Specialized Agents
+
+| ID | Name | Description |
+|----|------|-------------|
+| `tech-writer` | Tech Writer | Technical documentation |
+| `seo-ai-specialist` | SEO Specialist | SEO optimization |
+| `i18n-specialist` | i18n Specialist | Internationalization |
+| `content-writer` | Content Writer | Web copywriting |
+| `enrichment-agent` | Enrichment Agent | Data enrichment |
+| `markdown-formatter` | Markdown Formatter | Document formatting |
+| `git-commit-helper` | Git Commit Helper | Commit message generation |
+
+### Skills (25 Available)
+
+Reusable capabilities that can be invoked by agents.
+
+#### Testing Skills
+
+| ID | Name | Description |
+|----|------|-------------|
+| `tdd-methodology` | TDD Methodology | Test-driven development |
 | `security-testing` | Security Testing | Security vulnerability testing |
 | `performance-testing` | Performance Testing | Performance optimization |
-| `api-app-testing` | API App Testing | API testing strategies |
+| `api-app-testing` | API Testing | API testing strategies |
 | `web-app-testing` | Web App Testing | Web application testing |
-| `qa-criteria-validator` | QA Criteria Validator | Quality criteria validation |
-| `git-commit-helper` | Git Commit Helper | Commit message formatting |
-| `vercel-specialist` | Vercel Specialist | Vercel deployment expertise |
-| `shadcn-specialist` | Shadcn Specialist | Shadcn UI components |
-| `mermaid-diagram-specialist` | Mermaid Diagrams | Diagram generation |
+| `qa-criteria-validator` | QA Validator | Quality criteria validation |
+
+#### Development Skills
+
+| ID | Name | Description |
+|----|------|-------------|
+| `git-commit-helper` | Git Commit | Commit message formatting |
+| `vercel-specialist` | Vercel | Vercel deployment |
+| `shadcn-specialist` | Shadcn | Shadcn UI components |
+| `mermaid-diagram-specialist` | Mermaid | Diagram generation |
+| `add-memory` | Add Memory | Context memory |
+
+#### Design Skills
+
+| ID | Name | Description |
+|----|------|-------------|
 | `brand-guidelines` | Brand Guidelines | Brand consistency |
-| `error-handling-patterns` | Error Handling | Error handling patterns |
-| `markdown-formatter` | Markdown Formatter | Markdown formatting |
-| `pdf-creator-editor` | PDF Creator/Editor | PDF manipulation |
-| `json-data-auditor` | JSON Data Auditor | JSON validation |
-| `add-memory` | Add Memory | Context memory management |
-| `i18n-specialist` | i18n Specialist | Internationalization |
-| `accessibility-audit` | Accessibility Audit | Accessibility testing |
-| `performance-audit` | Performance Audit | Performance analysis |
+| `error-handling-patterns` | Error Handling | Error patterns |
+| `markdown-formatter` | Markdown | Markdown formatting |
+| `pdf-creator-editor` | PDF Editor | PDF manipulation |
+| `json-data-auditor` | JSON Auditor | JSON validation |
 
-### Commands
+### Commands (23 Available)
 
-Slash commands for common operations.
+Slash commands for common workflows.
 
-| ID | Name | Description |
-|----|------|-------------|
-| `quality-check` | /quality-check | Run comprehensive quality checks |
-| `code-check` | /code-check | Static code analysis |
-| `commit` | /commit | Generate atomic commits |
-| `run-tests` | /run-tests | Execute test suites |
-| `review-code` | /review-code | Code review assistance |
-| `review-security` | /review-security | Security review |
-| `review-performance` | /review-performance | Performance review |
-| `add-new-entity` | /add-new-entity | Scaffold new entities |
-| `update-docs` | /update-docs | Update documentation |
-| `start-feature-plan` | /start-feature-plan | Begin feature planning |
-| `start-refactor-plan` | /start-refactor-plan | Plan refactoring |
-| `sync-planning` | /sync-planning | Sync planning documents |
-| `help` | /help | Show help information |
-| `status` | /status | Project status |
-| `cleanup` | /cleanup | Clean up resources |
+#### Quality Commands
 
-### Documentation
+| Command | Description |
+|---------|-------------|
+| `/quality-check` | Comprehensive quality validation |
+| `/code-check` | Lint + typecheck |
+| `/run-tests` | Execute test suites |
 
-Reference documentation and guides.
+#### Audit Commands
 
-| ID | Name | Description |
-|----|------|-------------|
-| `quick-start` | Quick Start | Quick start guide |
-| `decision-tree` | Decision Tree | Workflow decision guide |
-| `quick-fix-protocol` | Quick Fix Protocol | Quick fix workflow |
-| `atomic-task-protocol` | Atomic Task Protocol | Atomic task workflow |
-| `phase-1-planning` | Phase 1 Planning | Planning phase guide |
-| `phase-2-implementation` | Phase 2 Implementation | Implementation guide |
-| `phase-3-validation` | Phase 3 Validation | Validation guide |
-| `phase-4-finalization` | Phase 4 Finalization | Finalization guide |
-| `code-standards` | Code Standards | Coding standards |
-| `testing-standards` | Testing Standards | Testing guidelines |
-| `documentation-standards` | Documentation Standards | Documentation guidelines |
-| `architecture-patterns` | Architecture Patterns | Architecture patterns |
-| `pdr-template` | PDR Template | Product Definition Report template |
-| `tech-analysis-template` | Tech Analysis Template | Technical analysis template |
-| `todos-template` | TODOs Template | Task breakdown template |
-| `workflow-diagrams` | Workflow Diagrams | Mermaid diagrams |
-| `glossary` | Glossary | Project terminology |
-| `mcp-servers` | MCP Servers | MCP documentation |
+| Command | Description |
+|---------|-------------|
+| `/security-audit` | OWASP security audit |
+| `/performance-audit` | Performance analysis |
+| `/accessibility-audit` | WCAG compliance audit |
+
+#### Planning Commands
+
+| Command | Description |
+|---------|-------------|
+| `/start-feature-plan` | Initialize feature planning |
+| `/start-refactor-plan` | Plan refactoring |
+| `/sync-planning` | Sync to issue tracker |
+| `/sync-planning-github` | Sync to GitHub Issues |
+| `/sync-todos-github` | Sync TODOs to GitHub |
+| `/check-completed-tasks` | Auto-detect completed tasks |
+| `/planning-cleanup` | Clean up planning artifacts |
+| `/cleanup-issues` | Clean up stale issues |
+
+#### Development Commands
+
+| Command | Description |
+|---------|-------------|
+| `/add-new-entity` | Scaffold new entity |
+| `/update-docs` | Update documentation |
+| `/five-why` | Root cause analysis |
+
+#### Git Commands
+
+| Command | Description |
+|---------|-------------|
+| `/commit` | Generate atomic commit |
+
+#### Meta Commands
+
+| Command | Description |
+|---------|-------------|
+| `/create-agent` | Create new agent |
+| `/create-command` | Create new command |
+| `/create-skill` | Create new skill |
+| `/help` | Show help information |
+
+#### Formatting Commands
+
+| Command | Description |
+|---------|-------------|
+| `/format-markdown` | Format markdown files |
+
+### Documentation (18 Available)
+
+Reference documentation and workflow guides.
+
+| ID | Description |
+|----|-------------|
+| `quick-start` | Quick start guide |
+| `decision-tree` | Workflow decision guide |
+| `quick-fix-protocol` | Level 1 quick fix workflow |
+| `atomic-task-protocol` | Level 2 atomic task workflow |
+| `phase-1-planning` | Planning phase guide |
+| `phase-2-implementation` | Implementation guide |
+| `phase-3-validation` | Validation guide |
+| `phase-4-finalization` | Finalization guide |
+| `code-standards` | Coding standards |
+| `testing-standards` | Testing guidelines |
+| `documentation-standards` | Documentation guidelines |
+| `architecture-patterns` | Architecture patterns |
+| `pdr-template` | Product Definition Report template |
+| `tech-analysis-template` | Technical analysis template |
+| `todos-template` | Task breakdown template |
+| `workflow-diagrams` | Mermaid diagrams |
+| `glossary` | Project terminology |
+| `mcp-servers` | MCP documentation |
+
+## Template Configuration
+
+The CLI can auto-configure `{{PLACEHOLDER}}` values in templates by detecting your project setup.
+
+### Configuration Categories
+
+| Category | Examples |
+|----------|----------|
+| **Commands** | `{{TYPECHECK_COMMAND}}`, `{{LINT_COMMAND}}`, `{{TEST_COMMAND}}`, `{{COVERAGE_COMMAND}}` |
+| **Paths** | `{{PLANNING_PATH}}`, `{{ARCHIVE_PATH}}`, `{{SCHEMAS_PATH}}` |
+| **Targets** | `{{COVERAGE_TARGET}}`, `{{BUNDLE_SIZE_TARGET}}`, `{{LCP_TARGET}}` |
+| **Tracking** | `{{ISSUE_TRACKER}}`, `{{TRACKING_FILE}}`, `{{TASK_CODE_PATTERN}}` |
+| **Tech Stack** | `{{FRONTEND_FRAMEWORK}}`, `{{DATABASE_ORM}}`, `{{VALIDATION_LIBRARY}}` |
+| **Environment** | `{{GITHUB_TOKEN_ENV}}`, `{{GITHUB_OWNER_ENV}}` |
+| **Brand** | `{{BRAND_NAME}}`, `{{PRIMARY_COLOR}}`, `{{TONE_OF_VOICE}}` |
+
+### Auto-Detection
+
+The CLI automatically detects values from:
+
+- **package.json scripts**: `typecheck`, `lint`, `test`, `coverage`, `build`
+- **Dependencies**: React, Next.js, Drizzle, Prisma, Zod, Vitest, Jest
+- **Lock files**: pnpm-lock.yaml, yarn.lock, package-lock.json, bun.lockb
+- **Config files**: tsconfig.json, .git directory
+
+### Global Defaults
+
+Save configuration as defaults for future projects:
+
+```bash
+# During init, you'll be asked:
+# "Save these values as global defaults for future projects?"
+
+# View saved defaults
+claude-config configure --show-defaults
+```
+
+Defaults are stored in `~/.claude/defaults.json`.
 
 ## MCP Servers
 
 Model Context Protocol servers extend Claude's capabilities.
 
-| ID | Name | Category | Description | Requires Config |
-|----|------|----------|-------------|-----------------|
-| `context7` | Context7 | Documentation | Library/framework documentation lookup | No |
-| `github` | GitHub | Version Control | GitHub API (issues, PRs, repos) | Yes (`GITHUB_TOKEN`) |
-| `postgres` | PostgreSQL | Database | Direct PostgreSQL access | Yes (`DATABASE_URL`) |
-| `neon` | Neon | Database | Neon serverless PostgreSQL | Yes (`NEON_API_KEY`) |
-| `vercel` | Vercel | Deployment | Vercel deployment management | Yes (`VERCEL_TOKEN`) |
-| `docker` | Docker | Infrastructure | Docker container management | No |
-| `linear` | Linear | Project Mgmt | Linear issue tracking | Yes (`LINEAR_API_KEY`) |
-| `sentry` | Sentry | Monitoring | Error monitoring | Yes (`SENTRY_AUTH_TOKEN`) |
-| `filesystem` | Filesystem | Infrastructure | Enhanced file operations | No |
+| ID | Name | Category | Requires Config |
+|----|------|----------|-----------------|
+| `context7` | Context7 | Documentation | No |
+| `github` | GitHub | Version Control | Yes (`GITHUB_TOKEN`) |
+| `postgres` | PostgreSQL | Database | Yes (`DATABASE_URL`) |
+| `neon` | Neon | Database | Yes (`NEON_API_KEY`) |
+| `vercel` | Vercel | Deployment | Yes (`VERCEL_TOKEN`) |
+| `docker` | Docker | Infrastructure | No |
+| `linear` | Linear | Project Mgmt | Yes (`LINEAR_API_KEY`) |
+| `sentry` | Sentry | Monitoring | Yes (`SENTRY_AUTH_TOKEN`) |
+| `filesystem` | Filesystem | Infrastructure | No |
 
-### Configuration
-
-MCP servers can be configured at two levels:
+### Configuration Levels
 
 - **User level**: `~/.claude/settings.json` - Available in all projects
 - **Project level**: `.claude/settings.local.json` - Project-specific
@@ -620,41 +713,79 @@ Control what Claude can do in your project.
 
 #### File Operations
 
-| Permission | Description | Default |
-|------------|-------------|---------|
-| `readAll` | Read any file | ✓ |
-| `writeCode` | Write `.ts`, `.js`, `.tsx`, `.jsx` | ✓ |
-| `writeConfig` | Write `.json`, `.yaml`, `.toml` | ✓ |
-| `writeMarkdown` | Write `.md` files | ✓ |
-| `writeOther` | Write other file types | ✗ |
-| `editTool` | Use Edit tool | ✓ |
+| Permission | Default | Trust | Restrictive |
+|------------|---------|-------|-------------|
+| Read any file | ✓ | ✓ | ✓ |
+| Write code (.ts, .js, .tsx) | ✓ | ✓ | ✗ |
+| Write config (.json, .yaml) | ✓ | ✓ | ✗ |
+| Write markdown (.md) | ✓ | ✓ | ✗ |
+| Write other files | ✗ | ✓ | ✗ |
 
 #### Git Operations
 
-| Permission | Description | Default |
-|------------|-------------|---------|
-| `readOnly` | `status`, `diff`, `log` | ✓ |
-| `staging` | `add` | ✗ |
-| `commit` | `commit` | ✗ |
-| `push` | `push` (dangerous) | ✗ |
-| `branching` | `checkout`, `branch` | ✗ |
+| Permission | Default | Trust | Restrictive |
+|------------|---------|-------|-------------|
+| status, diff, log | ✓ | ✓ | ✓ |
+| add (staging) | ✗ | ✓ | ✗ |
+| commit | ✗ | ✓ | ✗ |
+| push | ✗ | ✗ | ✗ |
+| checkout, branch | ✗ | ✓ | ✗ |
 
-#### Bash/Terminal
+#### Bash Operations
 
-| Permission | Description | Default |
-|------------|-------------|---------|
-| `packageManager` | `pnpm`, `npm`, `yarn` | ✓ |
-| `testing` | `vitest`, `jest`, etc. | ✓ |
-| `building` | Build commands | ✓ |
-| `docker` | Docker commands | ✗ |
-| `arbitrary` | Any bash command | ✗ |
+| Permission | Default | Trust | Restrictive |
+|------------|---------|-------|-------------|
+| Package manager | ✓ | ✓ | ✗ |
+| Testing commands | ✓ | ✓ | ✗ |
+| Build commands | ✓ | ✓ | ✗ |
+| Docker commands | ✗ | ✓ | ✗ |
+| Arbitrary commands | ✗ | ✓ | ✗ |
 
-#### Web
+## Code Style
 
-| Permission | Description | Default |
-|------------|-------------|---------|
-| `fetch` | WebFetch tool | ✓ |
-| `search` | WebSearch tool | ✓ |
+Configure code style tools during initialization.
+
+### Available Tools
+
+| Tool | Description |
+|------|-------------|
+| **EditorConfig** | Editor-agnostic formatting rules |
+| **Biome** | Fast linter and formatter |
+| **Prettier** | Opinionated code formatter |
+| **Commitlint** | Commit message linting |
+
+### EditorConfig Options
+
+- Indent style (tabs/spaces)
+- Indent size
+- Line endings (LF/CRLF)
+- Final newline
+- Trim trailing whitespace
+- Max line length
+
+### Biome Options
+
+- Formatter settings (indent, quotes, semicolons)
+- Linter rules (recommended, correctness, security)
+- Import organization
+- Ignore patterns
+
+### Prettier Options
+
+- Print width
+- Tab width
+- Semicolons
+- Quote style
+- Trailing commas
+- Bracket spacing
+
+### Commitlint Options
+
+- Commit types allowed
+- Scope requirements
+- Header max length
+- Body requirements
+- Husky integration
 
 ## Hooks
 
@@ -666,7 +797,7 @@ Notification hooks alert you when Claude finishes tasks.
 |------|---------|-------------|
 | `notification` | Task completion | Desktop/audio notifications |
 | `stop` | Claude stops | Beep or custom sound |
-| `subagentStop` | Subagent completes | Notification for background tasks |
+| `subagentStop` | Subagent completes | Background task notifications |
 
 ### Configuration
 
@@ -687,90 +818,78 @@ Notification hooks alert you when Claude finishes tasks.
 }
 ```
 
-### System Requirements for Hooks
+### System Requirements
 
 | Feature | Linux | macOS | Windows |
 |---------|-------|-------|---------|
 | Desktop notifications | `libnotify-bin` | Built-in | Built-in |
-| Audio (TTS) | Piper TTS | `say` command | SAPI |
+| Audio (TTS) | Piper TTS | `say` | SAPI |
 | Audio (beep) | `aplay` | `afplay` | PowerShell |
 
 ## Project Structure
-
-After initialization, your project will have:
 
 ```
 your-project/
 ├── .claude/
 │   ├── config.json              # Claude Code Config settings
+│   ├── settings.local.json      # Local permissions & MCP
 │   ├── agents/                  # AI agent definitions
-│   │   ├── engineering/         # Engineering agents
-│   │   ├── product/             # Product agents
-│   │   ├── quality/             # Quality agents
-│   │   └── specialized/         # Specialized agents
+│   │   ├── engineering/
+│   │   ├── product/
+│   │   ├── quality/
+│   │   ├── design/
+│   │   └── specialized/
 │   ├── skills/                  # Skill definitions
-│   │   ├── testing/             # Testing skills
-│   │   ├── development/         # Development skills
-│   │   └── design/              # Design skills
+│   │   ├── testing/
+│   │   ├── development/
+│   │   └── design/
 │   ├── commands/                # Slash commands
-│   │   ├── quality/             # Quality commands
-│   │   ├── development/         # Development commands
-│   │   └── planning/            # Planning commands
+│   │   ├── audit/
+│   │   ├── planning/
+│   │   ├── git/
+│   │   ├── meta/
+│   │   └── formatting/
 │   ├── docs/                    # Documentation
-│   │   ├── workflows/           # Workflow guides
-│   │   ├── standards/           # Coding standards
-│   │   └── templates/           # Document templates
+│   │   ├── workflows/
+│   │   ├── standards/
+│   │   └── templates/
 │   ├── schemas/                 # JSON schemas (optional)
 │   ├── scripts/                 # Utility scripts (optional)
 │   ├── hooks/                   # Hook scripts (optional)
 │   └── sessions/                # Planning sessions (optional)
-│       └── planning/            # Feature planning storage
+│       └── planning/
 ├── CLAUDE.md                    # Main Claude instructions
-└── .claude/settings.local.json  # Local settings (permissions, MCP)
+└── .editorconfig               # EditorConfig (optional)
 ```
 
 ## Placeholders
 
-Templates use placeholders that are replaced with project-specific values.
+Templates use two types of placeholders:
 
-### Available Placeholders
+### Project Placeholders (Replaced During Init)
 
-| Placeholder | Config Key | Description |
-|-------------|------------|-------------|
-| `{{PROJECT_NAME}}` | `name` | Project name |
-| `{{PROJECT_DESCRIPTION}}` | `description` | Project description |
-| `{{ORG_NAME}}` | `org` | GitHub organization |
-| `{{REPO_NAME}}` | `repo` | Repository name |
-| `{{DOMAIN}}` | `domain` | Project domain |
-| `{{ENTITY_TYPE}}` | `entityType` | Primary entity (singular) |
-| `{{ENTITY_TYPE_PLURAL}}` | `entityTypePlural` | Primary entity (plural) |
-| `{{LOCATION}}` | `location` | Location for examples |
-| `[City Name]` | `location` | Location placeholder |
-| `your-org` | `org` | Organization placeholder |
-| `your-repo` | `repo` | Repository placeholder |
-| `example.com` | `domain` | Domain placeholder |
+| Placeholder | Description |
+|-------------|-------------|
+| `[Project Name]` | Project name |
+| `your-org` | GitHub organization |
+| `your-repo` | Repository name |
+| `example.com` | Project domain |
+| `entity` | Primary entity type |
 
-### Example
+### Template Placeholders (Configured via `configure`)
 
-Before:
-```markdown
-# {{PROJECT_NAME}}
-
-Visit https://{{DOMAIN}} for more information.
-Report issues at https://github.com/{{ORG_NAME}}/{{REPO_NAME}}/issues
-```
-
-After:
-```markdown
-# My Awesome Project
-
-Visit https://myproject.com for more information.
-Report issues at https://github.com/myorg/myproject/issues
-```
+| Placeholder | Example Value |
+|-------------|---------------|
+| `{{TYPECHECK_COMMAND}}` | `pnpm typecheck` |
+| `{{LINT_COMMAND}}` | `pnpm lint` |
+| `{{TEST_COMMAND}}` | `pnpm test` |
+| `{{COVERAGE_TARGET}}` | `90` |
+| `{{ISSUE_TRACKER}}` | `github` |
+| `{{DATABASE_ORM}}` | `Drizzle` |
 
 ## Programmatic API
 
-Use the library programmatically in your Node.js applications.
+Use the library programmatically in Node.js applications.
 
 ### Installation
 
@@ -799,47 +918,42 @@ import {
   // Placeholders
   replacePlaceholders,
 
+  // Template Configuration
+  scanForPlaceholders,
+  replaceTemplatePlaceholders,
+  buildConfigContext,
+
+  // Global Defaults
+  readGlobalDefaults,
+  writeGlobalDefaults,
+
   // Constants
   PRESETS,
   MCP_SERVERS,
   PERMISSION_PRESETS,
-  PLACEHOLDERS,
-  DEPENDENCIES,
+  TEMPLATE_PLACEHOLDERS,
 } from '@qazuor/claude-code-config';
-
-// Check if project has Claude config
-const hasClaudeConfig = await hasConfig('./my-project');
-
-// Read existing configuration
-const config = await readConfig('./my-project');
-console.log(config.modules.agents.selected);
 
 // Detect project type
 const detection = await detectProject('./my-project');
 console.log(detection.projectType);      // 'nextjs', 'astro', 'hono', etc.
 console.log(detection.packageManager);   // 'pnpm', 'npm', 'yarn', 'bun'
 console.log(detection.suggestedPreset);  // 'frontend', 'backend', etc.
-console.log(detection.confidence);       // 'high', 'medium', 'low'
 
-// Load module registry from templates
-const registry = await loadRegistry('./templates');
-console.log(registry.agents);  // Array of agent definitions
-console.log(registry.skills);  // Array of skill definitions
+// Build context for template configuration
+const context = await buildConfigContext('./my-project');
+console.log(context.scripts);        // { test: 'vitest', lint: 'biome check' }
+console.log(context.dependencies);   // { react: '^18.0.0', drizzle-orm: '...' }
+console.log(context.packageManager); // 'pnpm'
 
-// Get preset configuration
-const fullstackPreset = PRESETS.fullstack;
-console.log(fullstackPreset.modules.agents);  // ['tech-lead', 'hono-engineer', ...]
+// Scan for placeholders
+const scan = await scanForPlaceholders('./.claude');
+console.log(scan.placeholders);      // ['{{TYPECHECK_COMMAND}}', ...]
+console.log(scan.byCategory);        // { commands: [...], paths: [...] }
 
-// Create default config
-const defaultConfig = createDefaultConfig({
-  name: 'my-project',
-  description: 'My awesome project',
-  org: 'myorg',
-  repo: 'my-project',
-});
-
-// Write configuration
-await writeConfig('./my-project', defaultConfig);
+// Read/write configuration
+const config = await readConfig('./my-project');
+await writeConfig('./my-project', config);
 ```
 
 ### Types
@@ -849,32 +963,25 @@ import type {
   // Configuration
   ClaudeConfig,
   ProjectInfo,
-  Preferences,
-  ModuleSelection,
-  HookConfig,
+  TemplateConfig,
+  TemplateConfigContext,
 
   // Modules
   ModuleRegistry,
   ModuleDefinition,
   ModuleCategory,
-  ResolvedModule,
 
-  // Presets
+  // Template
+  TemplatePlaceholderDefinition,
+  PlaceholderScanResult,
+
+  // Presets & Bundles
   PresetName,
   PresetDefinition,
+  BundleDefinition,
 
-  // MCP
+  // MCP & Permissions
   McpServerDefinition,
-  McpInstallation,
-
-  // Scaffold
-  ProjectType,
-  PackageManager,
-  ProjectDetectionResult,
-  ScaffoldOptions,
-
-  // Permissions
-  PermissionPreset,
   PermissionsConfig,
 } from '@qazuor/claude-code-config';
 ```
@@ -895,7 +1002,6 @@ The main configuration is stored in `.claude/config.json`.
     "description": "My awesome project",
     "org": "myorg",
     "repo": "my-project",
-    "domain": "myproject.com",
     "entityType": "product",
     "entityTypePlural": "products"
   },
@@ -907,70 +1013,56 @@ The main configuration is stored in `.claude/config.json`.
   "mcp": {
     "level": "project",
     "servers": [
-      {
-        "serverId": "context7",
-        "level": "project",
-        "config": {}
-      }
+      { "serverId": "context7", "level": "project" }
     ]
   },
   "modules": {
-    "agents": {
-      "selected": ["tech-lead", "qa-engineer"],
-      "excluded": []
-    },
-    "skills": {
-      "selected": ["tdd-methodology"],
-      "excluded": []
-    },
-    "commands": {
-      "selected": ["quality-check", "commit"],
-      "excluded": []
-    },
-    "docs": {
-      "selected": ["quick-start"],
-      "excluded": []
-    }
+    "agents": { "selected": ["tech-lead", "qa-engineer"], "excluded": [] },
+    "skills": { "selected": ["tdd-methodology"], "excluded": [] },
+    "commands": { "selected": ["quality-check", "commit"], "excluded": [] },
+    "docs": { "selected": ["quick-start"], "excluded": [] }
   },
   "extras": {
     "schemas": true,
     "scripts": false,
-    "hooks": {
-      "enabled": true,
-      "notification": {
-        "desktop": true,
-        "audio": false
-      }
+    "hooks": { "enabled": true, "notification": { "desktop": true } },
+    "sessions": true,
+    "codeStyle": { "enabled": true, "biome": true }
+  },
+  "templateConfig": {
+    "commands": {
+      "typecheck": "pnpm typecheck",
+      "lint": "pnpm lint",
+      "test": "pnpm test"
     },
-    "sessions": true
-  },
-  "scaffold": {
-    "type": "claude-only",
-    "createdStructure": [".claude/", "CLAUDE.md"]
-  },
-  "customizations": {
-    "placeholdersReplaced": true,
-    "lastUpdated": "2024-01-15T10:30:00.000Z",
-    "customFiles": []
+    "targets": {
+      "coverageTarget": 90
+    },
+    "tracking": {
+      "issueTracker": "github"
+    },
+    "techStack": {
+      "frontendFramework": "React",
+      "databaseOrm": "Drizzle",
+      "validationLibrary": "Zod"
+    }
   }
 }
 ```
 
-## Templates
+## Custom Templates
 
-### Using Custom Templates
+### Using Remote Templates
 
 ```bash
-# Use templates from a custom repository
+# Use templates from custom repository
 claude-config init --template https://github.com/your-org/claude-templates
 
-# Specify a branch or tag
+# Specify branch or tag
 claude-config init --template https://github.com/your-org/claude-templates --branch v2.0
 ```
 
 ### Template Structure
-
-Custom template repositories should follow this structure:
 
 ```
 your-templates/
@@ -999,8 +1091,6 @@ your-templates/
 
 ### Registry Format
 
-Each category needs a `_registry.json` file:
-
 ```json
 {
   "category": "agents",
@@ -1010,7 +1100,12 @@ Each category needs a `_registry.json` file:
       "name": "My Agent",
       "description": "Description of my agent",
       "file": "engineering/my-agent.md",
-      "tags": ["engineering", "custom"]
+      "tags": ["engineering", "custom"],
+      "longDescription": "Extended description...",
+      "whatItDoes": ["Action 1", "Action 2"],
+      "whenToUse": "When to use this agent",
+      "skillLevel": "intermediate",
+      "relatedModules": ["other-agent"]
     }
   ]
 }
@@ -1019,7 +1114,7 @@ Each category needs a `_registry.json` file:
 ## Requirements
 
 - **Node.js**: >= 18.0.0
-- **Package Manager**: npm, pnpm, yarn, or bun
+- **Package Manager**: pnpm, npm, yarn, or bun
 - **Git**: For version control operations
 
 ### Optional Dependencies
@@ -1032,18 +1127,9 @@ Each category needs a `_registry.json` file:
 
 ## Contributing
 
-Contributions are welcome! Please read our contributing guidelines.
+Contributions are welcome! Please follow these guidelines:
 
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/my-feature`
-3. Make your changes
-4. Run tests: `pnpm test`
-5. Run linter: `pnpm lint`
-6. Commit: `git commit -m 'feat: add my feature'`
-7. Push: `git push origin feature/my-feature`
-8. Open a Pull Request
-
-### Development
+### Development Setup
 
 ```bash
 # Clone repository
@@ -1070,7 +1156,40 @@ pnpm typecheck
 
 # Run tests
 pnpm test
+
+# Run tests with coverage
+pnpm test:coverage
 ```
+
+### Contribution Process
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/my-feature`
+3. Make your changes
+4. Run tests: `pnpm test`
+5. Run linter: `pnpm lint`
+6. Run typecheck: `pnpm typecheck`
+7. Commit using conventional commits: `git commit -m 'feat: add my feature'`
+8. Push: `git push origin feature/my-feature`
+9. Open a Pull Request
+
+### Conventional Commits
+
+Use conventional commit messages:
+
+- `feat:` - New features
+- `fix:` - Bug fixes
+- `docs:` - Documentation changes
+- `refactor:` - Code refactoring
+- `test:` - Test additions/changes
+- `chore:` - Maintenance tasks
+
+### Adding New Modules
+
+1. Create the module file in the appropriate `templates/` directory
+2. Add entry to `_registry.json` with full metadata
+3. Update tests if needed
+4. Update documentation
 
 ## License
 
@@ -1089,3 +1208,4 @@ MIT License - see [LICENSE](LICENSE) for details.
 - [Inquirer.js](https://github.com/SBoudrias/Inquirer.js/) for interactive prompts
 - [tsup](https://github.com/egoist/tsup) for TypeScript bundling
 - [Biome](https://biomejs.dev/) for linting and formatting
+- [Vitest](https://vitest.dev/) for testing
