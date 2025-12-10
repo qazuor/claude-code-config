@@ -5,6 +5,7 @@
 import type { FolderPreferences } from './folder-preferences.js';
 import type { McpInstallation } from './mcp.js';
 import type { PermissionsConfig } from './permissions.js';
+import type { PackageManager } from './scaffold.js';
 import type { TemplateConfig } from './template-config.js';
 
 /**
@@ -53,6 +54,8 @@ export interface Preferences {
   responseLanguage: 'es' | 'en';
   /** Include Claude as commit co-author */
   includeCoAuthor: boolean;
+  /** Preferred package manager */
+  packageManager?: PackageManager;
 }
 
 /**
