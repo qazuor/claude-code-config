@@ -131,3 +131,17 @@ export type {
   FolderPreferences,
   BundleFolderRecommendations,
 } from './folder-preferences.js';
+
+// Package.json types
+export type {
+  PackageJson,
+  PackageJsonPerson,
+  PackageJsonRepository,
+  PackageJsonBugs,
+  PackageJsonFunding,
+  PackageJsonUpdateOptions,
+  PackageJsonUpdateResult,
+  PackageJsonChanges,
+  ToolSelection,
+  DependencyGenerationConfig,
+} from './package-json.js';

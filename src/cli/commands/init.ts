@@ -9,12 +9,22 @@ import { writeConfig } from '../../lib/config/index.js';
 import {
   checkFeatureDependencies,
   formatDependencyReport,
+  formatManualInstallInstructions,
   getRequiredFeatures,
+  installDependencies,
 } from '../../lib/dependencies/index.js';
 import { installHooks } from '../../lib/hooks/index.js';
 import { installMcpServers } from '../../lib/mcp/index.js';
 import { filterModules, loadRegistry } from '../../lib/modules/index.js';
 import { installAllModules, installExtras } from '../../lib/modules/installer.js';
+import {
+  deriveToolSelectionFromCodeStyle,
+  generatePackageJsonChanges,
+  getInstallCommand,
+  getSetupInstructions,
+  readPackageJson,
+  updatePackageJson,
+} from '../../lib/npm/index.js';
 import { installPermissions, setCoAuthorSetting } from '../../lib/permissions/index.js';
 import { replacePlaceholders, showReplacementReport } from '../../lib/placeholders/index.js';
 import {
@@ -30,6 +40,7 @@ import { colors, logger } from '../../lib/utils/logger.js';
 import { getTemplatesPath } from '../../lib/utils/paths.js';
 import {
   cleanup,
+  confirm,
   setupGracefulCancellation,
   showCancelHint,
 } from '../../lib/utils/prompt-cancel.js';
@@ -37,6 +48,7 @@ import { spinner, withSpinner } from '../../lib/utils/spinner.js';
 import type { BundleSelectionResult } from '../../types/bundles.js';
 import type { ClaudeConfig } from '../../types/config.js';
 import type { ModuleCategory, ModuleDefinition, ModuleRegistry } from '../../types/modules.js';
+import type { DependencyGenerationConfig, ToolSelection } from '../../types/package-json.js';
 import type { TemplateConfig } from '../../types/template-config.js';
 import {
   promptBundleMode,
@@ -222,8 +234,66 @@ async function runInit(path: string | undefined, options: InitOptions): Promise<
     if (features.length > 0) {
       const depReport = await checkFeatureDependencies(features);
       if (depReport.missing.length > 0) {
+        logger.section('System Dependencies', '🔧');
+        logger.warn(`Found ${depReport.missing.length} missing system dependencies`);
         logger.newline();
-        formatDependencyReport(depReport);
+
+        // Show what's missing
+        for (const dep of depReport.missing) {
+          logger.item(`${dep.name} - ${dep.description}`);
+        }
+        logger.newline();
+
+        if (!options.yes) {
+          const shouldInstall = await confirm({
+            message: 'Would you like to try installing these dependencies now?',
+            default: true,
+          });
+
+          if (shouldInstall) {
+            logger.newline();
+            const results = await installDependencies(depReport.missing, {
+              onProgress: (dep, index, total) => {
+                spinner.start(`Installing ${dep.name} (${index + 1}/${total})...`);
+              },
+            });
+
+            const successful = results.filter((r) => r.success);
+            const failed = results.filter((r) => !r.success);
+
+            if (successful.length > 0) {
+              spinner.succeed(`Installed ${successful.length} dependencies successfully`);
+            }
+
+            if (failed.length > 0) {
+              spinner.fail(`Failed to install ${failed.length} dependencies`);
+              logger.newline();
+              logger.warn('The following dependencies could not be installed automatically:');
+              for (const result of failed) {
+                logger.item(`${result.dep.name}: ${result.error}`);
+              }
+
+              // Show manual instructions for failed ones
+              const failedReport = {
+                ...depReport,
+                missing: failed.map((r) => r.dep),
+              };
+              logger.newline();
+              formatDependencyReport(failedReport);
+            }
+          } else {
+            // User chose not to install - show manual instructions
+            logger.newline();
+            logger.info('You can install them later using the following commands:');
+            const instructions = formatManualInstallInstructions(depReport);
+            for (const line of instructions) {
+              logger.raw(line);
+            }
+          }
+        } else {
+          // Non-interactive mode - just show the report
+          formatDependencyReport(depReport);
+        }
       }
     }
 
@@ -355,8 +425,10 @@ async function buildInteractiveConfig(
     return buildInteractiveConfig(projectPath, detection, registry, options);
   }
 
-  // Preferences
-  const preferences = await promptPreferences();
+  // Preferences (including package manager)
+  const preferences = await promptPreferences({
+    detectedPackageManager: detection.packageManager,
+  });
 
   // Scaffold options
   const scaffoldOptions = await promptScaffoldOptions({
@@ -651,6 +723,216 @@ async function executeInstallation(
   // Show code style instructions if needed
   if (config.extras.codeStyle?.enabled) {
     showCodeStyleInstructions(config.extras.codeStyle);
+  }
+
+  // Update package.json with dependencies if code style tools are enabled
+  if (config.extras.codeStyle?.enabled) {
+    await handlePackageJsonUpdate(projectPath, config, options);
+  }
+}
+
+/**
+ * Handle package.json update with code style dependencies
+ */
+async function handlePackageJsonUpdate(
+  projectPath: string,
+  config: ClaudeConfig,
+  options: InitOptions
+): Promise<void> {
+  const codeStyle = config.extras.codeStyle;
+  if (!codeStyle?.enabled) return;
+
+  // Derive tool selection from code style config
+  const toolSelection = deriveToolSelectionFromCodeStyle({
+    biome: codeStyle.biome,
+    prettier: codeStyle.prettier,
+    commitlint: codeStyle.commitlint,
+  });
+
+  // Check if there are any tools selected
+  const hasTools = toolSelection.linter || toolSelection.formatter || toolSelection.commitlint;
+  if (!hasTools) return;
+
+  // Generate package.json changes
+  const packageManager = config.preferences.packageManager || 'pnpm';
+  const depConfig: DependencyGenerationConfig = {
+    tools: toolSelection as ToolSelection,
+    packageManager,
+    project: {
+      name: config.project.name,
+      description: config.project.description,
+      repository:
+        config.project.org && config.project.repo
+          ? `https://github.com/${config.project.org}/${config.project.repo}`
+          : undefined,
+    },
+  };
+
+  const changes = generatePackageJsonChanges(depConfig);
+
+  // Check if there are any changes to make
+  const hasChanges =
+    Object.keys(changes.scripts || {}).length > 0 ||
+    Object.keys(changes.dependencies || {}).length > 0 ||
+    Object.keys(changes.devDependencies || {}).length > 0;
+
+  if (!hasChanges) return;
+
+  // Show what would be added
+  logger.newline();
+  logger.section('Package.json Updates', '📦');
+
+  // Check if package.json exists
+  const existingPackageJson = await readPackageJson(projectPath);
+  const packageJsonExists = existingPackageJson !== null;
+
+  if (!packageJsonExists) {
+    logger.info('No package.json found. A new one will be created.');
+  }
+
+  // Show proposed devDependencies
+  if (changes.devDependencies && Object.keys(changes.devDependencies).length > 0) {
+    logger.subtitle('Dev Dependencies to add:');
+    for (const [name, version] of Object.entries(changes.devDependencies)) {
+      logger.item(`${name}@${version}`);
+    }
+  }
+
+  // Show proposed scripts
+  if (changes.scripts && Object.keys(changes.scripts).length > 0) {
+    logger.newline();
+    logger.subtitle('Scripts to add:');
+    for (const [name, command] of Object.entries(changes.scripts)) {
+      logger.item(`${name}: ${command}`);
+    }
+  }
+
+  // Ask user if they want to update package.json
+  if (!options.yes) {
+    logger.newline();
+    const shouldUpdate = await confirm({
+      message: packageJsonExists
+        ? 'Would you like to update package.json with these changes?'
+        : 'Would you like to create package.json with these settings?',
+      default: true,
+    });
+
+    if (!shouldUpdate) {
+      logger.info('Skipped package.json update. You can add these manually later.');
+      showManualDependencyInstructions(changes, packageManager, toolSelection as ToolSelection);
+      return;
+    }
+  }
+
+  // Apply changes
+  if (!options.dryRun) {
+    const result = await updatePackageJson(projectPath, changes, {
+      scriptsMerge: 'skip-existing',
+      dependenciesMerge: 'skip-existing',
+      createIfMissing: true,
+    });
+
+    if (result.success) {
+      if (result.created) {
+        logger.success('Created package.json');
+      } else if (result.modified) {
+        logger.success('Updated package.json');
+      }
+
+      // Show what was added/skipped
+      if (result.addedDevDependencies.length > 0) {
+        logger.info(`Added ${result.addedDevDependencies.length} dev dependencies`);
+      }
+      if (result.skippedDevDependencies.length > 0) {
+        logger.info(
+          `Skipped ${result.skippedDevDependencies.length} existing dependencies: ${result.skippedDevDependencies.join(', ')}`
+        );
+      }
+      if (result.addedScripts.length > 0) {
+        logger.info(`Added ${result.addedScripts.length} scripts`);
+      }
+      if (result.skippedScripts.length > 0) {
+        logger.info(
+          `Skipped ${result.skippedScripts.length} existing scripts: ${result.skippedScripts.join(', ')}`
+        );
+      }
+
+      // Show install command
+      logger.newline();
+      logger.subtitle('Next Steps');
+      logger.info('Run the following command to install dependencies:');
+      logger.raw(`  ${getInstallCommand(packageManager)}`);
+
+      // Show setup instructions if any
+      const setupInstructions = getSetupInstructions(toolSelection as ToolSelection);
+      if (setupInstructions.length > 0) {
+        logger.newline();
+        logger.subtitle('Additional Setup');
+        for (const instruction of setupInstructions) {
+          logger.raw(`  ${instruction}`);
+        }
+      }
+    } else {
+      logger.warn(`Failed to update package.json: ${result.error}`);
+      showManualDependencyInstructions(changes, packageManager, toolSelection as ToolSelection);
+    }
+  } else {
+    logger.info('Dry run - package.json would be updated with above changes');
+  }
+}
+
+/**
+ * Show manual instructions for adding dependencies
+ */
+function showManualDependencyInstructions(
+  changes: ReturnType<typeof generatePackageJsonChanges>,
+  packageManager: 'npm' | 'yarn' | 'pnpm' | 'bun',
+  toolSelection: ToolSelection
+): void {
+  logger.newline();
+  logger.subtitle('Manual Installation');
+
+  // Show install command for dependencies
+  if (changes.devDependencies && Object.keys(changes.devDependencies).length > 0) {
+    const pkgNames = Object.keys(changes.devDependencies).join(' ');
+    let installCmd: string;
+    switch (packageManager) {
+      case 'npm':
+        installCmd = `npm install -D ${pkgNames}`;
+        break;
+      case 'yarn':
+        installCmd = `yarn add -D ${pkgNames}`;
+        break;
+      case 'pnpm':
+        installCmd = `pnpm add -D ${pkgNames}`;
+        break;
+      case 'bun':
+        installCmd = `bun add -D ${pkgNames}`;
+        break;
+      default:
+        installCmd = `npm install -D ${pkgNames}`;
+    }
+    logger.info('Install dev dependencies:');
+    logger.raw(`  ${installCmd}`);
+  }
+
+  // Show scripts to add
+  if (changes.scripts && Object.keys(changes.scripts).length > 0) {
+    logger.newline();
+    logger.info('Add these scripts to package.json:');
+    for (const [name, command] of Object.entries(changes.scripts)) {
+      logger.raw(`  "${name}": "${command}"`);
+    }
+  }
+
+  // Show setup instructions
+  const setupInstructions = getSetupInstructions(toolSelection);
+  if (setupInstructions.length > 0) {
+    logger.newline();
+    logger.subtitle('Additional Setup');
+    for (const instruction of setupInstructions) {
+      logger.raw(`  ${instruction}`);
+    }
   }
 }
 
