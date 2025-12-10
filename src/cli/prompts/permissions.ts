@@ -30,7 +30,7 @@ interface PermissionsPromptOptions {
 export async function promptPermissionsConfig(
   options?: PermissionsPromptOptions
 ): Promise<PermissionsConfig> {
-  logger.subtitle('Permissions Configuration');
+  logger.section('Permissions', '🔐');
 
   const configurePermissions = await confirm({
     message: 'Do you want to configure Claude Code permissions?',

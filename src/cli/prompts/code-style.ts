@@ -64,7 +64,7 @@ const CODE_STYLE_TOOLS: CodeStyleChoice[] = [
 export async function promptCodeStyleConfig(options?: {
   defaults?: Partial<CodeStyleConfig>;
 }): Promise<CodeStyleConfig> {
-  logger.subtitle('Code Style Configuration');
+  logger.section('Code Style', '🎨');
   logger.info('Configure code formatting and linting tools');
   logger.newline();
 

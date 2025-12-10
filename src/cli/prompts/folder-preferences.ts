@@ -326,8 +326,7 @@ export async function promptQuickFolderPreferences(options: {
 
   // If we have recommendations, show them and ask if user wants to customize
   if (recommendations.length > 0) {
-    logger.newline();
-    logger.subtitle('Folder Structure');
+    logger.section('Folder Structure', '📁');
     logger.info(colors.muted('Based on your bundles, we have recommended folder settings.'));
 
     showFolderPreferencesSummary(mergedDefaults);

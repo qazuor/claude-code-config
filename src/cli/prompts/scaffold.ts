@@ -21,7 +21,7 @@ interface ScaffoldPromptOptions {
  * Prompt for scaffold type
  */
 export async function promptScaffoldType(options?: ScaffoldPromptOptions): Promise<ScaffoldType> {
-  logger.subtitle('Configuration Scope');
+  logger.section('Configuration Scope', '🏗️');
 
   if (options?.existingProject) {
     logger.info('Existing project detected');

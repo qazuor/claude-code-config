@@ -16,7 +16,7 @@ interface HookPromptOptions {
  * Prompt for hook configuration
  */
 export async function promptHookConfig(options?: HookPromptOptions): Promise<HookConfig> {
-  logger.subtitle('Hook Configuration');
+  logger.section('Hook Configuration', '🪝');
 
   const enableHooks = await confirm({
     message: 'Do you want to configure hooks?',

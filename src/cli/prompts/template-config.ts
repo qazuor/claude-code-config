@@ -376,7 +376,7 @@ export async function promptTemplateConfig(
 ): Promise<Partial<TemplateConfig>> {
   const { context, mode = 'quick', category, requiredOnly = false } = options;
 
-  logger.subtitle('Template Configuration');
+  logger.section('Template Configuration', '📝');
 
   // Get global defaults if available
   const hasDefaults = await hasGlobalDefaults();

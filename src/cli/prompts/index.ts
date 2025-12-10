@@ -11,6 +11,7 @@ export {
 // Preferences
 export {
   promptPreferences,
+  promptPackageManagerPreference,
   confirmPreferences,
 } from './preferences.js';
 

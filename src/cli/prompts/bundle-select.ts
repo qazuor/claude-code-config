@@ -64,8 +64,7 @@ async function promptBundleSelectionByCategory(): Promise<string[]> {
   const grouped = getBundlesGroupedByCategory();
   const categories = Object.keys(grouped);
 
-  logger.newline();
-  logger.subtitle('Bundle Selection');
+  logger.section('Module Bundles', '📦');
   logger.info('Select bundles to install. Use arrow keys to see details for each bundle.');
   logger.newline();
 

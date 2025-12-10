@@ -15,7 +15,7 @@ interface ProjectInfoOptions {
  * Prompt for project information
  */
 export async function promptProjectInfo(options?: ProjectInfoOptions): Promise<ProjectInfo> {
-  logger.subtitle('Project Information');
+  logger.section('Project Information', '📋');
 
   const name = await input({
     message: 'Project name:',

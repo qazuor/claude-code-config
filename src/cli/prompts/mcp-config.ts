@@ -39,7 +39,7 @@ export interface SkippedField {
  * Returns both the config and information about any skipped configurations
  */
 export async function promptMcpConfig(options?: McpPromptOptions): Promise<McpConfigResult> {
-  logger.subtitle('MCP Server Configuration');
+  logger.section('MCP Servers', '🔌');
 
   const enableMcp = await confirm({
     message: 'Do you want to configure MCP servers?',
