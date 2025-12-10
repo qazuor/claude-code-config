@@ -147,6 +147,22 @@ export interface ModulesConfig {
 }
 
 /**
+ * Code style configuration
+ */
+export interface CodeStyleConfig {
+  /** Whether code style tools are enabled */
+  enabled: boolean;
+  /** EditorConfig file installed */
+  editorconfig: boolean;
+  /** Commitlint configuration installed */
+  commitlint: boolean;
+  /** Biome configuration installed */
+  biome: boolean;
+  /** Prettier configuration installed */
+  prettier: boolean;
+}
+
+/**
  * Extra components configuration
  */
 export interface ExtrasConfig {
@@ -158,6 +174,8 @@ export interface ExtrasConfig {
   hooks: HookConfig;
   /** Planning sessions structure */
   sessions: boolean;
+  /** Code style configuration */
+  codeStyle?: CodeStyleConfig;
 }
 
 /**

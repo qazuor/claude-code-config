@@ -91,3 +91,10 @@ export {
   showPostInstallInstructions,
   showDependencyInstructions,
 } from './confirm.js';
+
+// Code style prompts
+export {
+  promptCodeStyleConfig,
+  showCodeStyleSummary,
+  confirmCodeStyleConfig,
+} from './code-style.js';
