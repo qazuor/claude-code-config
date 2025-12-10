@@ -934,6 +934,41 @@ export const BUNDLES: BundleDefinition[] = [
       { id: 'atomic-commits', category: 'docs', optional: true },
     ],
   },
+  {
+    id: 'cicd-github-actions',
+    name: 'GitHub Actions CI/CD',
+    description: 'GitHub Actions workflows for CI/CD automation',
+    category: 'workflow',
+    longDescription:
+      'Complete CI/CD setup with GitHub Actions including testing, quality checks, security scanning, and deployment workflows.',
+    techStack: ['GitHub Actions', 'Node.js', 'PNPM'],
+    tags: ['cicd', 'github', 'automation', 'devops'],
+    complexity: 'standard',
+    responsibilities: [
+      'Continuous Integration workflows',
+      'Automated testing on PRs',
+      'Code quality checks',
+      'Security scanning',
+      'Deployment automation',
+    ],
+    scope: 'CI/CD pipeline automation with GitHub Actions',
+    useCases: [
+      'Automating test runs on PRs',
+      'Automated deployments to staging/production',
+      'Code quality gates',
+      'Security vulnerability scanning',
+    ],
+    moduleDetails: {
+      agents: [],
+      skills: [{ id: 'github-actions-specialist', purpose: 'GitHub Actions workflow patterns' }],
+      commands: [],
+      docs: [{ id: 'cicd-workflows', topic: 'CI/CD workflow documentation' }],
+    },
+    modules: [
+      { id: 'github-actions-specialist', category: 'skills', optional: true },
+      { id: 'cicd-workflows', category: 'docs', optional: true },
+    ],
+  },
 ];
 
 /**
@@ -984,4 +1019,5 @@ export const BUNDLE_CATEGORY_NAMES: Record<string, string> = {
   api: 'API Frameworks',
   frontend: 'Frontend',
   workflow: 'Workflows',
+  cicd: 'CI/CD & DevOps',
 };

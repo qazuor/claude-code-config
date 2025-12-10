@@ -14,7 +14,8 @@ export type BundleCategory =
   | 'database' // Database-related bundles
   | 'api' // API framework bundles
   | 'frontend' // Frontend framework bundles
-  | 'workflow'; // Workflow and planning bundles
+  | 'workflow' // Workflow and planning bundles
+  | 'cicd'; // CI/CD and DevOps bundles
 
 /**
  * Bundle complexity level
