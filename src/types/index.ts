@@ -120,3 +120,14 @@ export type {
   GlobalDefaults,
   TemplateConfigSetupMode,
 } from './template-config.js';
+
+// Folder preferences types
+export type {
+  TestFileLocation,
+  PlanningFileLocation,
+  DocsFileLocation,
+  CiCdLocation,
+  GithubWorkflowTemplate,
+  FolderPreferences,
+  BundleFolderRecommendations,
+} from './folder-preferences.js';
