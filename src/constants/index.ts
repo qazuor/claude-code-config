@@ -74,3 +74,24 @@ export {
   getFolderRecommendationsForBundles,
   mergeFolderPreferences,
 } from './folder-preferences.js';
+
+// NPM Dependencies
+export {
+  LINTER_DEPENDENCIES,
+  FORMATTER_DEPENDENCIES,
+  TEST_RUNNER_DEPENDENCIES,
+  COMMITLINT_DEPENDENCIES,
+  HUSKY_DEPENDENCIES,
+  TYPESCRIPT_DEPENDENCIES,
+  getLinterDependencies,
+  getFormatterDependencies,
+  getTestRunnerDependencies,
+  mergeToolDependencies,
+  formatInstallCommand,
+} from './npm-dependencies.js';
+
+export type {
+  NpmPackage,
+  PackageScript,
+  ToolDependencies,
+} from './npm-dependencies.js';
