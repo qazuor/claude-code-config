@@ -2,28 +2,28 @@
  * Template processing tests
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import {
+  applyTemplateTransform,
+  buildTemplateContext,
+  evaluateCondition,
+  extendContext,
+  findVariables,
+  getContextValue,
+  getIterable,
+  hasAllModules,
+  hasAnyModule,
+  hasDirectives,
+  hasModule,
+  isTruthy,
   parseDirectives,
   parseExpression,
   parseVariable,
-  findVariables,
-  hasDirectives,
-  validateTemplate,
-  evaluateCondition,
-  getContextValue,
-  isTruthy,
-  getIterable,
-  applyTemplateTransform,
   processTemplate,
-  buildTemplateContext,
-  extendContext,
-  hasModule,
-  hasAnyModule,
-  hasAllModules,
+  validateTemplate,
 } from '../../../src/lib/templates/index.js';
-import type { TemplateContext } from '../../../src/types/templates.js';
 import type { ClaudeConfig } from '../../../src/types/config.js';
+import type { TemplateContext } from '../../../src/types/templates.js';
 
 describe('template parser', () => {
   describe('parseDirectives', () => {
@@ -206,7 +206,10 @@ describe('template evaluator', () => {
     });
 
     it('should get arrays', () => {
-      expect(getContextValue(mockContext, 'modules.agents')).toEqual(['tech-lead', 'react-senior-dev']);
+      expect(getContextValue(mockContext, 'modules.agents')).toEqual([
+        'tech-lead',
+        'react-senior-dev',
+      ]);
     });
 
     it('should get custom values', () => {
