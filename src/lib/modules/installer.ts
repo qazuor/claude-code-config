@@ -3,9 +3,75 @@
  */
 
 import type { ModuleCategory, ModuleDefinition } from '../../types/modules.js';
-import { copy, dirname, ensureDir, joinPath, pathExists } from '../utils/fs.js';
+import {
+  copy,
+  dirname,
+  ensureDir,
+  joinPath,
+  pathExists,
+  readFile,
+  writeFile,
+} from '../utils/fs.js';
 import { logger } from '../utils/logger.js';
 import { withSpinner } from '../utils/spinner.js';
+
+/**
+ * Remove config_required section from YAML frontmatter in markdown files
+ * This cleans up template files after installation
+ */
+export function removeConfigRequiredFromFrontmatter(content: string): string {
+  // Match YAML frontmatter (starts with ---, ends with ---)
+  const frontmatterRegex = /^---\n([\s\S]*?)\n---/;
+  const match = content.match(frontmatterRegex);
+
+  if (!match) {
+    return content;
+  }
+
+  const frontmatter = match[1];
+
+  // Remove config_required section from frontmatter
+  // It can be multi-line with indented items like:
+  // config_required:
+  //   - KEY: "description"
+  //   - KEY2: "description2"
+  // The regex needs to match the key and all following indented lines
+  const configRequiredRegex = /config_required:\s*\n(?:\s+-\s+[^\n]+\n?)*/g;
+  const cleanedFrontmatter = frontmatter.replace(configRequiredRegex, '').trim();
+
+  // Reconstruct the file
+  const restOfFile = content.slice(match[0].length);
+
+  // If frontmatter is now empty except for required fields, keep it minimal
+  if (cleanedFrontmatter.trim() === '') {
+    return restOfFile.trim();
+  }
+
+  return `---\n${cleanedFrontmatter}\n---${restOfFile}`;
+}
+
+/**
+ * Process a module file after copying to clean up config_required
+ */
+async function processModuleFile(filePath: string): Promise<void> {
+  // Only process markdown files
+  if (!filePath.endsWith('.md')) {
+    return;
+  }
+
+  try {
+    const content = await readFile(filePath);
+    const cleanedContent = removeConfigRequiredFromFrontmatter(content);
+
+    // Only write if content changed
+    if (cleanedContent !== content) {
+      await writeFile(filePath, cleanedContent);
+      logger.debug(`Cleaned config_required from: ${filePath}`);
+    }
+  } catch (error) {
+    logger.debug(`Failed to process module file ${filePath}: ${error}`);
+  }
+}
 
 export interface InstallOptions {
   templatesPath: string;
@@ -74,6 +140,10 @@ export async function installModules(
 
       // Copy file
       await copy(sourcePath, targetPath, { overwrite: options.overwrite });
+
+      // Process the file to clean up config_required
+      await processModuleFile(targetPath);
+
       result.installed.push(module.id);
 
       logger.debug(`Installed: ${module.id}`);

@@ -33,6 +33,7 @@ export {
   isModuleInstalled,
   getInstalledModules,
   installExtras,
+  removeConfigRequiredFromFrontmatter,
   type InstallOptions,
   type InstallResult,
 } from './installer.js';
