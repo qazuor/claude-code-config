@@ -30,9 +30,15 @@ export {
   promptQuickBundleSelection,
   showBundleContents,
   showBundlesSummary,
+  showBundlesSummaryWithTotals,
   confirmBundleSelection,
+  confirmBundleSelectionWithEdit,
+  editBundleSelection,
+  calculateModuleTotals,
   createEmptyBundleResult,
   type BundleSelectionMode,
+  type BundleConfirmAction,
+  type ModuleTotals,
 } from './bundle-select.js';
 
 // Item selection (granular)
@@ -104,3 +110,15 @@ export {
   showCodeStyleSummary,
   confirmCodeStyleConfig,
 } from './code-style.js';
+
+// Folder preferences prompts
+export {
+  promptTestLocation,
+  promptPlanningLocation,
+  promptDocsLocation,
+  promptGithubWorkflows,
+  promptFolderPreferences,
+  promptQuickFolderPreferences,
+  showFolderPreferencesSummary,
+  confirmFolderPreferences,
+} from './folder-preferences.js';
