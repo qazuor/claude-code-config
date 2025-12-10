@@ -2,6 +2,7 @@ import { Command } from 'commander';
 
 import {
   createAddCommand,
+  createConfigureCommand,
   createInitCommand,
   createListCommand,
   createRemoveCommand,
@@ -23,5 +24,6 @@ program.addCommand(createAddCommand());
 program.addCommand(createRemoveCommand());
 program.addCommand(createStatusCommand());
 program.addCommand(createUpdateCommand());
+program.addCommand(createConfigureCommand());
 
 export { VERSION };

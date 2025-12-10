@@ -24,6 +24,7 @@ import {
   getProjectName,
   hasExistingClaudeConfig,
 } from '../../lib/scaffold/index.js';
+import { replaceTemplateConfigWithSpinner } from '../../lib/templates/config-replacer.js';
 import { joinPath, resolvePath } from '../../lib/utils/fs.js';
 import { colors, logger } from '../../lib/utils/logger.js';
 import { getTemplatesPath } from '../../lib/utils/paths.js';
@@ -36,7 +37,9 @@ import { spinner, withSpinner } from '../../lib/utils/spinner.js';
 import type { ClaudeConfig } from '../../types/config.js';
 import type { ModuleCategory, ModuleDefinition, ModuleRegistry } from '../../types/modules.js';
 import type { PresetName } from '../../types/presets.js';
+import type { TemplateConfig } from '../../types/template-config.js';
 import {
+  type SkippedMcpConfig,
   confirmFinalConfiguration,
   confirmProjectInfo,
   promptCodeStyleConfig,
@@ -51,13 +54,18 @@ import {
   selectItemsFromCategory,
   showPostInstallInstructions,
   showSkippedMcpInstructions,
-  type SkippedMcpConfig,
 } from '../prompts/index.js';
+import {
+  buildConfigContext,
+  promptSaveGlobalDefaults,
+  promptTemplateConfig,
+} from '../prompts/template-config.js';
 
 /** Extended config result that includes skipped MCP configurations */
 interface ConfigBuildResult {
   config: ClaudeConfig;
   skippedMcpConfigs: SkippedMcpConfig[];
+  templateConfig?: Partial<TemplateConfig>;
 }
 
 // Package version (will be replaced at build time or read from package.json)
@@ -163,7 +171,12 @@ async function runInit(path: string | undefined, options: InitOptions): Promise<
       return;
     }
 
-    const { config, skippedMcpConfigs } = buildResult;
+    const { config, skippedMcpConfigs, templateConfig } = buildResult;
+
+    // Store template config in main config
+    if (templateConfig) {
+      config.templateConfig = templateConfig;
+    }
 
     // Show final summary and confirm
     if (!options.yes && !options.dryRun) {
@@ -183,6 +196,17 @@ async function runInit(path: string | undefined, options: InitOptions): Promise<
 
     // Execute installation
     await executeInstallation(projectPath, config, registry, templatesPath, options);
+
+    // Apply template configuration (replace {{PLACEHOLDER}} patterns)
+    if (templateConfig && !options.noPlaceholders) {
+      const claudePath = joinPath(projectPath, '.claude');
+      await replaceTemplateConfigWithSpinner(claudePath, templateConfig);
+
+      // Offer to save as global defaults
+      if (!options.yes) {
+        await promptSaveGlobalDefaults(templateConfig);
+      }
+    }
 
     // Check dependencies
     const features = getRequiredFeatures({
@@ -345,6 +369,14 @@ async function buildInteractiveConfig(
   // Code style configuration
   const codeStyleConfig = await promptCodeStyleConfig();
 
+  // Template configuration ({{PLACEHOLDER}} values)
+  logger.newline();
+  const configContext = await buildConfigContext(projectPath);
+  const templateConfigResult = await promptTemplateConfig({
+    context: configContext,
+    mode: 'quick',
+  });
+
   const config: ClaudeConfig = {
     version: VERSION,
     templateSource: {
@@ -382,6 +414,7 @@ async function buildInteractiveConfig(
   return {
     config,
     skippedMcpConfigs,
+    templateConfig: templateConfigResult,
   };
 }
 
