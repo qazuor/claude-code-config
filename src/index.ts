@@ -22,7 +22,12 @@ export type {
   ResolvedModule,
 } from './types/modules.js';
 
-export type { PresetName, PresetDefinition } from './types/presets.js';
+export type {
+  BundleCategory,
+  BundleDefinition,
+  BundleSelectionResult,
+  ResolvedBundle,
+} from './types/bundles.js';
 
 export type {
   McpServerDefinition,
@@ -42,11 +47,14 @@ export type {
 export type { PermissionPreset, PermissionsConfig } from './types/permissions.js';
 
 // Export constants
-export { PRESETS } from './constants/presets.js';
+export { BUNDLES, getAllBundles, getBundleById } from './constants/bundles.js';
 export { MCP_SERVERS } from './constants/mcp-servers.js';
 export { DEPENDENCIES } from './constants/dependencies.js';
 export { PLACEHOLDERS } from './constants/placeholders.js';
 export { PERMISSION_PRESETS } from './constants/permissions.js';
+
+// Export bundle resolver
+export { resolveBundles, resolveBundle, mergeBundleSelection } from './lib/bundles/resolver.js';
 
 // Export programmatic API
 export { readConfig, writeConfig, hasConfig, createDefaultConfig } from './lib/config/index.js';

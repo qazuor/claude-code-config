@@ -23,15 +23,17 @@ export {
   confirmScaffoldOptions,
 } from './scaffold.js';
 
-// Module selection (preset vs custom)
+// Bundle selection
 export {
-  promptModuleSelectionMode,
-  promptPresetSelection,
-  showPresetDetails,
-  confirmPresetSelection,
-  promptCategoryPreset,
-  type ModuleSelectionMode,
-} from './module-select.js';
+  promptBundleMode,
+  promptBundleSelection,
+  promptQuickBundleSelection,
+  showBundleContents,
+  showBundlesSummary,
+  confirmBundleSelection,
+  createEmptyBundleResult,
+  type BundleSelectionMode,
+} from './bundle-select.js';
 
 // Item selection (granular)
 export {

@@ -2,13 +2,15 @@
  * Constants exports
  */
 
-// Presets
+// Bundles
 export {
-  PRESETS,
-  getPreset,
-  getPresetNames,
-  isModuleInPreset,
-} from './presets.js';
+  BUNDLES,
+  getAllBundles,
+  getBundleById,
+  getBundlesByCategory,
+  getBundlesGroupedByCategory,
+  BUNDLE_CATEGORY_NAMES,
+} from './bundles.js';
 
 // MCP Servers
 export {
