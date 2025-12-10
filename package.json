@@ -4,7 +4,7 @@
   "description": "CLI tool to install and manage Claude Code configurations",
   "type": "module",
   "bin": {
-    "claude-config": "./dist/bin.js"
+    "qazuor-claude-config": "./dist/bin.js"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -36,8 +36,11 @@
     "ci": "pnpm lint && pnpm typecheck && pnpm test:coverage"
   },
   "dependencies": {
+    "@inquirer/core": "^11.0.2",
     "@inquirer/prompts": "^7.2.0",
+    "chalk": "^5.6.2",
     "commander": "^12.1.0",
+    "figlet": "^1.9.4",
     "fs-extra": "^11.2.0",
     "glob": "^11.0.0",
     "ora": "^8.1.1",
@@ -46,6 +49,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
+    "@types/figlet": "^1.7.0",
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^22.10.2",
     "@vitest/coverage-v8": "^2.1.8",
