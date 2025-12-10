@@ -6,98 +6,384 @@
       "name": "Tech Lead",
       "description": "Principal Software Architect - coordinates all agents, architectural decisions, code review",
       "file": "engineering/tech-lead.md",
-      "tags": ["core", "leadership", "architecture"]
+      "tags": ["core", "leadership", "architecture"],
+      "longDescription": "The Tech Lead agent serves as the principal coordinator for all development activities. It makes high-level architectural decisions, conducts code reviews, and ensures all other agents work cohesively toward project goals.",
+      "whatItDoes": [
+        "Coordinates work between different engineering agents",
+        "Makes architectural decisions and ensures consistency",
+        "Reviews code for quality, patterns, and best practices",
+        "Resolves technical conflicts and ambiguities",
+        "Maintains project-wide standards and conventions"
+      ],
+      "whenToUse": "Essential for any project. This is the orchestrating agent that manages all others.",
+      "skillLevel": "advanced",
+      "relatedModules": ["product-functional", "product-technical", "qa-engineer"]
     },
     {
       "id": "product-functional",
       "name": "Product Functional",
       "description": "Creates PDR (Product Definition Reports) with user requirements and functional specs",
       "file": "product/product-functional.md",
-      "tags": ["product", "requirements", "pdr"]
+      "tags": ["product", "requirements", "pdr"],
+      "longDescription": "Translates business needs into detailed Product Definition Reports (PDR). Focuses on user stories, acceptance criteria, and functional specifications without diving into technical implementation.",
+      "whatItDoes": [
+        "Gathers and documents user requirements",
+        "Creates Product Definition Reports (PDR)",
+        "Defines acceptance criteria and success metrics",
+        "Identifies edge cases and user flows",
+        "Prioritizes features based on business value"
+      ],
+      "whenToUse": "When starting new features or projects that need clear requirements definition.",
+      "skillLevel": "intermediate",
+      "relatedModules": ["product-technical", "ux-ui-designer"]
     },
     {
       "id": "product-technical",
       "name": "Product Technical",
       "description": "Technical analysis, architecture design, task breakdown from PDR",
       "file": "product/product-technical.md",
-      "tags": ["product", "architecture", "planning"]
+      "tags": ["product", "architecture", "planning"],
+      "longDescription": "Takes functional requirements from PDR and transforms them into technical specifications. Designs system architecture, creates task breakdowns, and defines technical acceptance criteria.",
+      "whatItDoes": [
+        "Analyzes PDR and creates technical specifications",
+        "Designs system architecture and data models",
+        "Breaks down features into actionable development tasks",
+        "Identifies technical risks and dependencies",
+        "Defines API contracts and integration points"
+      ],
+      "whenToUse": "After Product Functional creates the PDR, use this to plan the technical implementation.",
+      "skillLevel": "advanced",
+      "relatedModules": ["product-functional", "tech-lead", "db-drizzle-engineer"]
     },
     {
       "id": "hono-engineer",
       "name": "Hono Engineer",
       "description": "Backend API development with Hono framework",
       "file": "engineering/hono-engineer.md",
-      "tags": ["backend", "api", "hono"]
+      "tags": ["backend", "api", "hono"],
+      "longDescription": "Specialized in building high-performance APIs using the Hono framework. Creates RESTful endpoints, handles middleware, and implements business logic with TypeScript.",
+      "whatItDoes": [
+        "Creates RESTful API endpoints with Hono",
+        "Implements middleware for auth, validation, logging",
+        "Handles request/response processing",
+        "Integrates with database and external services",
+        "Implements error handling and response formatting"
+      ],
+      "whenToUse": "When building backend APIs with Hono framework. For Express, Fastify, or NestJS, use the respective agents.",
+      "techStack": ["Hono", "TypeScript", "Node.js", "Zod"],
+      "alternativeTo": ["express-engineer", "fastify-engineer", "nestjs-engineer"],
+      "skillLevel": "intermediate",
+      "relatedModules": ["db-drizzle-engineer", "node-typescript-engineer"]
     },
     {
       "id": "db-drizzle-engineer",
       "name": "DB Drizzle Engineer",
       "description": "Database design and development with Drizzle ORM",
       "file": "engineering/db-drizzle-engineer.md",
-      "tags": ["backend", "database", "drizzle"]
+      "tags": ["backend", "database", "drizzle"],
+      "longDescription": "Expert in database design and implementation using Drizzle ORM. Handles schema design, migrations, queries, and database optimization with a focus on type safety.",
+      "whatItDoes": [
+        "Designs database schemas with Drizzle",
+        "Creates and manages migrations",
+        "Writes type-safe queries and transactions",
+        "Implements database models and relationships",
+        "Optimizes query performance"
+      ],
+      "whenToUse": "When using Drizzle ORM for database access. For Prisma or other ORMs, use respective agents.",
+      "techStack": ["Drizzle ORM", "PostgreSQL", "SQLite", "MySQL", "TypeScript"],
+      "alternativeTo": ["prisma-engineer", "typeorm-engineer", "mongoose-engineer"],
+      "skillLevel": "intermediate",
+      "relatedModules": ["hono-engineer", "node-typescript-engineer"]
     },
     {
       "id": "node-typescript-engineer",
       "name": "Node TypeScript Engineer",
       "description": "Shared packages and Node.js TypeScript development",
       "file": "engineering/node-typescript-engineer.md",
-      "tags": ["backend", "shared", "typescript"]
+      "tags": ["backend", "shared", "typescript"],
+      "longDescription": "Develops shared TypeScript packages, utilities, and core business logic. Focuses on code reusability, type safety, and clean architecture patterns.",
+      "whatItDoes": [
+        "Creates shared utility packages",
+        "Implements core business logic",
+        "Designs reusable type definitions",
+        "Builds validation schemas with Zod",
+        "Creates configuration and constants"
+      ],
+      "whenToUse": "For any shared code, utilities, or packages that are used across different parts of the application.",
+      "techStack": ["TypeScript", "Node.js", "Zod", "ESM"],
+      "skillLevel": "intermediate",
+      "relatedModules": ["hono-engineer", "db-drizzle-engineer", "react-senior-dev"]
     },
     {
       "id": "astro-engineer",
       "name": "Astro Engineer",
       "description": "Astro framework development for static/SSR sites",
       "file": "engineering/astro-engineer.md",
-      "tags": ["frontend", "astro", "ssr"]
+      "tags": ["frontend", "astro", "ssr"],
+      "longDescription": "Builds fast, content-focused websites using Astro. Specializes in static site generation, partial hydration, and integrating with various UI frameworks.",
+      "whatItDoes": [
+        "Creates Astro pages and layouts",
+        "Implements content collections",
+        "Configures SSG and SSR modes",
+        "Integrates React/Vue/Svelte components",
+        "Optimizes for performance and SEO"
+      ],
+      "whenToUse": "When building content-focused websites, blogs, or marketing sites with Astro.",
+      "techStack": ["Astro", "TypeScript", "Tailwind CSS", "MDX"],
+      "alternativeTo": ["nextjs-engineer", "nuxt-engineer"],
+      "skillLevel": "intermediate",
+      "relatedModules": ["react-senior-dev", "seo-ai-specialist"]
     },
     {
       "id": "tanstack-start-engineer",
       "name": "TanStack Start Engineer",
       "description": "TanStack Start/Router development for admin dashboards",
       "file": "engineering/tanstack-start-engineer.md",
-      "tags": ["frontend", "tanstack", "admin"]
+      "tags": ["frontend", "tanstack", "admin"],
+      "longDescription": "Expert in TanStack Start and Router for building type-safe, full-stack React applications. Specializes in admin dashboards and complex data-driven interfaces.",
+      "whatItDoes": [
+        "Creates routes with TanStack Router",
+        "Implements server functions with TanStack Start",
+        "Builds type-safe data fetching patterns",
+        "Creates admin dashboard layouts",
+        "Implements authentication flows"
+      ],
+      "whenToUse": "When building admin panels or complex React applications with TanStack Start/Router.",
+      "techStack": ["TanStack Start", "TanStack Router", "TanStack Query", "React", "TypeScript"],
+      "alternativeTo": ["nextjs-engineer", "remix-engineer"],
+      "skillLevel": "advanced",
+      "relatedModules": ["react-senior-dev", "hono-engineer"]
     },
     {
       "id": "react-senior-dev",
       "name": "React Senior Dev",
       "description": "React component development and UI architecture",
       "file": "engineering/react-senior-dev.md",
-      "tags": ["frontend", "react", "components"]
+      "tags": ["frontend", "react", "components"],
+      "longDescription": "Senior-level React developer focused on component architecture, state management, and UI best practices. Builds reusable, accessible, and performant components.",
+      "whatItDoes": [
+        "Creates reusable React components",
+        "Implements state management patterns",
+        "Builds accessible UI with proper ARIA",
+        "Optimizes component performance",
+        "Creates component libraries and design systems"
+      ],
+      "whenToUse": "For any React-based frontend development, component libraries, or UI architecture.",
+      "techStack": ["React", "TypeScript", "Tailwind CSS", "Shadcn UI", "TanStack Query"],
+      "skillLevel": "advanced",
+      "relatedModules": ["tanstack-start-engineer", "ux-ui-designer", "astro-engineer"]
     },
     {
       "id": "ux-ui-designer",
       "name": "UX/UI Designer",
       "description": "User experience and interface design",
       "file": "design/ux-ui-designer.md",
-      "tags": ["design", "ux", "ui"]
+      "tags": ["design", "ux", "ui"],
+      "longDescription": "Designs user experiences and interfaces following modern design principles. Creates wireframes, mockups, and design specifications for development teams.",
+      "whatItDoes": [
+        "Creates user flows and wireframes",
+        "Designs responsive UI layouts",
+        "Defines color schemes and typography",
+        "Ensures accessibility compliance",
+        "Creates design specifications for developers"
+      ],
+      "whenToUse": "When designing new features or improving existing user interfaces.",
+      "skillLevel": "intermediate",
+      "relatedModules": ["react-senior-dev", "product-functional"]
     },
     {
       "id": "qa-engineer",
       "name": "QA Engineer",
       "description": "Quality assurance, testing strategy, test automation",
       "file": "quality/qa-engineer.md",
-      "tags": ["quality", "testing", "qa"]
+      "tags": ["quality", "testing", "qa"],
+      "longDescription": "Ensures software quality through comprehensive testing strategies. Designs test plans, writes automated tests, and validates feature implementations.",
+      "whatItDoes": [
+        "Creates comprehensive test plans",
+        "Writes unit, integration, and E2E tests",
+        "Implements TDD practices (Red-Green-Refactor)",
+        "Validates features against acceptance criteria",
+        "Identifies and documents bugs"
+      ],
+      "whenToUse": "Essential for maintaining code quality. Use throughout development for TDD and after features for validation.",
+      "techStack": ["Vitest", "Playwright", "Testing Library", "MSW"],
+      "skillLevel": "intermediate",
+      "relatedModules": ["tech-lead", "debugger"]
     },
     {
       "id": "debugger",
       "name": "Debugger",
       "description": "Bug investigation, root cause analysis, debugging",
       "file": "quality/debugger.md",
-      "tags": ["quality", "debugging", "bugs"]
+      "tags": ["quality", "debugging", "bugs"],
+      "longDescription": "Specialized in investigating and resolving bugs. Performs root cause analysis, traces execution flows, and implements fixes with minimal side effects.",
+      "whatItDoes": [
+        "Investigates bug reports and reproduces issues",
+        "Performs root cause analysis",
+        "Traces code execution and data flow",
+        "Implements targeted bug fixes",
+        "Adds regression tests for fixed bugs"
+      ],
+      "whenToUse": "When investigating bugs, unexpected behavior, or production issues.",
+      "skillLevel": "advanced",
+      "relatedModules": ["qa-engineer", "tech-lead"]
     },
     {
       "id": "tech-writer",
       "name": "Tech Writer",
       "description": "Technical documentation, API docs, user guides",
       "file": "specialized/tech-writer.md",
-      "tags": ["specialized", "documentation", "writing"]
+      "tags": ["specialized", "documentation", "writing"],
+      "longDescription": "Creates clear, comprehensive technical documentation. Writes API documentation, user guides, tutorials, and maintains project documentation.",
+      "whatItDoes": [
+        "Writes API documentation",
+        "Creates user guides and tutorials",
+        "Maintains README and project docs",
+        "Documents architecture decisions (ADRs)",
+        "Creates developer onboarding guides"
+      ],
+      "whenToUse": "When creating or updating documentation, API docs, or user guides.",
+      "skillLevel": "intermediate",
+      "relatedModules": ["tech-lead"]
     },
     {
       "id": "seo-ai-specialist",
       "name": "SEO AI Specialist",
       "description": "SEO optimization, content strategy, AI-assisted content",
       "file": "specialized/seo-ai-specialist.md",
-      "tags": ["specialized", "seo", "content"]
+      "tags": ["specialized", "seo", "content"],
+      "longDescription": "Optimizes content and code for search engines. Creates SEO strategies, implements meta tags, structured data, and generates AI-assisted content.",
+      "whatItDoes": [
+        "Implements SEO best practices",
+        "Creates meta tags and structured data",
+        "Optimizes content for search engines",
+        "Generates SEO-friendly content",
+        "Analyzes and improves page rankings"
+      ],
+      "whenToUse": "When building public-facing websites that need search engine visibility.",
+      "techStack": ["Schema.org", "JSON-LD", "Open Graph", "Sitemap"],
+      "skillLevel": "intermediate",
+      "relatedModules": ["astro-engineer", "tech-writer"]
+    },
+    {
+      "id": "prisma-engineer",
+      "name": "Prisma Engineer",
+      "description": "Database design and development with Prisma ORM",
+      "file": "engineering/prisma-engineer.md",
+      "tags": ["backend", "database", "prisma"],
+      "longDescription": "Expert in database design using Prisma ORM. Handles schema design, migrations, type-safe queries, and database optimization across multiple database engines.",
+      "whatItDoes": [
+        "Designs database schemas with Prisma",
+        "Creates and manages migrations",
+        "Writes type-safe queries with Prisma Client",
+        "Implements relations and nested operations",
+        "Handles transactions and database optimization"
+      ],
+      "whenToUse": "When using Prisma ORM for database access. For Drizzle or other ORMs, use respective agents.",
+      "techStack": ["Prisma", "PostgreSQL", "MySQL", "SQLite", "MongoDB", "TypeScript"],
+      "alternativeTo": ["db-drizzle-engineer", "mongoose-engineer"],
+      "skillLevel": "intermediate",
+      "relatedModules": ["hono-engineer", "express-engineer", "node-typescript-engineer"]
+    },
+    {
+      "id": "express-engineer",
+      "name": "Express Engineer",
+      "description": "Backend API development with Express.js",
+      "file": "engineering/express-engineer.md",
+      "tags": ["backend", "api", "express"],
+      "longDescription": "Specialized in building REST APIs with Express.js. Creates modular routes, middleware chains, and implements robust error handling with TypeScript.",
+      "whatItDoes": [
+        "Creates RESTful API endpoints with Express",
+        "Implements middleware for auth, validation, logging",
+        "Builds controller-service architecture",
+        "Handles async errors and HTTP status codes",
+        "Documents APIs with Swagger/OpenAPI"
+      ],
+      "whenToUse": "When building backend APIs with Express.js. For Hono, Fastify, or NestJS, use the respective agents.",
+      "techStack": ["Express.js", "TypeScript", "Zod", "Passport.js"],
+      "alternativeTo": ["hono-engineer", "fastify-engineer", "nestjs-engineer"],
+      "skillLevel": "intermediate",
+      "relatedModules": ["prisma-engineer", "db-drizzle-engineer", "node-typescript-engineer"]
+    },
+    {
+      "id": "nextjs-engineer",
+      "name": "Next.js Engineer",
+      "description": "Full-stack development with Next.js App Router",
+      "file": "engineering/nextjs-engineer.md",
+      "tags": ["frontend", "fullstack", "nextjs"],
+      "longDescription": "Expert in Next.js App Router for building full-stack React applications. Handles Server Components, Server Actions, and data fetching patterns.",
+      "whatItDoes": [
+        "Creates pages with App Router architecture",
+        "Implements Server and Client Components",
+        "Builds Server Actions for form handling",
+        "Handles SSR, SSG, and ISR patterns",
+        "Creates API Routes and middleware"
+      ],
+      "whenToUse": "When building full-stack React applications with Next.js. For pure React SPAs, consider TanStack Start.",
+      "techStack": ["Next.js", "React", "TypeScript", "Tailwind CSS", "Server Actions"],
+      "alternativeTo": ["tanstack-start-engineer", "astro-engineer"],
+      "skillLevel": "advanced",
+      "relatedModules": ["react-senior-dev", "prisma-engineer"]
+    },
+    {
+      "id": "fastify-engineer",
+      "name": "Fastify Engineer",
+      "description": "High-performance API development with Fastify",
+      "file": "engineering/fastify-engineer.md",
+      "tags": ["backend", "api", "fastify"],
+      "longDescription": "Builds high-performance APIs with Fastify's plugin architecture. Uses schema-based validation for automatic type inference and OpenAPI docs.",
+      "whatItDoes": [
+        "Creates typed routes with schema validation",
+        "Builds reusable plugins with encapsulation",
+        "Implements decorators for shared utilities",
+        "Generates OpenAPI docs from schemas",
+        "Optimizes for high-throughput performance"
+      ],
+      "whenToUse": "When building high-performance APIs with Fastify. Excellent for microservices and high-throughput applications.",
+      "techStack": ["Fastify", "TypeBox", "TypeScript", "Pino"],
+      "alternativeTo": ["hono-engineer", "express-engineer", "nestjs-engineer"],
+      "skillLevel": "intermediate",
+      "relatedModules": ["prisma-engineer", "db-drizzle-engineer", "node-typescript-engineer"]
+    },
+    {
+      "id": "nestjs-engineer",
+      "name": "NestJS Engineer",
+      "description": "Enterprise backend development with NestJS",
+      "file": "engineering/nestjs-engineer.md",
+      "tags": ["backend", "api", "nestjs", "enterprise"],
+      "longDescription": "Builds scalable enterprise applications with NestJS. Uses dependency injection, modular architecture, and enterprise patterns like CQRS.",
+      "whatItDoes": [
+        "Creates modular application architecture",
+        "Implements dependency injection patterns",
+        "Builds guards, interceptors, and pipes",
+        "Creates REST and GraphQL APIs",
+        "Implements enterprise patterns (CQRS, events)"
+      ],
+      "whenToUse": "When building enterprise-scale applications that need strong architecture and dependency injection.",
+      "techStack": ["NestJS", "TypeScript", "class-validator", "TypeORM", "GraphQL"],
+      "alternativeTo": ["express-engineer", "fastify-engineer", "hono-engineer"],
+      "skillLevel": "advanced",
+      "relatedModules": ["prisma-engineer", "node-typescript-engineer"]
+    },
+    {
+      "id": "mongoose-engineer",
+      "name": "Mongoose Engineer",
+      "description": "MongoDB development with Mongoose ODM",
+      "file": "engineering/mongoose-engineer.md",
+      "tags": ["backend", "database", "mongodb", "mongoose"],
+      "longDescription": "Expert in MongoDB with Mongoose ODM. Designs document schemas, writes aggregation pipelines, and implements NoSQL best practices.",
+      "whatItDoes": [
+        "Designs MongoDB document schemas",
+        "Implements typed models with TypeScript",
+        "Writes aggregation pipelines",
+        "Creates middleware and virtuals",
+        "Optimizes with indexes and query patterns"
+      ],
+      "whenToUse": "When using MongoDB as your database. For SQL databases, use Prisma or Drizzle agents.",
+      "techStack": ["Mongoose", "MongoDB", "TypeScript"],
+      "alternativeTo": ["prisma-engineer", "db-drizzle-engineer"],
+      "skillLevel": "intermediate",
+      "relatedModules": ["express-engineer", "fastify-engineer", "node-typescript-engineer"]
     }
   ]
 }

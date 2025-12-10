@@ -4,128 +4,326 @@
     {
       "id": "quick-start",
       "name": "Quick Start",
-      "description": "Quick start guide for new users",
+      "description": "15-minute onboarding guide for new users",
       "file": "quick-start.md",
-      "tags": ["workflows", "onboarding"]
+      "tags": ["workflows", "onboarding", "core"],
+      "longDescription": "Fast-track onboarding guide that gets you productive with the AI assistant system in 15 minutes. Covers essential workflows, commands, and best practices.",
+      "whatItDoes": [
+        "Introduces the agent system",
+        "Explains workflow levels",
+        "Demonstrates key commands",
+        "Provides first-task walkthrough",
+        "Links to deeper documentation"
+      ],
+      "whenToUse": "First thing to read when setting up the system in a new project.",
+      "skillLevel": "beginner",
+      "relatedModules": ["decision-tree", "help"]
     },
     {
       "id": "decision-tree",
       "name": "Decision Tree",
-      "description": "Workflow decision tree for choosing the right approach",
+      "description": "Visual guide for choosing the right workflow",
       "file": "workflows/decision-tree.md",
-      "tags": ["workflows", "decisions"]
+      "tags": ["workflows", "decisions", "core"],
+      "longDescription": "Decision tree for selecting the appropriate workflow based on task complexity, risk level, and time requirements. Helps avoid over-engineering simple tasks.",
+      "whatItDoes": [
+        "Guides workflow level selection",
+        "Considers task complexity",
+        "Evaluates risk factors",
+        "Recommends appropriate protocol",
+        "Prevents over-engineering"
+      ],
+      "whenToUse": "When starting any new task to determine the right approach.",
+      "skillLevel": "beginner",
+      "relatedModules": ["quick-fix-protocol", "atomic-task-protocol", "phase-1-planning"]
     },
     {
       "id": "quick-fix-protocol",
       "name": "Quick Fix Protocol",
-      "description": "Protocol for quick fixes and small changes",
+      "description": "Level 1 workflow for quick fixes (<30 min)",
       "file": "workflows/quick-fix-protocol.md",
-      "tags": ["workflows", "quick-fix"]
+      "tags": ["workflows", "quick-fix", "level-1"],
+      "longDescription": "Streamlined protocol for quick fixes that take less than 30 minutes and affect 1-2 files. Minimal overhead for low-risk changes like typos, config updates, and simple bug fixes.",
+      "whatItDoes": [
+        "Defines quick fix criteria",
+        "Provides minimal checklist",
+        "Ensures basic quality",
+        "Skips unnecessary planning",
+        "Fast path to completion"
+      ],
+      "whenToUse": "For typos, formatting, config changes, and obvious bug fixes that are low-risk.",
+      "skillLevel": "beginner",
+      "relatedModules": ["decision-tree"]
     },
     {
       "id": "atomic-task-protocol",
       "name": "Atomic Task Protocol",
-      "description": "Protocol for atomic tasks",
+      "description": "Level 2 workflow for atomic tasks (30min-3h)",
       "file": "workflows/atomic-task-protocol.md",
-      "tags": ["workflows", "atomic"]
+      "tags": ["workflows", "atomic", "level-2", "tdd"],
+      "longDescription": "Protocol for medium-complexity tasks that take 30 minutes to 3 hours. Uses TDD methodology, affects 2-10 files, and includes proper testing and documentation.",
+      "whatItDoes": [
+        "Guides TDD implementation",
+        "Ensures proper test coverage",
+        "Tracks with task codes (PB-XXX)",
+        "Validates before completion",
+        "Coordinates with QA"
+      ],
+      "whenToUse": "For bug fixes, small features, new endpoints, and focused refactoring work.",
+      "skillLevel": "intermediate",
+      "relatedModules": ["decision-tree", "tdd-methodology", "qa-engineer"]
     },
     {
       "id": "phase-1-planning",
       "name": "Phase 1 Planning",
-      "description": "Feature planning phase documentation",
+      "description": "Level 3 feature planning documentation",
       "file": "workflows/phase-1-planning.md",
-      "tags": ["workflows", "planning"]
+      "tags": ["workflows", "planning", "level-3"],
+      "longDescription": "First phase of Level 3 feature workflow focused on planning. Produces PDR (Product Definition Report), technical analysis, and task breakdown before implementation.",
+      "whatItDoes": [
+        "Coordinates planning agents",
+        "Creates PDR document",
+        "Designs technical architecture",
+        "Breaks down into tasks",
+        "Gets user approval"
+      ],
+      "whenToUse": "For complex, multi-day features that need architecture review and planning.",
+      "skillLevel": "advanced",
+      "relatedModules": ["phase-2-implementation", "product-functional", "product-technical"]
     },
     {
       "id": "phase-2-implementation",
       "name": "Phase 2 Implementation",
-      "description": "Implementation phase documentation",
+      "description": "Level 3 implementation phase documentation",
       "file": "workflows/phase-2-implementation.md",
-      "tags": ["workflows", "implementation"]
+      "tags": ["workflows", "implementation", "level-3"],
+      "longDescription": "Second phase of Level 3 workflow focused on implementation. Guides TDD development, agent coordination, and incremental progress tracking.",
+      "whatItDoes": [
+        "Implements tasks from breakdown",
+        "Follows TDD methodology",
+        "Coordinates engineering agents",
+        "Tracks progress and checkpoints",
+        "Handles blockers and issues"
+      ],
+      "whenToUse": "After Phase 1 planning is approved. Guides the actual implementation work.",
+      "skillLevel": "advanced",
+      "relatedModules": ["phase-1-planning", "phase-3-validation"]
     },
     {
       "id": "phase-3-validation",
       "name": "Phase 3 Validation",
-      "description": "Validation phase documentation",
+      "description": "Level 3 validation phase documentation",
       "file": "workflows/phase-3-validation.md",
-      "tags": ["workflows", "validation"]
+      "tags": ["workflows", "validation", "level-3", "qa"],
+      "longDescription": "Third phase of Level 3 workflow focused on validation. Covers quality assurance, code review, security review, and acceptance testing.",
+      "whatItDoes": [
+        "Runs comprehensive QA",
+        "Performs code review",
+        "Validates security",
+        "Tests edge cases",
+        "Verifies acceptance criteria"
+      ],
+      "whenToUse": "After implementation is complete. Ensures quality before finalization.",
+      "skillLevel": "advanced",
+      "relatedModules": ["phase-2-implementation", "phase-4-finalization", "qa-engineer"]
     },
     {
       "id": "phase-4-finalization",
       "name": "Phase 4 Finalization",
-      "description": "Finalization phase documentation",
+      "description": "Level 3 finalization phase documentation",
       "file": "workflows/phase-4-finalization.md",
-      "tags": ["workflows", "finalization"]
+      "tags": ["workflows", "finalization", "level-3"],
+      "longDescription": "Final phase of Level 3 workflow covering documentation updates, changelog, commit preparation, and feature closure procedures.",
+      "whatItDoes": [
+        "Updates documentation",
+        "Creates changelog entries",
+        "Prepares final commits",
+        "Closes planning session",
+        "Archives planning documents"
+      ],
+      "whenToUse": "After validation passes. Wraps up the feature with proper documentation.",
+      "skillLevel": "intermediate",
+      "relatedModules": ["phase-3-validation", "tech-writer"]
     },
     {
       "id": "code-standards",
       "name": "Code Standards",
-      "description": "Coding standards and conventions",
+      "description": "TypeScript coding standards and conventions",
       "file": "standards/code-standards.md",
-      "tags": ["standards", "code"]
+      "tags": ["standards", "code", "typescript", "core"],
+      "longDescription": "Comprehensive coding standards for TypeScript projects covering naming conventions, file structure, type safety, error handling, and best practices.",
+      "whatItDoes": [
+        "Defines naming conventions",
+        "Specifies file organization",
+        "Enforces type safety rules",
+        "Documents error handling patterns",
+        "Lists forbidden practices"
+      ],
+      "whenToUse": "Reference when writing code. Ensures consistency across the project.",
+      "skillLevel": "intermediate",
+      "relatedModules": ["architecture-patterns", "testing-standards"]
     },
     {
       "id": "testing-standards",
       "name": "Testing Standards",
-      "description": "Testing standards and practices",
+      "description": "Testing standards and TDD practices",
       "file": "standards/testing-standards.md",
-      "tags": ["standards", "testing"]
+      "tags": ["standards", "testing", "tdd", "core"],
+      "longDescription": "Testing standards including file organization, naming conventions, coverage requirements, and TDD practices. Ensures consistent test quality.",
+      "whatItDoes": [
+        "Defines test file structure",
+        "Specifies naming conventions",
+        "Sets coverage thresholds (90%)",
+        "Documents test patterns",
+        "Guides mock and stub usage"
+      ],
+      "whenToUse": "Reference when writing tests. Ensures consistent testing approach.",
+      "skillLevel": "intermediate",
+      "relatedModules": ["tdd-methodology", "code-standards"]
     },
     {
       "id": "documentation-standards",
       "name": "Documentation Standards",
       "description": "Documentation standards and templates",
       "file": "standards/documentation-standards.md",
-      "tags": ["standards", "documentation"]
+      "tags": ["standards", "documentation", "markdown"],
+      "longDescription": "Standards for project documentation including README structure, API docs, inline comments, and markdown formatting guidelines.",
+      "whatItDoes": [
+        "Defines documentation structure",
+        "Specifies JSDoc requirements",
+        "Sets markdown formatting rules",
+        "Guides API documentation",
+        "Provides doc templates"
+      ],
+      "whenToUse": "When writing or updating documentation. Ensures documentation consistency.",
+      "skillLevel": "beginner",
+      "relatedModules": ["tech-writer", "documentation-writer"]
     },
     {
       "id": "architecture-patterns",
       "name": "Architecture Patterns",
       "description": "Architecture patterns and best practices",
       "file": "standards/architecture-patterns.md",
-      "tags": ["standards", "architecture"]
+      "tags": ["standards", "architecture", "patterns", "core"],
+      "longDescription": "Architectural patterns for the project including layer structure, dependency injection, repository pattern, and service layer organization.",
+      "whatItDoes": [
+        "Defines layer architecture",
+        "Documents dependency flow",
+        "Specifies pattern usage",
+        "Guides module organization",
+        "Provides code examples"
+      ],
+      "whenToUse": "When designing new features or modules. Ensures architectural consistency.",
+      "skillLevel": "advanced",
+      "relatedModules": ["code-standards", "tech-lead", "product-technical"]
     },
     {
       "id": "pdr-template",
       "name": "PDR Template",
       "description": "Product Definition Report template",
       "file": "templates/PDR-template.md",
-      "tags": ["templates", "pdr"]
+      "tags": ["templates", "pdr", "planning"],
+      "longDescription": "Template for creating Product Definition Reports (PDR) that capture user requirements, acceptance criteria, user stories, and functional specifications.",
+      "whatItDoes": [
+        "Structures requirements capture",
+        "Defines acceptance criteria format",
+        "Guides user story writing",
+        "Documents edge cases",
+        "Links to tech analysis"
+      ],
+      "whenToUse": "When starting Phase 1 planning. Filled by Product Functional agent.",
+      "skillLevel": "intermediate",
+      "relatedModules": ["product-functional", "tech-analysis-template"]
     },
     {
       "id": "tech-analysis-template",
       "name": "Tech Analysis Template",
       "description": "Technical analysis document template",
       "file": "templates/tech-analysis-template.md",
-      "tags": ["templates", "analysis"]
+      "tags": ["templates", "analysis", "planning"],
+      "longDescription": "Template for technical analysis documents that translate PDR into architecture design, database schemas, API contracts, and implementation approach.",
+      "whatItDoes": [
+        "Structures technical design",
+        "Documents architecture decisions",
+        "Defines database schemas",
+        "Specifies API contracts",
+        "Identifies technical risks"
+      ],
+      "whenToUse": "After PDR is complete. Filled by Product Technical agent.",
+      "skillLevel": "advanced",
+      "relatedModules": ["product-technical", "pdr-template", "todos-template"]
     },
     {
       "id": "todos-template",
       "name": "TODOs Template",
       "description": "Task breakdown template",
       "file": "templates/TODOs-template.md",
-      "tags": ["templates", "todos"]
+      "tags": ["templates", "todos", "planning"],
+      "longDescription": "Template for task breakdown documents that list all implementation tasks with estimates, dependencies, and assignment to agents.",
+      "whatItDoes": [
+        "Structures task breakdown",
+        "Defines task format",
+        "Captures dependencies",
+        "Enables progress tracking",
+        "Supports issue sync"
+      ],
+      "whenToUse": "After tech analysis. Created by Product Technical, used for tracking.",
+      "skillLevel": "intermediate",
+      "relatedModules": ["tech-analysis-template", "sync-planning"]
     },
     {
       "id": "workflow-diagrams",
       "name": "Workflow Diagrams",
-      "description": "Mermaid diagrams for workflows",
+      "description": "Mermaid diagrams for system visualization",
       "file": "diagrams/README.md",
-      "tags": ["diagrams", "mermaid"]
+      "tags": ["diagrams", "mermaid", "visualization"],
+      "longDescription": "Collection of Mermaid diagrams visualizing workflows, agent hierarchy, tool relationships, and documentation structure for quick reference.",
+      "whatItDoes": [
+        "Visualizes workflow decision tree",
+        "Shows agent hierarchy",
+        "Maps tool relationships",
+        "Illustrates documentation structure",
+        "Provides quick reference"
+      ],
+      "whenToUse": "When needing visual overview of the system or explaining it to others.",
+      "skillLevel": "beginner",
+      "relatedModules": ["mermaid-diagram-specialist"]
     },
     {
       "id": "glossary",
       "name": "Glossary",
       "description": "Project terminology and definitions",
       "file": "glossary.md",
-      "tags": ["guides", "reference"]
+      "tags": ["guides", "reference", "terminology"],
+      "longDescription": "Comprehensive glossary of project-specific terms, abbreviations, and concepts. Ensures consistent terminology across documentation and communication.",
+      "whatItDoes": [
+        "Defines project terms",
+        "Explains abbreviations",
+        "Clarifies concepts",
+        "Provides context",
+        "Ensures consistency"
+      ],
+      "whenToUse": "Reference when encountering unfamiliar terms or when writing documentation.",
+      "skillLevel": "beginner",
+      "relatedModules": ["quick-start"]
     },
     {
       "id": "mcp-servers",
       "name": "MCP Servers",
-      "description": "MCP server documentation",
+      "description": "MCP server documentation and configuration",
       "file": "mcp-servers.md",
-      "tags": ["guides", "mcp"]
+      "tags": ["guides", "mcp", "configuration"],
+      "longDescription": "Documentation for configuring and using MCP (Model Context Protocol) servers including available servers, configuration options, and usage examples.",
+      "whatItDoes": [
+        "Lists available MCP servers",
+        "Documents configuration options",
+        "Provides usage examples",
+        "Explains server capabilities",
+        "Guides troubleshooting"
+      ],
+      "whenToUse": "When setting up or troubleshooting MCP server integrations.",
+      "skillLevel": "intermediate",
+      "relatedModules": []
     }
   ]
 }

@@ -4,107 +4,273 @@
     {
       "id": "quality-check",
       "name": "Quality Check",
-      "description": "Run comprehensive quality checks on the codebase",
+      "description": "Run comprehensive quality checks (lint, types, tests, coverage)",
       "file": "quality-check.md",
-      "tags": ["core", "quality"]
+      "tags": ["core", "quality", "ci"],
+      "longDescription": "Runs a comprehensive quality check pipeline including linting, type checking, tests, and coverage verification. Essential command before commits and PRs.",
+      "whatItDoes": [
+        "Runs ESLint/Biome linting",
+        "Performs TypeScript type checking",
+        "Executes test suites with coverage",
+        "Validates coverage thresholds",
+        "Reports all issues in summary"
+      ],
+      "whenToUse": "Before every commit and PR. Essential for maintaining code quality.",
+      "skillLevel": "beginner",
+      "relatedModules": ["code-check", "run-tests"]
     },
     {
       "id": "code-check",
       "name": "Code Check",
-      "description": "Run code analysis and linting",
+      "description": "Run code analysis, linting, and formatting checks",
       "file": "code-check.md",
-      "tags": ["core", "linting"]
+      "tags": ["core", "linting", "formatting"],
+      "longDescription": "Focused code analysis command that runs linting, formatting checks, and static analysis. Faster than full quality check for quick validation.",
+      "whatItDoes": [
+        "Runs linter with auto-fix option",
+        "Checks code formatting",
+        "Performs static analysis",
+        "Identifies code smells",
+        "Suggests improvements"
+      ],
+      "whenToUse": "During development for quick code quality feedback. Faster than full quality-check.",
+      "skillLevel": "beginner",
+      "relatedModules": ["quality-check"]
     },
     {
       "id": "run-tests",
       "name": "Run Tests",
-      "description": "Execute test suites",
+      "description": "Execute test suites with various options",
       "file": "run-tests.md",
-      "tags": ["core", "testing"]
+      "tags": ["core", "testing", "vitest"],
+      "longDescription": "Flexible test runner command supporting unit tests, integration tests, watch mode, coverage, and filtering. Works with Vitest and Jest.",
+      "whatItDoes": [
+        "Runs unit and integration tests",
+        "Supports watch mode for TDD",
+        "Generates coverage reports",
+        "Filters tests by name/path",
+        "Runs tests in parallel"
+      ],
+      "whenToUse": "During TDD workflow, before commits, or when validating changes.",
+      "techStack": ["Vitest", "Jest", "Testing Library"],
+      "skillLevel": "beginner",
+      "relatedModules": ["quality-check", "tdd-methodology"]
     },
     {
       "id": "start-feature-plan",
       "name": "Start Feature Plan",
-      "description": "Initialize a new feature planning session",
+      "description": "Initialize Level 3 feature planning workflow",
       "file": "start-feature-plan.md",
-      "tags": ["planning", "features"]
+      "tags": ["planning", "features", "workflow"],
+      "longDescription": "Initiates the Level 3 feature planning workflow for complex, multi-day features. Creates planning session, coordinates agents, and produces PDR, tech analysis, and task breakdown.",
+      "whatItDoes": [
+        "Creates planning session directory",
+        "Invokes Product Functional for PDR",
+        "Invokes Product Technical for architecture",
+        "Generates task breakdown",
+        "Coordinates with relevant agents"
+      ],
+      "whenToUse": "When starting complex features that need planning, architecture review, and task breakdown.",
+      "skillLevel": "intermediate",
+      "relatedModules": ["product-functional", "product-technical", "tech-lead"]
     },
     {
       "id": "start-refactor-plan",
       "name": "Start Refactor Plan",
-      "description": "Initialize a refactoring planning session",
+      "description": "Initialize refactoring planning session",
       "file": "start-refactor-plan.md",
-      "tags": ["planning", "refactoring"]
+      "tags": ["planning", "refactoring", "workflow"],
+      "longDescription": "Initiates a planning session for refactoring work. Analyzes current state, identifies improvement areas, and creates safe refactoring plan with tests.",
+      "whatItDoes": [
+        "Analyzes code for refactoring",
+        "Identifies code smells and issues",
+        "Plans safe refactoring steps",
+        "Ensures test coverage exists",
+        "Coordinates with QA for validation"
+      ],
+      "whenToUse": "When planning significant refactoring that affects multiple files or modules.",
+      "skillLevel": "intermediate",
+      "relatedModules": ["tech-lead", "qa-engineer"]
     },
     {
       "id": "sync-planning",
       "name": "Sync Planning",
-      "description": "Synchronize planning documents",
+      "description": "Synchronize planning documents to issue tracker",
       "file": "sync-planning.md",
-      "tags": ["planning", "sync"]
+      "tags": ["planning", "sync", "github", "linear"],
+      "longDescription": "Synchronizes planning documents (PDR, tech analysis, TODOs) to issue trackers like GitHub Issues or Linear. Creates linked issues from task breakdown.",
+      "whatItDoes": [
+        "Parses TODOs.md for tasks",
+        "Creates GitHub/Linear issues",
+        "Links issues to planning docs",
+        "Updates task status",
+        "Syncs bidirectionally"
+      ],
+      "whenToUse": "After planning approval to create trackable issues from the task breakdown.",
+      "skillLevel": "intermediate",
+      "relatedModules": ["start-feature-plan"]
     },
     {
       "id": "add-new-entity",
       "name": "Add New Entity",
-      "description": "Create a new entity with full CRUD setup",
+      "description": "Generate full CRUD entity (model, service, API, tests)",
       "file": "add-new-entity.md",
-      "tags": ["development", "entities"]
+      "tags": ["development", "entities", "scaffolding"],
+      "longDescription": "Scaffolds a complete entity with database model, service layer, API endpoints, and tests. Follows project conventions and architecture patterns.",
+      "whatItDoes": [
+        "Creates database schema/model",
+        "Generates service layer with CRUD",
+        "Creates API endpoints",
+        "Generates unit and integration tests",
+        "Adds validation schemas"
+      ],
+      "whenToUse": "When adding new data entities that need full CRUD operations.",
+      "skillLevel": "intermediate",
+      "relatedModules": ["db-drizzle-engineer", "hono-engineer", "qa-engineer"]
     },
     {
       "id": "update-docs",
       "name": "Update Docs",
-      "description": "Update project documentation",
+      "description": "Update project documentation after changes",
       "file": "update-docs.md",
-      "tags": ["development", "documentation"]
+      "tags": ["development", "documentation"],
+      "longDescription": "Analyzes code changes and updates relevant documentation including README, API docs, architecture diagrams, and changelog.",
+      "whatItDoes": [
+        "Identifies affected documentation",
+        "Updates API documentation",
+        "Refreshes README sections",
+        "Updates architecture diagrams",
+        "Adds changelog entries"
+      ],
+      "whenToUse": "After implementing features or making changes that affect documentation.",
+      "skillLevel": "beginner",
+      "relatedModules": ["tech-writer", "documentation-writer"]
     },
     {
       "id": "five-why",
       "name": "Five Why Analysis",
-      "description": "Root cause analysis using the Five Why method",
+      "description": "Root cause analysis using Five Why method",
       "file": "five-why.md",
-      "tags": ["development", "analysis"]
+      "tags": ["development", "analysis", "debugging"],
+      "longDescription": "Systematic root cause analysis using the Five Why methodology. Helps identify underlying causes of bugs, issues, or failures.",
+      "whatItDoes": [
+        "Guides through Five Why questions",
+        "Documents cause chain",
+        "Identifies root cause",
+        "Suggests preventive measures",
+        "Creates action items"
+      ],
+      "whenToUse": "When debugging complex issues or after incidents to prevent recurrence.",
+      "skillLevel": "intermediate",
+      "relatedModules": ["debugger"]
     },
     {
       "id": "commit",
       "name": "Commit",
-      "description": "Create atomic git commits with proper messages",
+      "description": "Create atomic git commits with conventional messages",
       "file": "git/commit.md",
-      "tags": ["git", "commits"]
+      "tags": ["git", "commits", "core"],
+      "longDescription": "Creates atomic git commits following conventional commit format. Ensures only task-related files are included and generates proper commit messages.",
+      "whatItDoes": [
+        "Reviews staged changes",
+        "Validates atomic commit scope",
+        "Generates conventional message",
+        "Handles breaking changes",
+        "Runs pre-commit checks"
+      ],
+      "whenToUse": "When committing changes. Ensures atomic commits and proper message format.",
+      "skillLevel": "beginner",
+      "relatedModules": ["git-commit-helper"]
     },
     {
       "id": "review-code",
       "name": "Review Code",
-      "description": "Perform code review",
+      "description": "Perform comprehensive code review",
       "file": "audit/review-code.md",
-      "tags": ["audit", "review"]
+      "tags": ["audit", "review", "quality"],
+      "longDescription": "Performs thorough code review covering logic, patterns, readability, maintainability, and project conventions. Provides actionable feedback.",
+      "whatItDoes": [
+        "Reviews code logic and correctness",
+        "Checks pattern adherence",
+        "Evaluates readability/maintainability",
+        "Identifies potential bugs",
+        "Suggests improvements"
+      ],
+      "whenToUse": "Before merging PRs or when wanting feedback on implementation.",
+      "skillLevel": "intermediate",
+      "relatedModules": ["tech-lead"]
     },
     {
       "id": "review-security",
       "name": "Review Security",
-      "description": "Security-focused code review",
+      "description": "Security-focused code review for vulnerabilities",
       "file": "audit/review-security.md",
-      "tags": ["audit", "security"]
+      "tags": ["audit", "security", "owasp"],
+      "longDescription": "Security-focused code review checking for OWASP Top 10 vulnerabilities, injection flaws, authentication issues, and data exposure risks.",
+      "whatItDoes": [
+        "Checks for injection vulnerabilities",
+        "Reviews authentication/authorization",
+        "Validates input sanitization",
+        "Identifies data exposure risks",
+        "Reviews security configurations"
+      ],
+      "whenToUse": "Before deploying to production or when handling sensitive data.",
+      "skillLevel": "advanced",
+      "relatedModules": ["security-audit", "security-testing"]
     },
     {
       "id": "review-performance",
       "name": "Review Performance",
-      "description": "Performance-focused code review",
+      "description": "Performance-focused code review for optimization",
       "file": "audit/review-performance.md",
-      "tags": ["audit", "performance"]
+      "tags": ["audit", "performance", "optimization"],
+      "longDescription": "Performance-focused code review identifying potential bottlenecks, memory issues, unnecessary computations, and optimization opportunities.",
+      "whatItDoes": [
+        "Identifies performance bottlenecks",
+        "Reviews algorithm complexity",
+        "Checks for memory leaks",
+        "Evaluates database queries",
+        "Suggests optimizations"
+      ],
+      "whenToUse": "When performance is critical or when investigating slowdowns.",
+      "skillLevel": "advanced",
+      "relatedModules": ["performance-audit", "performance-testing"]
     },
     {
       "id": "help",
       "name": "Help",
-      "description": "Show available commands and documentation",
+      "description": "Show available commands, agents, and documentation",
       "file": "meta/help.md",
-      "tags": ["meta", "help"]
+      "tags": ["meta", "help", "reference"],
+      "longDescription": "Displays help information about available commands, agents, skills, and documentation. Provides quick reference for the AI assistant system.",
+      "whatItDoes": [
+        "Lists available commands",
+        "Shows agent descriptions",
+        "Displays skill references",
+        "Links to documentation",
+        "Provides usage examples"
+      ],
+      "whenToUse": "When unsure what commands are available or how to use the system.",
+      "skillLevel": "beginner",
+      "relatedModules": []
     },
     {
       "id": "markdown-format",
       "name": "Markdown Format",
-      "description": "Format markdown files",
+      "description": "Format and lint markdown files",
       "file": "formatting/markdown-format.md",
-      "tags": ["formatting", "markdown"]
+      "tags": ["formatting", "markdown", "docs"],
+      "longDescription": "Formats markdown files following consistent style guidelines. Checks for formatting issues, broken links, and style violations.",
+      "whatItDoes": [
+        "Formats markdown consistently",
+        "Fixes heading hierarchy",
+        "Validates link references",
+        "Standardizes list formatting",
+        "Ensures code block languages"
+      ],
+      "whenToUse": "Before committing documentation changes or when cleaning up markdown files.",
+      "skillLevel": "beginner",
+      "relatedModules": ["documentation-writer", "tech-writer"]
     }
   ]
 }
