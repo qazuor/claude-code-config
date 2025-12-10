@@ -2,7 +2,6 @@
  * Project detector - detects existing project type and configuration
  */
 
-import type { PresetName } from '../../types/presets.js';
 import type {
   DetectionSignal,
   PackageManager,
@@ -62,14 +61,14 @@ export async function detectProject(projectPath: string): Promise<ProjectDetecti
   const confidence: 'high' | 'medium' | 'low' =
     projectType && packageManager ? 'high' : projectType || packageManager ? 'medium' : 'low';
 
-  // Suggest preset based on project type
-  const suggestedPreset = suggestPreset(projectType, packageJson);
+  // Suggest bundles based on project type
+  const suggestedBundles = suggestBundles(projectType, packageJson);
 
   return {
     detected: true,
     projectType,
     packageManager,
-    suggestedPreset,
+    suggestedBundles,
     confidence,
     signals,
   };
@@ -163,49 +162,112 @@ async function detectProjectType(
 }
 
 /**
- * Suggest preset based on project type
+ * Suggest bundles based on project type and dependencies
  */
-function suggestPreset(
-  projectType: ProjectType | undefined,
-  packageJson: PackageJson
-): PresetName | undefined {
+function suggestBundles(projectType: ProjectType | undefined, packageJson: PackageJson): string[] {
   const deps = { ...packageJson.dependencies, ...packageJson.devDependencies };
+  const suggestedBundles: string[] = [];
 
-  // Full-stack indicators
-  const hasBackend =
-    deps.express || deps.fastify || deps.hono || deps.koa || deps['@hono/node-server'];
-  const hasFrontend = deps.react || deps.vue || deps.svelte || deps.astro || deps.next;
-  const hasDatabase =
-    deps.prisma || deps.drizzle || deps['drizzle-orm'] || deps.sequelize || deps.typeorm;
+  // Detect backend framework
+  const hasHono = deps.hono || deps['@hono/node-server'];
+  const hasExpress = deps.express;
+  const hasFastify = deps.fastify;
+  const hasNestjs = deps['@nestjs/core'];
 
-  if (hasBackend && hasFrontend) {
-    return 'fullstack';
-  }
+  // Detect database ORM
+  const hasDrizzle = deps.drizzle || deps['drizzle-orm'];
+  const hasPrisma = deps.prisma || deps['@prisma/client'];
+  const hasMongoose = deps.mongoose;
 
+  // Detect frontend framework
+  const hasReact = deps.react;
+  const hasTanstack = deps['@tanstack/react-router'] || deps['@tanstack/start'];
+
+  // Stack bundles based on detected technologies
   switch (projectType) {
     case 'astro':
+      suggestedBundles.push('astro-react-stack');
+      break;
+
     case 'nextjs':
+      if (hasPrisma) {
+        suggestedBundles.push('nextjs-prisma-stack');
+      } else {
+        // Just React + TanStack for Next.js without Prisma
+        suggestedBundles.push('react-tanstack-stack');
+      }
+      break;
+
     case 'vite-react':
-      return 'frontend';
+      suggestedBundles.push('react-tanstack-stack');
+      break;
 
     case 'hono':
-      return hasDatabase ? 'backend' : 'api-only';
+      if (hasDrizzle) {
+        suggestedBundles.push('hono-drizzle-stack');
+      } else if (hasPrisma) {
+        suggestedBundles.push('hono-api');
+        suggestedBundles.push('prisma-database');
+      } else {
+        suggestedBundles.push('hono-api');
+      }
+      break;
 
     case 'monorepo':
-      return 'fullstack';
+      // For monorepos, suggest based on detected technologies
+      if (hasReact && hasTanstack) {
+        suggestedBundles.push('react-tanstack-stack');
+      }
+      if (hasHono && hasDrizzle) {
+        suggestedBundles.push('hono-drizzle-stack');
+      } else if (hasHono) {
+        suggestedBundles.push('hono-api');
+      }
+      break;
 
     case 'node':
-      if (hasBackend && hasDatabase) {
-        return 'backend';
+      // Detect API framework
+      if (hasHono) {
+        if (hasDrizzle) {
+          suggestedBundles.push('hono-drizzle-stack');
+        } else {
+          suggestedBundles.push('hono-api');
+        }
+      } else if (hasExpress) {
+        if (hasPrisma) {
+          suggestedBundles.push('express-prisma-stack');
+        } else {
+          suggestedBundles.push('express-api');
+        }
+      } else if (hasFastify) {
+        suggestedBundles.push('fastify-api');
+      } else if (hasNestjs) {
+        suggestedBundles.push('nestjs-api');
       }
-      if (hasBackend) {
-        return 'api-only';
-      }
-      return 'minimal';
-
-    default:
-      return 'minimal';
+      break;
   }
+
+  // Add database bundle if ORM detected but not in a stack
+  if (hasDrizzle && !suggestedBundles.some((b) => b.includes('drizzle'))) {
+    suggestedBundles.push('drizzle-database');
+  }
+  if (hasPrisma && !suggestedBundles.some((b) => b.includes('prisma'))) {
+    suggestedBundles.push('prisma-database');
+  }
+  if (hasMongoose) {
+    suggestedBundles.push('mongoose-database');
+  }
+
+  // Always suggest minimal testing and quality
+  if (suggestedBundles.length > 0) {
+    suggestedBundles.push('testing-minimal');
+    suggestedBundles.push('quality-minimal');
+  }
+
+  // Add git workflow for all projects
+  suggestedBundles.push('git-workflow');
+
+  return suggestedBundles;
 }
 
 /**
