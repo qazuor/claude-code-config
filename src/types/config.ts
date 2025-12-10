@@ -147,6 +147,154 @@ export interface ModulesConfig {
 }
 
 /**
+ * Indent style options
+ */
+export type IndentStyle = 'space' | 'tab';
+
+/**
+ * Quote style options
+ */
+export type QuoteStyle = 'single' | 'double';
+
+/**
+ * EditorConfig options
+ */
+export interface EditorConfigOptions {
+  /** Indent style (tabs or spaces) */
+  indentStyle: IndentStyle;
+  /** Indent size (number of spaces or tab width) */
+  indentSize: number;
+  /** Line ending style */
+  endOfLine: 'lf' | 'crlf' | 'cr';
+  /** Insert final newline */
+  insertFinalNewline: boolean;
+  /** Trim trailing whitespace */
+  trimTrailingWhitespace: boolean;
+  /** Character set */
+  charset: 'utf-8' | 'utf-8-bom' | 'latin1';
+  /** Max line length */
+  maxLineLength: number | 'off';
+}
+
+/**
+ * Biome formatter options
+ */
+export interface BiomeFormatterOptions {
+  /** Indent style */
+  indentStyle: IndentStyle;
+  /** Indent width */
+  indentWidth: number;
+  /** Line width */
+  lineWidth: number;
+  /** Quote style for JS/TS */
+  quoteStyle: QuoteStyle;
+  /** Use semicolons */
+  semicolons: 'always' | 'asNeeded';
+  /** Trailing commas */
+  trailingCommas: 'all' | 'es5' | 'none';
+  /** Quote properties */
+  quoteProperties: 'asNeeded' | 'preserve';
+  /** Bracket spacing */
+  bracketSpacing: boolean;
+  /** Bracket same line (JSX) */
+  bracketSameLine: boolean;
+  /** Arrow function parentheses */
+  arrowParentheses: 'always' | 'asNeeded';
+}
+
+/**
+ * Biome linter options
+ */
+export interface BiomeLinterOptions {
+  /** Enable recommended rules */
+  recommended: boolean;
+  /** Enable correctness rules */
+  correctness: boolean;
+  /** Enable suspicious code rules */
+  suspicious: boolean;
+  /** Enable style rules */
+  style: boolean;
+  /** Enable complexity rules */
+  complexity: boolean;
+  /** Enable security rules */
+  security: boolean;
+  /** Enable performance rules */
+  performance: boolean;
+  /** Enable accessibility rules */
+  a11y: boolean;
+}
+
+/**
+ * Biome configuration options
+ */
+export interface BiomeOptions {
+  /** Formatter options */
+  formatter: BiomeFormatterOptions;
+  /** Linter options */
+  linter: BiomeLinterOptions;
+  /** Organize imports */
+  organizeImports: boolean;
+  /** Files to ignore */
+  ignorePatterns: string[];
+}
+
+/**
+ * Prettier options
+ */
+export interface PrettierOptions {
+  /** Print width */
+  printWidth: number;
+  /** Tab width */
+  tabWidth: number;
+  /** Use tabs instead of spaces */
+  useTabs: boolean;
+  /** Use semicolons */
+  semi: boolean;
+  /** Use single quotes */
+  singleQuote: boolean;
+  /** JSX single quotes */
+  jsxSingleQuote: boolean;
+  /** Trailing commas */
+  trailingComma: 'all' | 'es5' | 'none';
+  /** Bracket spacing */
+  bracketSpacing: boolean;
+  /** Bracket same line (JSX) */
+  bracketSameLine: boolean;
+  /** Arrow function parentheses */
+  arrowParens: 'always' | 'avoid';
+  /** End of line */
+  endOfLine: 'lf' | 'crlf' | 'cr' | 'auto';
+  /** Prose wrap (for markdown) */
+  proseWrap: 'always' | 'never' | 'preserve';
+  /** HTML whitespace sensitivity */
+  htmlWhitespaceSensitivity: 'css' | 'strict' | 'ignore';
+  /** Single attribute per line (HTML/JSX) */
+  singleAttributePerLine: boolean;
+}
+
+/**
+ * Commitlint configuration options
+ */
+export interface CommitlintOptions {
+  /** Extends base config */
+  extends: string[];
+  /** Commit types allowed */
+  types: string[];
+  /** Scopes allowed (empty for any) */
+  scopes: string[];
+  /** Maximum header length */
+  headerMaxLength: number;
+  /** Require scope */
+  scopeRequired: boolean;
+  /** Require body */
+  bodyRequired: boolean;
+  /** Body max line length */
+  bodyMaxLineLength: number;
+  /** Enable Husky integration */
+  huskyIntegration: boolean;
+}
+
+/**
  * Code style configuration
  */
 export interface CodeStyleConfig {
@@ -154,12 +302,20 @@ export interface CodeStyleConfig {
   enabled: boolean;
   /** EditorConfig file installed */
   editorconfig: boolean;
+  /** EditorConfig options */
+  editorconfigOptions?: EditorConfigOptions;
   /** Commitlint configuration installed */
   commitlint: boolean;
+  /** Commitlint options */
+  commitlintOptions?: CommitlintOptions;
   /** Biome configuration installed */
   biome: boolean;
+  /** Biome options */
+  biomeOptions?: BiomeOptions;
   /** Prettier configuration installed */
   prettier: boolean;
+  /** Prettier options */
+  prettierOptions?: PrettierOptions;
 }
 
 /**
