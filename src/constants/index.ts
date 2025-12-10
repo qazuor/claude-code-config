@@ -44,3 +44,16 @@ export {
   generateDenyRules,
   PRESET_DESCRIPTIONS,
 } from './permissions.js';
+
+// Template Placeholders
+export {
+  TEMPLATE_PLACEHOLDERS,
+  getPlaceholderByKey,
+  getPlaceholderByPattern,
+  getPlaceholdersByCategory,
+  getRequiredPlaceholders as getRequiredTemplatePlaceholders,
+  getAllPlaceholderKeys,
+  getAllPlaceholderPatterns,
+  isConfigurablePlaceholder,
+  computeDefaultValue,
+} from './template-placeholders.js';

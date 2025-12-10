@@ -54,3 +54,22 @@ export {
   hasAllModules,
   getAllModules,
 } from './context.js';
+
+// Scanner exports
+export {
+  extractPlaceholders,
+  scanForPlaceholders,
+  getUnconfiguredPlaceholders,
+  getMissingRequiredPlaceholders,
+  formatScanSummary,
+  listAllConfigurablePlaceholders,
+} from './scanner.js';
+
+// Config replacer exports
+export {
+  flattenTemplateConfig,
+  replaceTemplatePlaceholders,
+  replaceTemplateConfigWithSpinner,
+  formatReplacementReport,
+  previewReplacements,
+} from './config-replacer.js';

@@ -26,3 +26,16 @@ export {
   updateMcpConfig,
   updateExtrasConfig,
 } from './writer.js';
+
+// Global Defaults
+export {
+  getGlobalDefaultsPath,
+  readGlobalDefaults,
+  writeGlobalDefaults,
+  updateGlobalDefaults,
+  mergeWithGlobalDefaults,
+  hasGlobalDefaults,
+  clearGlobalDefaults,
+  getGlobalTemplateConfig,
+  formatGlobalDefaults,
+} from './global-defaults.js';

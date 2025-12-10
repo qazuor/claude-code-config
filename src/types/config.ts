@@ -4,6 +4,7 @@
 
 import type { McpInstallation } from './mcp.js';
 import type { PermissionsConfig } from './permissions.js';
+import type { TemplateConfig } from './template-config.js';
 
 /**
  * Template source configuration
@@ -364,6 +365,9 @@ export interface ClaudeConfig {
 
   /** Customization tracking */
   customizations: Customizations;
+
+  /** Template placeholder configuration */
+  templateConfig?: Partial<TemplateConfig>;
 }
 
 /**

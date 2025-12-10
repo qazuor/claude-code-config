@@ -102,3 +102,24 @@ export type {
   TemplateProcessingReport,
   TemplateModuleRef,
 } from './templates.js';
+
+// Template config types
+export type {
+  TemplatePlaceholderCategory,
+  TemplatePlaceholderInputType,
+  TemplatePlaceholderChoice,
+  TemplateConfigContext,
+  TemplatePlaceholderDefinition,
+  TemplateConfigCommands,
+  TemplateConfigPaths,
+  TemplateConfigTargets,
+  TemplateConfigTracking,
+  TemplateConfigTechStack,
+  TemplateConfigEnvironment,
+  TemplateConfigBrand,
+  TemplateConfig,
+  PlaceholderScanResult,
+  TemplatePlaceholderReport,
+  GlobalDefaults,
+  TemplateConfigSetupMode,
+} from './template-config.js';

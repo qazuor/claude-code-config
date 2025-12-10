@@ -56,4 +56,8 @@ export { detectProject } from './lib/scaffold/detector.js';
 export { processTemplates, buildTemplateContext } from './lib/templates/index.js';
 
 // Export template types
-export type { TemplateContext, TemplateResult, TemplateProcessingReport } from './types/templates.js';
+export type {
+  TemplateContext,
+  TemplateResult,
+  TemplateProcessingReport,
+} from './types/templates.js';
