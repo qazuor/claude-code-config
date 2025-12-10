@@ -2,8 +2,6 @@
  * Project scaffold types
  */
 
-import type { PresetName } from './presets.js';
-
 /**
  * Scaffold type options
  */
@@ -78,8 +76,8 @@ export interface ProjectDetectionResult {
   projectType?: ProjectType;
   /** Detected package manager */
   packageManager?: PackageManager;
-  /** Suggested preset based on detection */
-  suggestedPreset?: PresetName;
+  /** Suggested bundle IDs based on detection */
+  suggestedBundles?: string[];
   /** Overall confidence */
   confidence: 'high' | 'medium' | 'low';
   /** Signals that were found */

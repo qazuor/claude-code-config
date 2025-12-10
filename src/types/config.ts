@@ -131,6 +131,8 @@ export interface Customizations {
   customFiles: string[];
   /** Permissions configuration (if custom) */
   permissions?: PermissionsConfig;
+  /** Selected bundle IDs used during installation */
+  selectedBundles?: string[];
 }
 
 /**

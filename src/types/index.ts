@@ -30,9 +30,6 @@ export type {
   ModuleInstallResult,
 } from './modules.js';
 
-// Preset types
-export type { PresetName, PresetDefinition, PresetSelectionResult } from './presets.js';
-
 // MCP types
 export type {
   McpCategory,

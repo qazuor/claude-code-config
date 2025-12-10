@@ -2,8 +2,6 @@
  * Module registry and definition types
  */
 
-import type { PresetName } from './presets.js';
-
 /**
  * Module categories
  */
@@ -53,8 +51,8 @@ export interface ModuleDefinition extends ModuleExtendedInfo {
   tags?: string[];
   /** Whether this is a core module (always installed) */
   isCore?: boolean;
-  /** Presets that include this module (optional, can be computed) */
-  includedInPresets?: PresetName[];
+  /** Bundle IDs that include this module (optional, can be computed) */
+  includedInBundles?: string[];
   /** Placeholders used in this module's files */
   placeholders?: string[];
 }
