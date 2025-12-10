@@ -56,7 +56,7 @@ describe('MCP_SERVERS', () => {
 
       for (const server of serversRequiringConfig) {
         expect(server.configFields).toBeDefined();
-        expect(server.configFields!.length).toBeGreaterThan(0);
+        expect(server.configFields?.length).toBeGreaterThan(0);
       }
     });
 
@@ -64,7 +64,8 @@ describe('MCP_SERVERS', () => {
       const serversRequiringConfig = MCP_SERVERS.filter((s) => s.requiresConfig);
 
       for (const server of serversRequiringConfig) {
-        for (const field of server.configFields!) {
+        if (!server.configFields) continue;
+        for (const field of server.configFields) {
           expect(field.name).toBeDefined();
           expect(typeof field.name).toBe('string');
           expect(field.type).toMatch(/^(string|boolean|number)$/);
@@ -79,29 +80,29 @@ describe('MCP_SERVERS', () => {
     it('should include context7', () => {
       const context7 = MCP_SERVERS.find((s) => s.id === 'context7');
       expect(context7).toBeDefined();
-      expect(context7!.category).toBe('documentation');
-      expect(context7!.requiresConfig).toBe(false);
+      expect(context7?.category).toBe('documentation');
+      expect(context7?.requiresConfig).toBe(false);
     });
 
     it('should include github', () => {
       const github = MCP_SERVERS.find((s) => s.id === 'github');
       expect(github).toBeDefined();
-      expect(github!.category).toBe('version-control');
-      expect(github!.requiresConfig).toBe(true);
-      expect(github!.configFields!.some((f) => f.name === 'token')).toBe(true);
+      expect(github?.category).toBe('version-control');
+      expect(github?.requiresConfig).toBe(true);
+      expect(github?.configFields?.some((f) => f.name === 'token')).toBe(true);
     });
 
     it('should include postgres', () => {
       const postgres = MCP_SERVERS.find((s) => s.id === 'postgres');
       expect(postgres).toBeDefined();
-      expect(postgres!.category).toBe('database');
-      expect(postgres!.requiresConfig).toBe(true);
+      expect(postgres?.category).toBe('database');
+      expect(postgres?.requiresConfig).toBe(true);
     });
 
     it('should include vercel', () => {
       const vercel = MCP_SERVERS.find((s) => s.id === 'vercel');
       expect(vercel).toBeDefined();
-      expect(vercel!.category).toBe('deployment');
+      expect(vercel?.category).toBe('deployment');
     });
   });
 });
@@ -110,8 +111,8 @@ describe('getMcpServer', () => {
   it('should return server by id', () => {
     const server = getMcpServer('context7');
     expect(server).toBeDefined();
-    expect(server!.id).toBe('context7');
-    expect(server!.name).toBe('Context7');
+    expect(server?.id).toBe('context7');
+    expect(server?.name).toBe('Context7');
   });
 
   it('should return undefined for unknown id', () => {

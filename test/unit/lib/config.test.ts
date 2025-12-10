@@ -211,8 +211,9 @@ describe('config lib', () => {
 
       const readResult = await readConfig(testDir);
       expect(readResult).not.toBeNull();
-      expect(readResult!.project.name).toBe('read-test');
-      expect(readResult!.project.description).toBe('test description');
+      if (!readResult) return;
+      expect(readResult.project.name).toBe('read-test');
+      expect(readResult.project.description).toBe('test description');
     });
 
     it('should return null when config does not exist', async () => {
@@ -251,10 +252,11 @@ describe('config lib', () => {
       const readResult = await readConfig(testDir);
 
       expect(readResult).not.toBeNull();
-      expect(readResult!.modules.agents.selected).toEqual(['tech-lead', 'qa-engineer']);
-      expect(readResult!.extras.schemas).toBe(true);
-      expect(readResult!.project.domain).toBe('example.com');
-      expect(readResult!.project.location).toBe('New York');
+      if (!readResult) return;
+      expect(readResult.modules.agents.selected).toEqual(['tech-lead', 'qa-engineer']);
+      expect(readResult.extras.schemas).toBe(true);
+      expect(readResult.project.domain).toBe('example.com');
+      expect(readResult.project.location).toBe('New York');
     });
   });
 
@@ -281,10 +283,11 @@ describe('config lib', () => {
       const loaded = await readConfig(testDir);
 
       expect(loaded).not.toBeNull();
-      expect(loaded!.project).toEqual(original.project);
-      expect(loaded!.modules).toEqual(original.modules);
-      expect(loaded!.preferences.language).toBe('es');
-      expect(loaded!.preferences.includeCoAuthor).toBe(true);
+      if (!loaded) return;
+      expect(loaded.project).toEqual(original.project);
+      expect(loaded.modules).toEqual(original.modules);
+      expect(loaded.preferences.language).toBe('es');
+      expect(loaded.preferences.includeCoAuthor).toBe(true);
     });
   });
 
@@ -331,7 +334,8 @@ describe('config lib', () => {
 
       const result = await readPartialConfig(testDir);
       expect(result).not.toBeNull();
-      expect(result!.version).toBe('1.0.0');
+      if (!result) return;
+      expect(result.version).toBe('1.0.0');
     });
   });
 
@@ -456,9 +460,10 @@ describe('config lib', () => {
       });
 
       expect(result).not.toBeNull();
-      expect(result!.version).toBe('1.1.0');
-      expect(result!.project.name).toBe('updated-project');
-      expect(result!.project.description).toBe('A test project'); // preserved
+      if (!result) return;
+      expect(result.version).toBe('1.1.0');
+      expect(result.project.name).toBe('updated-project');
+      expect(result.project.description).toBe('A test project'); // preserved
     });
 
     it('should update lastUpdated timestamp', async () => {
@@ -474,7 +479,8 @@ describe('config lib', () => {
       await new Promise((resolve) => setTimeout(resolve, 10));
 
       const result = await updateConfig(testDir, { version: '1.0.1' });
-      expect(result!.customizations.lastUpdated).not.toBe(originalTimestamp);
+      if (!result) return;
+      expect(result.customizations.lastUpdated).not.toBe(originalTimestamp);
     });
   });
 

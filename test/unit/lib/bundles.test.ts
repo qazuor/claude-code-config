@@ -79,8 +79,9 @@ describe('bundle resolver', () => {
     it('should resolve bundle to modules', () => {
       const bundle = getBundleById('react-tanstack-stack');
       expect(bundle).toBeDefined();
+      if (!bundle) return;
 
-      const resolved = resolveBundle(bundle!);
+      const resolved = resolveBundle(bundle);
       expect(resolved.bundle).toBe(bundle);
       expect(resolved.modules.agents.length).toBeGreaterThan(0);
       expect(resolved.modules.skills.length).toBeGreaterThan(0);
@@ -257,8 +258,9 @@ describe('bundle resolver', () => {
     it('should format bundle with module counts', () => {
       const bundle = getBundleById('react-tanstack-stack');
       expect(bundle).toBeDefined();
+      if (!bundle) return;
 
-      const formatted = formatBundleForDisplay(bundle!);
+      const formatted = formatBundleForDisplay(bundle);
 
       expect(formatted).toContain('React + TanStack Stack');
       expect(formatted).toContain('agents');
@@ -297,8 +299,9 @@ describe('bundle resolver', () => {
     it('should include description and modules in detailed format', () => {
       const bundle = getBundleById('react-tanstack-stack');
       expect(bundle).toBeDefined();
+      if (!bundle) return;
 
-      const description = formatBundleDetailedDescription(bundle!);
+      const description = formatBundleDetailedDescription(bundle);
 
       // Should include main description
       expect(description).toContain('React with TanStack');

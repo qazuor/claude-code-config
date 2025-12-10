@@ -377,11 +377,12 @@ describe('fs utilities', () => {
 
       const info = await fsUtils.getFileInfo(filePath);
       expect(info).not.toBeNull();
-      expect(info!.exists).toBe(true);
-      expect(info!.isFile).toBe(true);
-      expect(info!.isDirectory).toBe(false);
-      expect(info!.size).toBeGreaterThan(0);
-      expect(info!.modified).toBeInstanceOf(Date);
+      if (!info) return;
+      expect(info.exists).toBe(true);
+      expect(info.isFile).toBe(true);
+      expect(info.isDirectory).toBe(false);
+      expect(info.size).toBeGreaterThan(0);
+      expect(info.modified).toBeInstanceOf(Date);
     });
 
     it('should return file info for directory', async () => {
@@ -390,8 +391,9 @@ describe('fs utilities', () => {
 
       const info = await fsUtils.getFileInfo(dirPath);
       expect(info).not.toBeNull();
-      expect(info!.isFile).toBe(false);
-      expect(info!.isDirectory).toBe(true);
+      if (!info) return;
+      expect(info.isFile).toBe(false);
+      expect(info.isDirectory).toBe(true);
     });
 
     it('should return null for non-existent path', async () => {

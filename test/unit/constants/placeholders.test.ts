@@ -38,7 +38,7 @@ describe('PLACEHOLDERS', () => {
     it('should include project name placeholder', () => {
       const projectName = PLACEHOLDERS.find((p) => p.configKey === 'name');
       expect(projectName).toBeDefined();
-      expect(projectName!.required).toBe(true);
+      expect(projectName?.required).toBe(true);
     });
 
     it('should include organization placeholder', () => {
@@ -84,7 +84,7 @@ describe('getPlaceholder', () => {
   it('should find placeholder by pattern source', () => {
     const placeholder = getPlaceholder('your-org');
     expect(placeholder).toBeDefined();
-    expect(placeholder!.configKey).toBe('org');
+    expect(placeholder?.configKey).toBe('org');
   });
 });
 

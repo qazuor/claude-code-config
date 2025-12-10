@@ -16,8 +16,9 @@ describe('bundle display', () => {
     it('should format planning-complete bundle with full details', () => {
       const bundle = getBundleById('planning-complete');
       expect(bundle).toBeDefined();
+      if (!bundle) return;
 
-      const lines = formatBundleVisualDisplay(bundle!);
+      const lines = formatBundleVisualDisplay(bundle);
 
       // Should have box borders
       expect(lines[0]).toContain('┌');
@@ -55,8 +56,9 @@ describe('bundle display', () => {
     it('should format testing-complete bundle with skills details', () => {
       const bundle = getBundleById('testing-complete');
       expect(bundle).toBeDefined();
+      if (!bundle) return;
 
-      const lines = formatBundleVisualDisplay(bundle!);
+      const lines = formatBundleVisualDisplay(bundle);
       const content = lines.join('\n');
 
       // Should include skills with purposes
@@ -95,9 +97,10 @@ describe('bundle display', () => {
     it('should respect custom width', () => {
       const bundle = getBundleById('git-workflow');
       expect(bundle).toBeDefined();
+      if (!bundle) return;
 
-      const narrowLines = formatBundleVisualDisplay(bundle!, 50);
-      const wideLines = formatBundleVisualDisplay(bundle!, 100);
+      const narrowLines = formatBundleVisualDisplay(bundle, 50);
+      const wideLines = formatBundleVisualDisplay(bundle, 100);
 
       // Narrow should have shorter lines
       expect(narrowLines[0].length).toBeLessThan(wideLines[0].length);
@@ -108,8 +111,9 @@ describe('bundle display', () => {
     it('should format bundle with module counts', () => {
       const bundle = getBundleById('planning-complete');
       expect(bundle).toBeDefined();
+      if (!bundle) return;
 
-      const compact = formatBundleCompact(bundle!);
+      const compact = formatBundleCompact(bundle);
 
       expect(compact).toContain('Complete Planning Workflow');
       expect(compact).toContain('agents');

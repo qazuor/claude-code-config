@@ -7,7 +7,6 @@ import path from 'node:path';
 import fse from 'fs-extra';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ClaudeConfig } from '../../../src/types/config.js';
-import type { ModuleCategory } from '../../../src/types/modules.js';
 
 import { filterModules, loadRegistry } from '../../../src/lib/modules/index.js';
 import { installAllModules } from '../../../src/lib/modules/installer.js';
@@ -416,8 +415,7 @@ describe('init command', () => {
       };
 
       // Resolve modules (tags -> actual module definitions)
-      const categories: ModuleCategory[] = ['agents', 'skills', 'commands', 'docs'];
-      const modulesByCategory: Record<ModuleCategory, any[]> = {
+      const modulesByCategory = {
         agents: filterModules(registry, 'agents', config.modules.agents.selected),
         skills: filterModules(registry, 'skills', config.modules.skills.selected),
         commands: filterModules(registry, 'commands', config.modules.commands.selected),
