@@ -2,6 +2,7 @@
  * Main configuration types for Claude Code config
  */
 
+import type { FolderPreferences } from './folder-preferences.js';
 import type { McpInstallation } from './mcp.js';
 import type { PermissionsConfig } from './permissions.js';
 import type { TemplateConfig } from './template-config.js';
@@ -335,6 +336,8 @@ export interface ExtrasConfig {
   sessions: boolean;
   /** Code style configuration */
   codeStyle?: CodeStyleConfig;
+  /** Folder structure preferences */
+  folderPreferences?: FolderPreferences;
 }
 
 /**

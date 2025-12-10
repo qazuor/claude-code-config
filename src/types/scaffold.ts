@@ -78,6 +78,8 @@ export interface ProjectDetectionResult {
   packageManager?: PackageManager;
   /** Suggested bundle IDs based on detection */
   suggestedBundles?: string[];
+  /** Detected technologies (e.g., ['react', 'typescript', 'tailwind']) */
+  detectedTechnologies?: string[];
   /** Overall confidence */
   confidence: 'high' | 'medium' | 'low';
   /** Signals that were found */

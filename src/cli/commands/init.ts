@@ -43,6 +43,7 @@ import {
   promptQuickBundleSelection,
   showBundlesSummary,
 } from '../prompts/bundle-select.js';
+import { promptQuickFolderPreferences } from '../prompts/folder-preferences.js';
 import {
   type SkippedMcpConfig,
   confirmFinalConfiguration,
@@ -392,6 +393,12 @@ async function buildInteractiveConfig(
   // Code style configuration
   const codeStyleConfig = await promptCodeStyleConfig();
 
+  // Folder structure preferences (based on selected bundles)
+  const folderPreferences = await promptQuickFolderPreferences({
+    selectedBundles: bundleSelection.selectedBundles,
+    technologies: detection.detectedTechnologies || [],
+  });
+
   // Template configuration ({{PLACEHOLDER}} values)
   logger.newline();
   const configContext = await buildConfigContext(projectPath);
@@ -434,6 +441,7 @@ async function buildInteractiveConfig(
       hooks: hookConfig,
       sessions: hasPlanning,
       codeStyle: codeStyleConfig,
+      folderPreferences: folderPreferences || undefined,
     },
     scaffold: {
       type: scaffoldOptions.type,
