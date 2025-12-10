@@ -4,10 +4,22 @@
 
 import path from 'node:path';
 import fse from 'fs-extra';
+import {
+  DEFAULT_BIOME_OPTIONS,
+  DEFAULT_COMMITLINT_OPTIONS,
+  DEFAULT_EDITORCONFIG_OPTIONS,
+  DEFAULT_PRETTIER_OPTIONS,
+} from '../../constants/code-style-defaults.js';
 import type { CodeStyleConfig } from '../../types/config.js';
 import { logger } from '../utils/logger.js';
-import { getTemplatesPath } from '../utils/paths.js';
 import { spinner } from '../utils/spinner.js';
+import {
+  generateBiomeConfig,
+  generateCommitlintConfig,
+  generateEditorConfig,
+  generatePrettierConfig,
+  generatePrettierIgnore,
+} from './generator.js';
 
 interface InstallResult {
   installed: string[];
@@ -26,6 +38,7 @@ const PRETTIER_IGNORE = '.prettierignore';
 
 /**
  * Install code style configuration files
+ * Generates files based on user options, or copies templates as fallback
  */
 export async function installCodeStyle(
   targetPath: string,
@@ -42,48 +55,93 @@ export async function installCodeStyle(
     return result;
   }
 
-  const templatesPath = getTemplatesPath();
-  const codeStylePath = path.join(templatesPath, 'code-style');
-
   spinner.start('Installing code style configurations...');
 
-  // Install each enabled tool's config
-  const toolsToInstall: Array<[string, string]> = [];
-  if (config.editorconfig) toolsToInstall.push(['editorconfig', CODE_STYLE_FILES.editorconfig]);
-  if (config.commitlint) toolsToInstall.push(['commitlint', CODE_STYLE_FILES.commitlint]);
-  if (config.biome) toolsToInstall.push(['biome', CODE_STYLE_FILES.biome]);
-  if (config.prettier) toolsToInstall.push(['prettier', CODE_STYLE_FILES.prettier]);
+  // Install EditorConfig
+  if (config.editorconfig) {
+    const filename = CODE_STYLE_FILES.editorconfig;
+    const destPath = path.join(targetPath, filename);
 
-  for (const [tool, filename] of toolsToInstall) {
     try {
-      const sourcePath = path.join(codeStylePath, filename);
-      const destPath = path.join(targetPath, filename);
-
-      // Check if file already exists
-      if (await fse.pathExists(destPath)) {
-        if (!options?.overwrite) {
-          result.skipped.push(filename);
-          continue;
-        }
-      }
-
-      // Copy the file
-      await fse.copy(sourcePath, destPath);
-      result.installed.push(filename);
-
-      // If prettier, also install .prettierignore
-      if (tool === 'prettier') {
-        const ignoreSource = path.join(codeStylePath, PRETTIER_IGNORE);
-        const ignoreDest = path.join(targetPath, PRETTIER_IGNORE);
-
-        if (!(await fse.pathExists(ignoreDest)) || options?.overwrite) {
-          await fse.copy(ignoreSource, ignoreDest);
-          result.installed.push(PRETTIER_IGNORE);
-        }
+      if ((await fse.pathExists(destPath)) && !options?.overwrite) {
+        result.skipped.push(filename);
+      } else {
+        const editorconfigOptions = config.editorconfigOptions ?? DEFAULT_EDITORCONFIG_OPTIONS;
+        const content = generateEditorConfig(editorconfigOptions);
+        await fse.writeFile(destPath, content, 'utf-8');
+        result.installed.push(filename);
       }
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : String(error);
-      result.errors.push(`${tool}: ${errorMsg}`);
+      result.errors.push(`editorconfig: ${errorMsg}`);
+    }
+  }
+
+  // Install Biome
+  if (config.biome) {
+    const filename = CODE_STYLE_FILES.biome;
+    const destPath = path.join(targetPath, filename);
+
+    try {
+      if ((await fse.pathExists(destPath)) && !options?.overwrite) {
+        result.skipped.push(filename);
+      } else {
+        const biomeOptions = config.biomeOptions ?? DEFAULT_BIOME_OPTIONS;
+        const content = generateBiomeConfig(biomeOptions);
+        await fse.writeFile(destPath, content, 'utf-8');
+        result.installed.push(filename);
+      }
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      result.errors.push(`biome: ${errorMsg}`);
+    }
+  }
+
+  // Install Prettier
+  if (config.prettier) {
+    const filename = CODE_STYLE_FILES.prettier;
+    const destPath = path.join(targetPath, filename);
+
+    try {
+      if ((await fse.pathExists(destPath)) && !options?.overwrite) {
+        result.skipped.push(filename);
+      } else {
+        const prettierOptions = config.prettierOptions ?? DEFAULT_PRETTIER_OPTIONS;
+        const content = generatePrettierConfig(prettierOptions);
+        await fse.writeFile(destPath, content, 'utf-8');
+        result.installed.push(filename);
+      }
+
+      // Also install .prettierignore
+      const ignoreDest = path.join(targetPath, PRETTIER_IGNORE);
+      if (!(await fse.pathExists(ignoreDest)) || options?.overwrite) {
+        const ignoreContent = generatePrettierIgnore();
+        await fse.writeFile(ignoreDest, ignoreContent, 'utf-8');
+        result.installed.push(PRETTIER_IGNORE);
+      }
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      result.errors.push(`prettier: ${errorMsg}`);
+    }
+  }
+
+  // Install Commitlint
+  if (config.commitlint) {
+    const filename = CODE_STYLE_FILES.commitlint;
+    const destPath = path.join(targetPath, filename);
+
+    try {
+      if ((await fse.pathExists(destPath)) && !options?.overwrite) {
+        result.skipped.push(filename);
+      } else {
+        const commitlintOptions = config.commitlintOptions ?? DEFAULT_COMMITLINT_OPTIONS;
+        const content = generateCommitlintConfig(commitlintOptions);
+        await fse.writeFile(destPath, content, 'utf-8');
+        result.installed.push(filename);
+      }
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      result.errors.push(`commitlint: ${errorMsg}`);
     }
   }
 
@@ -111,12 +169,16 @@ export function getCodeStyleDependencies(config: CodeStyleConfig): {
 
   if (config.commitlint) {
     devDependencies.push('@commitlint/cli', '@commitlint/config-conventional');
-    instructions.push(
-      'For commitlint with git hooks, install Husky:',
-      '  pnpm add -D husky',
-      '  npx husky init',
-      '  echo "npx --no -- commitlint --edit \\${1}" > .husky/commit-msg'
-    );
+
+    const huskyEnabled = config.commitlintOptions?.huskyIntegration ?? true;
+    if (huskyEnabled) {
+      instructions.push(
+        'For commitlint with git hooks, install Husky:',
+        '  pnpm add -D husky',
+        '  npx husky init',
+        '  echo "npx --no -- commitlint --edit \\${1}" > .husky/commit-msg'
+      );
+    }
   }
 
   if (config.biome) {
