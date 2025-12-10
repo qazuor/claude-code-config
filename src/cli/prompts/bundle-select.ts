@@ -14,6 +14,7 @@ import {
   getBundleById,
   getBundleCategoryName,
   getBundlesGroupedByCategory,
+  resolveBundles,
 } from '../../lib/bundles/resolver.js';
 import { validateModuleDependencies } from '../../lib/bundles/validator.js';
 import { colors, logger } from '../../lib/utils/logger.js';
@@ -57,10 +58,9 @@ export async function promptBundleMode(): Promise<BundleSelectionMode> {
 }
 
 /**
- * Prompt for bundle selection
- * Description shows detailed info when hovering over each choice
+ * Prompt for bundle selection by category (internal, doesn't show summary)
  */
-export async function promptBundleSelection(): Promise<string[]> {
+async function promptBundleSelectionByCategory(): Promise<string[]> {
   const grouped = getBundlesGroupedByCategory();
   const categories = Object.keys(grouped);
 
@@ -91,6 +91,38 @@ export async function promptBundleSelection(): Promise<string[]> {
     });
 
     selectedBundles.push(...selected);
+  }
+
+  return selectedBundles;
+}
+
+/**
+ * Prompt for bundle selection
+ * Description shows detailed info when hovering over each choice
+ * Shows summary with totals at the end with option to edit
+ */
+export async function promptBundleSelection(): Promise<string[]> {
+  let selectedBundles = await promptBundleSelectionByCategory();
+
+  // Show summary with totals and allow editing
+  if (selectedBundles.length > 0) {
+    let confirmed = false;
+    while (!confirmed) {
+      const action = await confirmBundleSelectionWithEdit(selectedBundles);
+
+      if (action === 'confirm') {
+        confirmed = true;
+      } else if (action === 'edit') {
+        selectedBundles = await editBundleSelection(selectedBundles);
+        // If all bundles were removed, break the loop
+        if (selectedBundles.length === 0) {
+          break;
+        }
+      } else {
+        // cancel
+        return [];
+      }
+    }
   }
 
   return selectedBundles;
@@ -208,14 +240,35 @@ export async function promptQuickBundleSelection(): Promise<string[]> {
     default: false,
   });
 
+  let finalSelection = selected;
   if (addMore) {
     const additional = await promptBundleSelection();
     // Merge without duplicates
-    const allSelected = [...selected, ...additional.filter((id) => !selected.includes(id))];
-    return allSelected;
+    finalSelection = [...selected, ...additional.filter((id) => !selected.includes(id))];
   }
 
-  return selected;
+  // Show summary with totals and allow editing
+  if (finalSelection.length > 0) {
+    let confirmed = false;
+    while (!confirmed) {
+      const action = await confirmBundleSelectionWithEdit(finalSelection);
+
+      if (action === 'confirm') {
+        confirmed = true;
+      } else if (action === 'edit') {
+        finalSelection = await editBundleSelection(finalSelection);
+        // If all bundles were removed, break the loop
+        if (finalSelection.length === 0) {
+          break;
+        }
+      } else {
+        // cancel
+        return [];
+      }
+    }
+  }
+
+  return finalSelection;
 }
 
 /**
@@ -260,7 +313,36 @@ export function showValidationResults(validation: BundleValidationResult): void 
 }
 
 /**
- * Show selected bundles summary with compact format
+ * Module totals from resolved bundles
+ */
+export interface ModuleTotals {
+  agents: number;
+  skills: number;
+  commands: number;
+  docs: number;
+  total: number;
+}
+
+/**
+ * Calculate module totals from bundle selection
+ */
+export function calculateModuleTotals(bundleIds: string[]): ModuleTotals {
+  const resolved = resolveBundles(bundleIds);
+  return {
+    agents: resolved.agents.length,
+    skills: resolved.skills.length,
+    commands: resolved.commands.length,
+    docs: resolved.docs.length,
+    total:
+      resolved.agents.length +
+      resolved.skills.length +
+      resolved.commands.length +
+      resolved.docs.length,
+  };
+}
+
+/**
+ * Show selected bundles summary with compact format and module totals
  */
 export function showBundlesSummary(bundleIds: string[]): void {
   if (bundleIds.length === 0) {
@@ -279,6 +361,54 @@ export function showBundlesSummary(bundleIds: string[]): void {
   for (const bundle of selectedBundles) {
     logger.success(`• ${formatBundleCompact(bundle)}`);
   }
+}
+
+/**
+ * Show selected bundles summary with totals
+ */
+export function showBundlesSummaryWithTotals(bundleIds: string[]): void {
+  if (bundleIds.length === 0) {
+    logger.info('No bundles selected');
+    return;
+  }
+
+  const allBundles = getAllBundles();
+  const selectedBundles = bundleIds
+    .map((id) => allBundles.find((b) => b.id === id))
+    .filter((b): b is BundleDefinition => b !== undefined);
+
+  const totals = calculateModuleTotals(bundleIds);
+
+  logger.newline();
+  logger.subtitle(`Selected Bundles (${selectedBundles.length})`);
+
+  for (const bundle of selectedBundles) {
+    logger.success(`  • ${formatBundleCompact(bundle)}`);
+  }
+
+  // Show totals box
+  const border = colors.primary('│');
+  logger.newline();
+  logger.info(colors.primary('┌─────────────────────────────────────┐'));
+  logger.info(`${border}         Module Totals              ${border}`);
+  logger.info(colors.primary('├─────────────────────────────────────┤'));
+  logger.info(
+    `${border}  🤖 Agents:   ${String(totals.agents).padStart(3)}                   ${border}`
+  );
+  logger.info(
+    `${border}  ⚡ Skills:   ${String(totals.skills).padStart(3)}                   ${border}`
+  );
+  logger.info(
+    `${border}  💻 Commands: ${String(totals.commands).padStart(3)}                   ${border}`
+  );
+  logger.info(
+    `${border}  📚 Docs:     ${String(totals.docs).padStart(3)}                   ${border}`
+  );
+  logger.info(colors.primary('├─────────────────────────────────────┤'));
+  logger.info(
+    `${border}${colors.success(`  Total:       ${String(totals.total).padStart(3)} modules            `)}${border}`
+  );
+  logger.info(colors.primary('└─────────────────────────────────────┘'));
 }
 
 /**
@@ -322,7 +452,12 @@ export function validateAndShowDependencies(
 }
 
 /**
- * Confirm bundle selection with validation
+ * Action options for bundle selection confirmation
+ */
+export type BundleConfirmAction = 'confirm' | 'edit' | 'cancel';
+
+/**
+ * Confirm bundle selection with option to edit
  */
 export async function confirmBundleSelection(bundleIds: string[]): Promise<boolean> {
   showBundlesSummary(bundleIds);
@@ -332,6 +467,87 @@ export async function confirmBundleSelection(bundleIds: string[]): Promise<boole
     message: 'Is this selection correct?',
     default: true,
   });
+}
+
+/**
+ * Confirm bundle selection with totals and option to go back and edit
+ * Returns the action the user wants to take
+ */
+export async function confirmBundleSelectionWithEdit(
+  bundleIds: string[]
+): Promise<BundleConfirmAction> {
+  showBundlesSummaryWithTotals(bundleIds);
+  logger.newline();
+
+  const action = await select<BundleConfirmAction>({
+    message: 'What would you like to do?',
+    choices: [
+      {
+        name: colors.success('✓ Confirm selection'),
+        value: 'confirm',
+        description: 'Continue with the selected bundles',
+      },
+      {
+        name: colors.warning('← Edit selection'),
+        value: 'edit',
+        description: 'Go back and modify your bundle selection',
+      },
+      {
+        name: colors.muted('✕ Cancel'),
+        value: 'cancel',
+        description: 'Cancel and start over',
+      },
+    ],
+    default: 'confirm',
+  });
+
+  return action;
+}
+
+/**
+ * Edit bundle selection - allows removing bundles from current selection
+ */
+export async function editBundleSelection(currentBundleIds: string[]): Promise<string[]> {
+  const allBundles = getAllBundles();
+  const selectedBundles = currentBundleIds
+    .map((id) => allBundles.find((b) => b.id === id))
+    .filter((b): b is BundleDefinition => b !== undefined);
+
+  logger.newline();
+  logger.subtitle('Edit Bundle Selection');
+  logger.info('Uncheck bundles you want to remove, or add new ones.');
+  logger.newline();
+
+  const choices = selectedBundles.map((bundle) => ({
+    name: formatBundleForDisplay(bundle),
+    value: bundle.id,
+    description: formatBundleDetailedDescription(bundle),
+    checked: true, // All currently selected bundles are checked
+  }));
+
+  // Add option to browse more bundles
+  choices.push({
+    name: colors.primary('+ Add more bundles...'),
+    value: BROWSE_ALL_VALUE,
+    description: 'Browse all available bundles to add more',
+    checked: false,
+  });
+
+  const selected = await checkbox({
+    message: 'Current bundles (uncheck to remove):',
+    choices,
+    required: false,
+  });
+
+  // Check if user wants to add more
+  if (selected.includes(BROWSE_ALL_VALUE)) {
+    const realBundles = selected.filter((id) => id !== BROWSE_ALL_VALUE);
+    const additional = await promptBundleSelection();
+    // Merge without duplicates
+    return [...realBundles, ...additional.filter((id) => !realBundles.includes(id))];
+  }
+
+  return selected;
 }
 
 /**
