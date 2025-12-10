@@ -56,7 +56,9 @@ describe('banner utilities', () => {
       // Check for description text
       const calls = consoleSpy.mock.calls.flat();
       expect(
-        calls.some((c) => typeof c === 'string' && c.includes('Claude Code Configuration Manager'))
+        calls.some(
+          (c) => typeof c === 'string' && c.includes('Claude Code Configuration & Project Setup')
+        )
       ).toBe(true);
 
       consoleSpy.mockRestore();

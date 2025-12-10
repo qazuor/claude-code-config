@@ -34,7 +34,7 @@ export function showBanner(): void {
     .join('\n');
 
   console.log(coloredBanner);
-  console.log(chalk.gray('  Claude Code Configuration Manager'));
+  console.log(chalk.gray('  Claude Code Configuration & Project Setup'));
   console.log(chalk.gray('  ─────────────────────────────────────'));
   console.log();
 }

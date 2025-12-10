@@ -102,6 +102,33 @@ class Logger {
   }
 
   /**
+   * Print a large section header for major transitions
+   * Creates a visually prominent divider between configuration sections
+   */
+  section(text: string, icon?: string): void {
+    if (this.silent) return;
+    const displayIcon = icon || '◆';
+    const width = 60;
+    const border = '═'.repeat(width);
+    const innerWidth = width - 4;
+    const paddedText = text.length > innerWidth ? text.slice(0, innerWidth) : text;
+    const leftPad = Math.floor((innerWidth - paddedText.length) / 2);
+    const rightPad = innerWidth - paddedText.length - leftPad;
+
+    console.log();
+    console.log(chalk.cyan(`╔${border}╗`));
+    console.log(chalk.cyan('║') + ' '.repeat(width) + chalk.cyan('║'));
+    console.log(
+      `${
+        chalk.cyan('║') + ' '.repeat(leftPad + 1) + chalk.hex('#FED330')(displayIcon)
+      } ${chalk.bold.white(paddedText)}${' '.repeat(rightPad + 1)}${chalk.cyan('║')}`
+    );
+    console.log(chalk.cyan('║') + ' '.repeat(width) + chalk.cyan('║'));
+    console.log(chalk.cyan(`╚${border}╝`));
+    console.log();
+  }
+
+  /**
    * Print a step in a process
    */
   step(stepNumber: number, totalSteps: number, message: string): void {
