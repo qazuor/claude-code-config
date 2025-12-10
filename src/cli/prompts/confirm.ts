@@ -89,6 +89,16 @@ export function showFinalSummary(config: ClaudeConfig): void {
   if (config.extras.sessions) extras.push('sessions');
   logger.keyValue('Included', extras.join(', ') || 'none');
 
+  // Code Style
+  if (config.extras.codeStyle?.enabled) {
+    const codeStyleTools: string[] = [];
+    if (config.extras.codeStyle.editorconfig) codeStyleTools.push('EditorConfig');
+    if (config.extras.codeStyle.commitlint) codeStyleTools.push('Commitlint');
+    if (config.extras.codeStyle.biome) codeStyleTools.push('Biome');
+    if (config.extras.codeStyle.prettier) codeStyleTools.push('Prettier');
+    logger.keyValue('Code Style', codeStyleTools.join(', '));
+  }
+
   // MCP
   if (config.mcp.servers.length > 0) {
     logger.newline();
