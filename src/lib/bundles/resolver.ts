@@ -106,9 +106,7 @@ export function resolveBundles(bundleIds: string[]): ModuleSelectionResult {
 /**
  * Merge bundle selection with additional individual modules
  */
-export function mergeBundleSelection(
-  bundleResult: BundleSelectionResult
-): ModuleSelectionResult {
+export function mergeBundleSelection(bundleResult: BundleSelectionResult): ModuleSelectionResult {
   // Start with resolved bundles
   const result = resolveBundles(bundleResult.selectedBundles);
 

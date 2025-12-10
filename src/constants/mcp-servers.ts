@@ -26,7 +26,8 @@ export const MCP_SERVERS: McpServerDefinition[] = [
   {
     id: 'chrome-devtools',
     name: 'Chrome DevTools',
-    description: 'Browser automation, debugging, and performance profiling via Chrome DevTools Protocol',
+    description:
+      'Browser automation, debugging, and performance profiling via Chrome DevTools Protocol',
     package: '@anthropic/chrome-devtools-mcp',
     category: 'testing',
     requiresConfig: false,
@@ -118,8 +119,7 @@ export const MCP_SERVERS: McpServerDefinition[] = [
         envVar: 'DATABASE_URL',
       },
     ],
-    installInstructions:
-      'Connection string format: postgresql://user:password@host:port/database',
+    installInstructions: 'Connection string format: postgresql://user:password@host:port/database',
   },
   {
     id: 'neon',
@@ -287,8 +287,7 @@ export const MCP_SERVERS: McpServerDefinition[] = [
         envVar: 'VERCEL_TOKEN',
       },
     ],
-    installInstructions:
-      'Create an access token at https://vercel.com/account/tokens',
+    installInstructions: 'Create an access token at https://vercel.com/account/tokens',
   },
   {
     id: 'netlify',
@@ -332,8 +331,7 @@ export const MCP_SERVERS: McpServerDefinition[] = [
         envVar: 'CLOUDFLARE_ACCOUNT_ID',
       },
     ],
-    installInstructions:
-      'Create an API token at https://dash.cloudflare.com/profile/api-tokens',
+    installInstructions: 'Create an API token at https://dash.cloudflare.com/profile/api-tokens',
   },
   {
     id: 'aws',
@@ -366,8 +364,7 @@ export const MCP_SERVERS: McpServerDefinition[] = [
         default: 'us-east-1',
       },
     ],
-    installInstructions:
-      'Create credentials in AWS IAM Console with appropriate permissions.',
+    installInstructions: 'Create credentials in AWS IAM Console with appropriate permissions.',
   },
   {
     id: 'docker',
@@ -430,8 +427,7 @@ export const MCP_SERVERS: McpServerDefinition[] = [
         envVar: 'LINEAR_API_KEY',
       },
     ],
-    installInstructions:
-      'Create an API key at https://linear.app/settings/api',
+    installInstructions: 'Create an API key at https://linear.app/settings/api',
   },
   {
     id: 'jira',
@@ -501,8 +497,7 @@ export const MCP_SERVERS: McpServerDefinition[] = [
         envVar: 'ASANA_TOKEN',
       },
     ],
-    installInstructions:
-      'Create a PAT at https://app.asana.com/0/my-apps',
+    installInstructions: 'Create a PAT at https://app.asana.com/0/my-apps',
   },
 
   // ============================================
@@ -563,8 +558,7 @@ export const MCP_SERVERS: McpServerDefinition[] = [
         default: 'datadoghq.com',
       },
     ],
-    installInstructions:
-      'Find keys at https://app.datadoghq.com/organization-settings/api-keys',
+    installInstructions: 'Find keys at https://app.datadoghq.com/organization-settings/api-keys',
   },
 
   // ============================================
@@ -605,8 +599,7 @@ export const MCP_SERVERS: McpServerDefinition[] = [
         envVar: 'DISCORD_BOT_TOKEN',
       },
     ],
-    installInstructions:
-      'Create a bot at https://discord.com/developers/applications',
+    installInstructions: 'Create a bot at https://discord.com/developers/applications',
   },
 
   // ============================================
@@ -628,8 +621,7 @@ export const MCP_SERVERS: McpServerDefinition[] = [
         envVar: 'FIGMA_TOKEN',
       },
     ],
-    installInstructions:
-      'Create a token at https://www.figma.com/developers/api#access-tokens',
+    installInstructions: 'Create a token at https://www.figma.com/developers/api#access-tokens',
   },
 
   // ============================================
@@ -681,8 +673,7 @@ export const MCP_SERVERS: McpServerDefinition[] = [
         envVar: 'ALGOLIA_API_KEY',
       },
     ],
-    installInstructions:
-      'Find credentials at https://www.algolia.com/account/api-keys/',
+    installInstructions: 'Find credentials at https://www.algolia.com/account/api-keys/',
   },
   {
     id: 'elasticsearch',
@@ -729,8 +720,7 @@ export const MCP_SERVERS: McpServerDefinition[] = [
         envVar: 'OPENAI_API_KEY',
       },
     ],
-    installInstructions:
-      'Get your API key at https://platform.openai.com/api-keys',
+    installInstructions: 'Get your API key at https://platform.openai.com/api-keys',
   },
   {
     id: 'pinecone',
@@ -755,8 +745,7 @@ export const MCP_SERVERS: McpServerDefinition[] = [
         envVar: 'PINECONE_ENVIRONMENT',
       },
     ],
-    installInstructions:
-      'Get credentials at https://app.pinecone.io/',
+    installInstructions: 'Get credentials at https://app.pinecone.io/',
   },
 
   // ============================================

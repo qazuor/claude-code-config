@@ -5,11 +5,11 @@
 import { checkbox, confirm, input, select } from '@inquirer/prompts';
 import {
   CODE_STYLE_PRESETS,
+  type CodeStylePreset,
   DEFAULT_BIOME_OPTIONS,
   DEFAULT_COMMITLINT_OPTIONS,
   DEFAULT_EDITORCONFIG_OPTIONS,
   DEFAULT_PRETTIER_OPTIONS,
-  type CodeStylePreset,
 } from '../../constants/code-style-defaults.js';
 import { colors, logger } from '../../lib/utils/logger.js';
 import type {
@@ -274,7 +274,8 @@ async function promptEditorConfigOptions(): Promise<EditorConfigOptions> {
     validate: (v) => {
       if (v.toLowerCase() === 'off') return true;
       const num = Number(v);
-      if (Number.isNaN(num) || num < 40 || num > 200) return 'Enter a number between 40 and 200, or "off"';
+      if (Number.isNaN(num) || num < 40 || num > 200)
+        return 'Enter a number between 40 and 200, or "off"';
       return true;
     },
   });

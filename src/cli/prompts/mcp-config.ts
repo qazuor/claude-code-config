@@ -199,7 +199,9 @@ async function configureServer(
     logger.newline();
     logger.info(`Configuring ${colors.primary(server.name)}...`);
     logger.info(
-      colors.muted('  (Press Enter to skip optional fields - instructions will be shown at the end)')
+      colors.muted(
+        '  (Press Enter to skip optional fields - instructions will be shown at the end)'
+      )
     );
 
     for (const field of server.configFields) {

@@ -14,8 +14,7 @@ import type {
  * Generate .editorconfig content
  */
 export function generateEditorConfig(options: EditorConfigOptions): string {
-  const indent =
-    options.indentStyle === 'tab' ? 'indent_style = tab' : `indent_style = space`;
+  const indent = options.indentStyle === 'tab' ? 'indent_style = tab' : 'indent_style = space';
   const indentSize =
     options.indentStyle === 'tab'
       ? `tab_width = ${options.indentSize}`
@@ -75,22 +74,12 @@ export function generateBiomeConfig(options: BiomeOptions): string {
       enabled: true,
       rules: {
         recommended: options.linter.recommended,
-        correctness: options.linter.correctness
-          ? { recommended: true }
-          : { recommended: false },
-        suspicious: options.linter.suspicious
-          ? { recommended: true }
-          : { recommended: false },
+        correctness: options.linter.correctness ? { recommended: true } : { recommended: false },
+        suspicious: options.linter.suspicious ? { recommended: true } : { recommended: false },
         style: options.linter.style ? { recommended: true } : { recommended: false },
-        complexity: options.linter.complexity
-          ? { recommended: true }
-          : { recommended: false },
-        security: options.linter.security
-          ? { recommended: true }
-          : { recommended: false },
-        performance: options.linter.performance
-          ? { recommended: true }
-          : { recommended: false },
+        complexity: options.linter.complexity ? { recommended: true } : { recommended: false },
+        security: options.linter.security ? { recommended: true } : { recommended: false },
+        performance: options.linter.performance ? { recommended: true } : { recommended: false },
         a11y: options.linter.a11y ? { recommended: true } : { recommended: false },
       },
     },
