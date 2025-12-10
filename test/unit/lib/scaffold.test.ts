@@ -82,7 +82,7 @@ describe('scaffold detector', () => {
 
       const result = await detectProject(testDir);
       expect(result.projectType).toBe('astro');
-      expect(result.suggestedPreset).toBe('frontend');
+      expect(result.suggestedBundles).toContain('astro-react-stack');
     });
 
     it('should detect Next.js project', async () => {
@@ -93,7 +93,7 @@ describe('scaffold detector', () => {
 
       const result = await detectProject(testDir);
       expect(result.projectType).toBe('nextjs');
-      expect(result.suggestedPreset).toBe('frontend');
+      expect(result.suggestedBundles).toContain('react-tanstack-stack');
     });
 
     it('should detect Vite + React project', async () => {
@@ -106,7 +106,7 @@ describe('scaffold detector', () => {
 
       const result = await detectProject(testDir);
       expect(result.projectType).toBe('vite-react');
-      expect(result.suggestedPreset).toBe('frontend');
+      expect(result.suggestedBundles).toContain('react-tanstack-stack');
     });
 
     it('should detect Hono project', async () => {
@@ -117,7 +117,7 @@ describe('scaffold detector', () => {
 
       const result = await detectProject(testDir);
       expect(result.projectType).toBe('hono');
-      expect(result.suggestedPreset).toBe('api-only');
+      expect(result.suggestedBundles).toContain('hono-api');
     });
 
     it('should detect monorepo from turbo.json', async () => {
@@ -126,7 +126,8 @@ describe('scaffold detector', () => {
 
       const result = await detectProject(testDir);
       expect(result.projectType).toBe('monorepo');
-      expect(result.suggestedPreset).toBe('fullstack');
+      // Monorepos get git-workflow as default
+      expect(result.suggestedBundles).toContain('git-workflow');
     });
 
     it('should detect monorepo from pnpm-workspace.yaml', async () => {
@@ -147,7 +148,7 @@ describe('scaffold detector', () => {
       expect(result.projectType).toBe('monorepo');
     });
 
-    it('should suggest fullstack for backend + frontend deps', async () => {
+    it('should suggest hono-api for backend + frontend deps', async () => {
       await fse.writeJson(path.join(testDir, 'package.json'), {
         name: 'fullstack',
         dependencies: {
@@ -157,20 +158,21 @@ describe('scaffold detector', () => {
       });
 
       const result = await detectProject(testDir);
-      expect(result.suggestedPreset).toBe('fullstack');
+      // Hono project type is detected, so hono-api is suggested
+      expect(result.suggestedBundles).toContain('hono-api');
     });
 
-    it('should suggest backend for API + database deps', async () => {
+    it('should suggest hono-drizzle-stack for API + database deps', async () => {
       await fse.writeJson(path.join(testDir, 'package.json'), {
         name: 'backend',
         dependencies: {
           hono: '^4.0.0',
-          drizzle: '^1.0.0',
+          'drizzle-orm': '^1.0.0',
         },
       });
 
       const result = await detectProject(testDir);
-      expect(result.suggestedPreset).toBe('backend');
+      expect(result.suggestedBundles).toContain('hono-drizzle-stack');
     });
 
     it('should have high confidence when type and manager detected', async () => {
