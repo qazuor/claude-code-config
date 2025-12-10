@@ -2,8 +2,8 @@
  * Hook configuration prompts
  */
 
-import { checkbox, confirm, input, select } from '@inquirer/prompts';
 import { logger } from '../../lib/utils/logger.js';
+import { checkbox, confirm, input, select } from '../../lib/utils/prompt-cancel.js';
 import type { HookConfig } from '../../types/config.js';
 
 type HookType = 'notification' | 'stop' | 'subagentStop' | 'custom';

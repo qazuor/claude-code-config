@@ -2,7 +2,6 @@
  * Remove command - remove modules from configuration
  */
 
-import { confirm } from '@inquirer/prompts';
 import { Command } from 'commander';
 import { readConfig, removeModulesFromConfig, updateConfig } from '../../lib/config/index.js';
 import { checkRemovalImpact, getModule, loadRegistry } from '../../lib/modules/index.js';
@@ -10,6 +9,7 @@ import { uninstallModule } from '../../lib/modules/installer.js';
 import { resolvePath } from '../../lib/utils/fs.js';
 import { colors, logger } from '../../lib/utils/logger.js';
 import { getTemplatesPath } from '../../lib/utils/paths.js';
+import { confirm } from '../../lib/utils/prompt-cancel.js';
 import type { ModuleCategory } from '../../types/modules.js';
 
 interface RemoveOptions {

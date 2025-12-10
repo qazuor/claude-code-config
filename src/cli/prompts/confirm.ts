@@ -2,8 +2,8 @@
  * General confirmation prompts
  */
 
-import { confirm, input, select } from '@inquirer/prompts';
 import { colors, logger } from '../../lib/utils/logger.js';
+import { confirm, input, select } from '../../lib/utils/prompt-cancel.js';
 import type { ClaudeConfig } from '../../types/config.js';
 
 /**

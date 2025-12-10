@@ -2,7 +2,6 @@
  * Bundle selection prompts
  */
 
-import { checkbox, confirm, select } from '@inquirer/prompts';
 import {
   formatBundleForDisplay,
   getAllBundles,
@@ -11,6 +10,7 @@ import {
   resolveBundle,
 } from '../../lib/bundles/resolver.js';
 import { colors, logger } from '../../lib/utils/logger.js';
+import { checkbox, confirm, select } from '../../lib/utils/prompt-cancel.js';
 import type { BundleDefinition, BundleSelectionResult } from '../../types/bundles.js';
 
 export type BundleSelectionMode = 'bundles' | 'individual' | 'both';

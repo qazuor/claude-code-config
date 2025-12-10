@@ -2,7 +2,6 @@
  * Add command - add modules to configuration
  */
 
-import { confirm } from '@inquirer/prompts';
 import { Command } from 'commander';
 import { addModulesToConfig, readConfig, updateConfig } from '../../lib/config/index.js';
 import { getModule, loadRegistry, resolveModules } from '../../lib/modules/index.js';
@@ -11,6 +10,7 @@ import { replacePlaceholders } from '../../lib/placeholders/index.js';
 import { joinPath, resolvePath } from '../../lib/utils/fs.js';
 import { colors, logger } from '../../lib/utils/logger.js';
 import { getTemplatesPath } from '../../lib/utils/paths.js';
+import { confirm } from '../../lib/utils/prompt-cancel.js';
 import type { ModuleCategory } from '../../types/modules.js';
 
 interface AddOptions {

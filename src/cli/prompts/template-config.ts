@@ -5,7 +5,6 @@
  * with auto-detection and smart defaults.
  */
 
-import { confirm, input, select } from '@inquirer/prompts';
 import {
   TEMPLATE_PLACEHOLDERS,
   computeDefaultValue,
@@ -18,6 +17,7 @@ import {
   updateGlobalDefaults,
 } from '../../lib/config/global-defaults.js';
 import { logger } from '../../lib/utils/logger.js';
+import { confirm, input, select } from '../../lib/utils/prompt-cancel.js';
 import type {
   TemplateConfig,
   TemplateConfigContext,

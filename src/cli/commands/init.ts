@@ -29,8 +29,8 @@ import { joinPath, resolvePath } from '../../lib/utils/fs.js';
 import { colors, logger } from '../../lib/utils/logger.js';
 import { getTemplatesPath } from '../../lib/utils/paths.js';
 import {
-  disableEscListener,
-  enableEscListener,
+  cleanup,
+  setupGracefulCancellation,
   showCancelHint,
 } from '../../lib/utils/prompt-cancel.js';
 import { spinner, withSpinner } from '../../lib/utils/spinner.js';
@@ -124,10 +124,10 @@ async function runInit(path: string | undefined, options: InitOptions): Promise<
   logger.title('@qazuor/claude-code-config');
   logger.info(`Initializing Claude configuration in ${colors.primary(projectPath)}`);
 
-  // Enable ESC key listener for interactive mode
+  // Setup graceful cancellation for interactive mode
   if (!options.yes) {
+    setupGracefulCancellation();
     showCancelHint();
-    enableEscListener();
   }
 
   try {
@@ -234,10 +234,10 @@ async function runInit(path: string | undefined, options: InitOptions): Promise<
       showSkippedMcpInstructions(skippedMcpConfigs, config.mcp.level);
     }
 
-    // Disable ESC listener after successful completion
-    disableEscListener();
+    // Cleanup after successful completion
+    cleanup();
   } catch (error) {
-    disableEscListener();
+    cleanup();
     spinner.fail();
     logger.error(`Initialization failed: ${error instanceof Error ? error.message : error}`);
     process.exit(1);

@@ -2,8 +2,8 @@
  * Granular item-by-item selection prompts
  */
 
-import { confirm, select } from '@inquirer/prompts';
 import { colors, logger } from '../../lib/utils/logger.js';
+import { confirm, select } from '../../lib/utils/prompt-cancel.js';
 import type { ModuleCategory, ModuleDefinition } from '../../types/modules.js';
 
 export type ItemAction = 'install' | 'skip';

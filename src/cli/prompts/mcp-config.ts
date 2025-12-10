@@ -2,9 +2,9 @@
  * MCP server configuration prompts
  */
 
-import { checkbox, confirm, input, password, select } from '@inquirer/prompts';
 import { MCP_SERVERS, getMcpServer } from '../../constants/mcp-servers.js';
 import { colors, logger } from '../../lib/utils/logger.js';
+import { checkbox, confirm, input, password, select } from '../../lib/utils/prompt-cancel.js';
 import type { McpConfig } from '../../types/config.js';
 import type { McpConfigField, McpInstallation, McpServerDefinition } from '../../types/mcp.js';
 

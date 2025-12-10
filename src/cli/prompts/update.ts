@@ -2,8 +2,8 @@
  * Update prompts
  */
 
-import { checkbox, confirm, select } from '@inquirer/prompts';
 import { colors, logger } from '../../lib/utils/logger.js';
+import { checkbox, confirm, select } from '../../lib/utils/prompt-cancel.js';
 
 export type UpdateAction = 'check' | 'modules' | 'config' | 'all' | 'cancel';
 

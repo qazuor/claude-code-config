@@ -2,7 +2,6 @@
  * Permission configuration prompts
  */
 
-import { confirm, input, select } from '@inquirer/prompts';
 import {
   PERMISSION_PRESETS,
   PRESET_DESCRIPTIONS,
@@ -10,6 +9,7 @@ import {
   generateDenyRules,
 } from '../../constants/permissions.js';
 import { colors, logger } from '../../lib/utils/logger.js';
+import { confirm, input, select } from '../../lib/utils/prompt-cancel.js';
 import type {
   BashPermissions,
   CustomPermissions,

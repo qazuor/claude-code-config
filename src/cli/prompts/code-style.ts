@@ -2,7 +2,6 @@
  * Code style configuration prompts
  */
 
-import { checkbox, confirm, input, select } from '@inquirer/prompts';
 import {
   CODE_STYLE_PRESETS,
   type CodeStylePreset,
@@ -12,6 +11,7 @@ import {
   DEFAULT_PRETTIER_OPTIONS,
 } from '../../constants/code-style-defaults.js';
 import { colors, logger } from '../../lib/utils/logger.js';
+import { checkbox, confirm, input, select } from '../../lib/utils/prompt-cancel.js';
 import type {
   BiomeOptions,
   CodeStyleConfig,

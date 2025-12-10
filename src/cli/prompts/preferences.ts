@@ -2,8 +2,8 @@
  * User preferences prompts
  */
 
-import { confirm, select } from '@inquirer/prompts';
 import { logger } from '../../lib/utils/logger.js';
+import { confirm, select } from '../../lib/utils/prompt-cancel.js';
 import type { Preferences } from '../../types/config.js';
 
 interface PreferencesOptions {

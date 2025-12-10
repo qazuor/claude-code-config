@@ -2,8 +2,8 @@
  * Project information prompts
  */
 
-import { confirm, input } from '@inquirer/prompts';
 import { logger } from '../../lib/utils/logger.js';
+import { confirm, input } from '../../lib/utils/prompt-cancel.js';
 import type { ProjectInfo } from '../../types/config.js';
 
 interface ProjectInfoOptions {
