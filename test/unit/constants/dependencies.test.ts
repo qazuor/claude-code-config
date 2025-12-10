@@ -62,14 +62,14 @@ describe('DEPENDENCIES', () => {
     it('should include jq', () => {
       const jq = DEPENDENCIES.find((d) => d.id === 'jq');
       expect(jq).toBeDefined();
-      expect(jq!.name).toBe('jq');
-      expect(jq!.requiredFor).toContain('hooks');
+      expect(jq?.name).toBe('jq');
+      expect(jq?.requiredFor).toContain('hooks');
     });
 
     it('should include notify-send', () => {
       const notifySend = DEPENDENCIES.find((d) => d.id === 'notify-send');
       expect(notifySend).toBeDefined();
-      expect(notifySend!.platforms.linux).toBeDefined();
+      expect(notifySend?.platforms.linux).toBeDefined();
     });
   });
 });

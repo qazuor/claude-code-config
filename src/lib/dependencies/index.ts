@@ -10,4 +10,8 @@ export {
   getInstallInstructions,
   formatDependencyReport,
   getRequiredFeatures,
+  installDependency,
+  installDependencies,
+  formatManualInstallInstructions,
+  type DependencyInstallResult,
 } from './checker.js';

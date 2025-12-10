@@ -215,3 +215,108 @@ export function getRequiredFeatures(config: {
 
   return features;
 }
+
+/**
+ * Result of dependency installation attempt
+ */
+export interface DependencyInstallResult {
+  dep: DependencyInfo;
+  success: boolean;
+  error?: string;
+}
+
+/**
+ * Try to install a single dependency
+ */
+export async function installDependency(dep: DependencyInfo): Promise<DependencyInstallResult> {
+  const platform = getCurrentPlatform();
+  const platformInstructions = dep.platforms[platform];
+
+  if (!platformInstructions) {
+    return {
+      dep,
+      success: false,
+      error: `No installation instructions for ${platform}`,
+    };
+  }
+
+  // Get the first install command (usually the most common method)
+  const installCommand = platformInstructions.commands[0];
+  if (!installCommand) {
+    return {
+      dep,
+      success: false,
+      error: 'No install command available',
+    };
+  }
+
+  try {
+    await execAsync(installCommand, { timeout: 120000 }); // 2 min timeout
+
+    // Verify installation
+    const checkResult = await checkDependency(dep);
+    if (checkResult.installed) {
+      return { dep, success: true };
+    }
+
+    return {
+      dep,
+      success: false,
+      error: 'Installation completed but dependency not found',
+    };
+  } catch (error) {
+    return {
+      dep,
+      success: false,
+      error: error instanceof Error ? error.message : 'Installation failed',
+    };
+  }
+}
+
+/**
+ * Install multiple dependencies
+ */
+export async function installDependencies(
+  deps: DependencyInfo[],
+  options?: {
+    onProgress?: (dep: DependencyInfo, index: number, total: number) => void;
+  }
+): Promise<DependencyInstallResult[]> {
+  const results: DependencyInstallResult[] = [];
+
+  for (let i = 0; i < deps.length; i++) {
+    const dep = deps[i];
+    if (options?.onProgress) {
+      options.onProgress(dep, i, deps.length);
+    }
+
+    const result = await installDependency(dep);
+    results.push(result);
+  }
+
+  return results;
+}
+
+/**
+ * Format installation instructions for manual installation
+ */
+export function formatManualInstallInstructions(report: DependencyReport): string[] {
+  const lines: string[] = [];
+
+  lines.push('');
+  lines.push('To install the missing dependencies manually, run the following commands:');
+  lines.push('');
+
+  for (const dep of report.missing) {
+    const instructions = report.instructions.get(dep.id);
+    if (instructions) {
+      lines.push(`# ${dep.name}`);
+      for (const cmd of instructions.commands) {
+        lines.push(cmd);
+      }
+      lines.push('');
+    }
+  }
+
+  return lines;
+}
