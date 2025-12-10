@@ -265,7 +265,8 @@ describe('mcp configurator', () => {
       expect(result.missing).toEqual([]);
     });
 
-    it('should report missing required fields', () => {
+    it('should accept empty config when all fields are optional', () => {
+      // MCP fields are now optional - keys can be configured later
       const installation: McpInstallation = {
         serverId: 'github',
         level: 'project',
@@ -273,8 +274,9 @@ describe('mcp configurator', () => {
       };
 
       const result = validateMcpConfig(installation);
-      expect(result.valid).toBe(false);
-      expect(result.missing).toContain('token');
+      // Since all fields are optional now, empty config is valid
+      expect(result.valid).toBe(true);
+      expect(result.missing).toEqual([]);
     });
 
     it('should validate custom server with package', () => {

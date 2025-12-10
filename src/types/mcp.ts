@@ -8,11 +8,19 @@
 export type McpCategory =
   | 'documentation'
   | 'database'
+  | 'cache'
   | 'version-control'
   | 'deployment'
   | 'infrastructure'
   | 'project-mgmt'
   | 'monitoring'
+  | 'testing'
+  | 'security'
+  | 'communication'
+  | 'design'
+  | 'payments'
+  | 'search'
+  | 'ai'
   | 'custom';
 
 /**
