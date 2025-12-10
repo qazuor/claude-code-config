@@ -3,7 +3,7 @@
  */
 
 import { Command } from 'commander';
-import { getPreset } from '../../constants/presets.js';
+import { resolveBundles } from '../../lib/bundles/resolver.js';
 import { installCodeStyle, showCodeStyleInstructions } from '../../lib/code-style/index.js';
 import { writeConfig } from '../../lib/config/index.js';
 import {
@@ -34,10 +34,15 @@ import {
   showCancelHint,
 } from '../../lib/utils/prompt-cancel.js';
 import { spinner, withSpinner } from '../../lib/utils/spinner.js';
+import type { BundleSelectionResult } from '../../types/bundles.js';
 import type { ClaudeConfig } from '../../types/config.js';
 import type { ModuleCategory, ModuleDefinition, ModuleRegistry } from '../../types/modules.js';
-import type { PresetName } from '../../types/presets.js';
 import type { TemplateConfig } from '../../types/template-config.js';
+import {
+  promptBundleMode,
+  promptQuickBundleSelection,
+  showBundlesSummary,
+} from '../prompts/bundle-select.js';
 import {
   type SkippedMcpConfig,
   confirmFinalConfiguration,
@@ -46,7 +51,6 @@ import {
   promptExistingProjectAction,
   promptHookConfig,
   promptMcpConfig,
-  promptModuleSelectionMode,
   promptPermissionsConfig,
   promptPreferences,
   promptProjectInfo,
@@ -72,7 +76,7 @@ interface ConfigBuildResult {
 const VERSION = '0.1.0';
 
 interface InitOptions {
-  preset?: PresetName;
+  bundles?: string;
   template?: string;
   branch?: string;
   yes?: boolean;
@@ -92,11 +96,11 @@ export function createInitCommand(): Command {
     .description('Initialize Claude configuration in a project')
     .argument('[path]', 'Project path (default: current directory)')
     .option(
-      '-p, --preset <name>',
-      'Use preset (fullstack|frontend|backend|minimal|api-only|documentation|quality-focused)'
+      '-b, --bundles <ids>',
+      'Comma-separated bundle IDs to install (e.g., "react-tanstack-stack,testing-complete")'
     )
     .option('-t, --template <url>', 'Remote git repo for templates')
-    .option('-b, --branch <name>', 'Branch/tag for remote template')
+    .option('--branch <name>', 'Branch/tag for remote template')
     .option('-y, --yes', 'Accept defaults, skip prompts')
     .option('-f, --force', 'Overwrite existing .claude/')
     .option('--dry-run', 'Show what would happen without making changes')
@@ -146,8 +150,8 @@ async function runInit(path: string | undefined, options: InitOptions): Promise<
     if (detection.detected) {
       logger.newline();
       logger.success(`Detected ${detection.projectType || 'Node.js'} project`);
-      if (detection.suggestedPreset) {
-        logger.info(`Suggested preset: ${colors.primary(detection.suggestedPreset)}`);
+      if (detection.suggestedBundles && detection.suggestedBundles.length > 0) {
+        logger.info(`Suggested bundles: ${colors.primary(detection.suggestedBundles.join(', '))}`);
       }
     }
 
@@ -241,18 +245,36 @@ async function runInit(path: string | undefined, options: InitOptions): Promise<
 }
 
 /**
- * Build configuration with defaults (for --yes flag)
+ * Build configuration with defaults (for --yes flag or --bundles flag)
  */
 async function buildDefaultConfig(
   projectPath: string,
   detection: Awaited<ReturnType<typeof detectProject>>,
   options: InitOptions
 ): Promise<ConfigBuildResult> {
-  const presetName = options.preset || detection.suggestedPreset || 'minimal';
-  const preset = getPreset(presetName);
+  // Determine which bundles to use
+  let bundleIds: string[] = [];
+
+  if (options.bundles) {
+    // Use bundles from command line
+    bundleIds = options.bundles.split(',').map((id) => id.trim());
+  } else if (detection.suggestedBundles && detection.suggestedBundles.length > 0) {
+    // Use suggested bundles from detection
+    bundleIds = detection.suggestedBundles;
+  } else {
+    // Default minimal bundles
+    bundleIds = ['git-workflow', 'testing-minimal', 'quality-minimal'];
+  }
+
+  // Resolve bundles to modules
+  const resolvedModules = resolveBundles(bundleIds);
 
   const projectName = (await getProjectName(projectPath)) || 'my-project';
   const projectDesc = (await getProjectDescription(projectPath)) || 'My project';
+
+  // Determine extras based on selected bundles
+  const hasPlanning = bundleIds.some((id) => id.includes('planning'));
+  const hasTesting = bundleIds.some((id) => id.includes('testing'));
 
   const config: ClaudeConfig = {
     version: VERSION,
@@ -278,16 +300,16 @@ async function buildDefaultConfig(
       servers: [],
     },
     modules: {
-      agents: { selected: preset.modules.agents, excluded: [] },
-      skills: { selected: preset.modules.skills, excluded: [] },
-      commands: { selected: preset.modules.commands, excluded: [] },
-      docs: { selected: preset.modules.docs, excluded: [] },
+      agents: { selected: resolvedModules.agents, excluded: [] },
+      skills: { selected: resolvedModules.skills, excluded: [] },
+      commands: { selected: resolvedModules.commands, excluded: [] },
+      docs: { selected: resolvedModules.docs, excluded: [] },
     },
     extras: {
-      schemas: preset.extras.schemas,
-      scripts: preset.extras.scripts,
-      hooks: { enabled: preset.extras.hooks },
-      sessions: preset.extras.sessions,
+      schemas: hasTesting,
+      scripts: false,
+      hooks: { enabled: false },
+      sessions: hasPlanning,
     },
     scaffold: {
       type: options.claudeOnly ? 'claude-only' : 'claude-only',
@@ -297,6 +319,7 @@ async function buildDefaultConfig(
       placeholdersReplaced: false,
       lastUpdated: new Date().toISOString(),
       customFiles: [],
+      selectedBundles: bundleIds,
     },
   };
 
@@ -341,16 +364,16 @@ async function buildInteractiveConfig(
     detectedPackageManager: detection.packageManager,
   });
 
-  // Module selection
-  const moduleSelection = await promptModuleSelectionMode();
-  const modules = await selectModules(registry, moduleSelection, detection.suggestedPreset);
+  // Module selection using bundles
+  const bundleSelection = await selectModulesWithBundles(registry, detection.suggestedBundles);
 
-  // Extras
-  const preset = moduleSelection.preset ? getPreset(moduleSelection.preset) : null;
+  // Determine extras based on selected bundles
+  const hasPlanning = bundleSelection.selectedBundles.some((id) => id.includes('planning'));
+  const hasTesting = bundleSelection.selectedBundles.some((id) => id.includes('testing'));
 
   // Hook configuration
   const hookConfig = await promptHookConfig({
-    defaults: preset?.extras.hooks ? { enabled: true } : undefined,
+    defaults: hasTesting ? { enabled: true } : undefined,
   });
 
   // MCP configuration
@@ -377,6 +400,19 @@ async function buildInteractiveConfig(
     mode: 'quick',
   });
 
+  // Resolve bundles to modules
+  const resolvedModules = resolveBundles(bundleSelection.selectedBundles);
+
+  // Merge with additional individual modules
+  const modules = {
+    agents: [...new Set([...resolvedModules.agents, ...bundleSelection.additionalModules.agents])],
+    skills: [...new Set([...resolvedModules.skills, ...bundleSelection.additionalModules.skills])],
+    commands: [
+      ...new Set([...resolvedModules.commands, ...bundleSelection.additionalModules.commands]),
+    ],
+    docs: [...new Set([...resolvedModules.docs, ...bundleSelection.additionalModules.docs])],
+  };
+
   const config: ClaudeConfig = {
     version: VERSION,
     templateSource: {
@@ -393,10 +429,10 @@ async function buildInteractiveConfig(
       docs: { selected: modules.docs, excluded: [] },
     },
     extras: {
-      schemas: preset?.extras.schemas ?? false,
-      scripts: preset?.extras.scripts ?? false,
+      schemas: hasTesting,
+      scripts: false,
       hooks: hookConfig,
-      sessions: preset?.extras.sessions ?? false,
+      sessions: hasPlanning,
       codeStyle: codeStyleConfig,
     },
     scaffold: {
@@ -408,6 +444,7 @@ async function buildInteractiveConfig(
       lastUpdated: new Date().toISOString(),
       customFiles: [],
       permissions: permissionsConfig,
+      selectedBundles: bundleSelection.selectedBundles,
     },
   };
 
@@ -419,46 +456,72 @@ async function buildInteractiveConfig(
 }
 
 /**
- * Select modules based on mode (preset or custom)
+ * Select modules using bundle system
  */
-async function selectModules(
+async function selectModulesWithBundles(
   registry: ModuleRegistry,
-  selection: Awaited<ReturnType<typeof promptModuleSelectionMode>>,
-  suggestedPreset?: PresetName
-): Promise<Record<ModuleCategory, string[]>> {
+  suggestedBundles?: string[]
+): Promise<BundleSelectionResult> {
   const categories: ModuleCategory[] = ['agents', 'skills', 'commands', 'docs'];
-  const result: Record<ModuleCategory, string[]> = {
-    agents: [],
-    skills: [],
-    commands: [],
-    docs: [],
+
+  // Ask how to select modules
+  const mode = await promptBundleMode();
+
+  const result: BundleSelectionResult = {
+    selectedBundles: [],
+    additionalModules: {
+      agents: [],
+      skills: [],
+      commands: [],
+      docs: [],
+    },
   };
 
-  if (selection.mode === 'preset' && selection.preset) {
-    const preset = getPreset(selection.preset);
-
-    for (const category of categories) {
-      result[category] = preset.modules[category] || [];
+  if (mode === 'bundles' || mode === 'both') {
+    // Show suggested bundles if available
+    if (suggestedBundles && suggestedBundles.length > 0) {
+      logger.newline();
+      logger.info(
+        colors.muted(`Suggested bundles based on your project: ${suggestedBundles.join(', ')}`)
+      );
     }
 
-    // Adjust if requested
-    if (selection.adjustAfterPreset) {
-      for (const category of categories) {
-        const categoryResult = await selectItemsFromCategory(category, registry[category], {
-          preselected: result[category],
-          showDescriptions: true,
-        });
-        result[category] = categoryResult.selectedItems;
-      }
+    // Quick bundle selection or full selection
+    result.selectedBundles = await promptQuickBundleSelection();
+
+    // Show summary
+    if (result.selectedBundles.length > 0) {
+      showBundlesSummary(result.selectedBundles);
     }
-  } else {
-    // Custom selection - one by one
+  }
+
+  if (mode === 'individual' || mode === 'both') {
+    // Get preselected from bundles
+    const preselectedFromBundles = resolveBundles(result.selectedBundles);
+
+    // Individual selection per category
+    logger.newline();
+    logger.subtitle('Individual Module Selection');
+
     for (const category of categories) {
+      const preselected =
+        mode === 'both'
+          ? preselectedFromBundles[category as keyof typeof preselectedFromBundles]
+          : [];
+
       const categoryResult = await selectItemsFromCategory(category, registry[category], {
-        preselected: suggestedPreset ? getPreset(suggestedPreset).modules[category] : [],
+        preselected,
         showDescriptions: true,
       });
-      result[category] = categoryResult.selectedItems;
+
+      // Store additional modules (not from bundles)
+      if (mode === 'both') {
+        result.additionalModules[category] = categoryResult.selectedItems.filter(
+          (id) => !preselected.includes(id)
+        );
+      } else {
+        result.additionalModules[category] = categoryResult.selectedItems;
+      }
     }
   }
 
