@@ -59,3 +59,18 @@ export {
   isConfigurablePlaceholder,
   computeDefaultValue,
 } from './template-placeholders.js';
+
+// Folder Preferences
+export {
+  DEFAULT_FOLDER_PREFERENCES,
+  TEST_LOCATION_OPTIONS,
+  PLANNING_LOCATION_OPTIONS,
+  DOCS_LOCATION_OPTIONS,
+  TEST_PATTERN_OPTIONS,
+  GITHUB_WORKFLOW_TEMPLATES,
+  BUNDLE_FOLDER_RECOMMENDATIONS,
+  getWorkflowsByCategory,
+  getRecommendedWorkflows,
+  getFolderRecommendationsForBundles,
+  mergeFolderPreferences,
+} from './folder-preferences.js';
