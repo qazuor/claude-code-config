@@ -25,7 +25,7 @@ export async function promptSingleItem(
     showDescription?: boolean;
   }
 ): Promise<ItemAction> {
-  const defaultValue = options?.defaultInstall ?? false;
+  const defaultValue = options?.defaultInstall ?? true;
 
   if (options?.showDescription && item.description) {
     logger.note(item.description);
@@ -49,14 +49,14 @@ export async function promptBatchAction(
 ): Promise<BatchAction> {
   const choices: Array<{ name: string; value: BatchAction; description: string }> = [
     {
+      name: 'Install all (recommended)',
+      value: 'all',
+      description: `Install all ${totalItems} ${category}`,
+    },
+    {
       name: 'Select one by one',
       value: 'continue',
       description: `Review each of the ${totalItems} items`,
-    },
-    {
-      name: 'Install all',
-      value: 'all',
-      description: `Install all ${totalItems} ${category}`,
     },
     {
       name: 'Skip all',
@@ -66,7 +66,7 @@ export async function promptBatchAction(
   ];
 
   if (hasPreset) {
-    choices.push({
+    choices.splice(1, 0, {
       name: 'Use preset for this category',
       value: 'preset',
       description: 'Use the preset selection for this category',
@@ -76,7 +76,7 @@ export async function promptBatchAction(
   return select<BatchAction>({
     message: `${capitalize(category)} selection (${totalItems} available):`,
     choices,
-    default: 'continue',
+    default: 'all',
   });
 }
 
@@ -225,7 +225,7 @@ async function promptItemWithShortcuts(
   return select<ItemActionExtended>({
     message: `Install ${item.name}?`,
     choices,
-    default: options.defaultInstall ? 'install' : 'skip',
+    default: options.defaultInstall !== false ? 'install' : 'skip',
   });
 }
 
