@@ -82,3 +82,23 @@ export type {
   DependencyCheckResult,
   DependencyReport,
 } from './dependencies.js';
+
+// Bundle types
+export type {
+  BundleCategory,
+  BundleModuleRef,
+  BundleDefinition,
+  BundleRegistry,
+  BundleSelectionResult,
+  ResolvedBundle,
+} from './bundles.js';
+
+// Template types
+export type {
+  TemplateDirectiveType,
+  TemplateContext,
+  TemplateDirective,
+  TemplateResult,
+  TemplateProcessingReport,
+  TemplateModuleRef,
+} from './templates.js';

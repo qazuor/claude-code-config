@@ -10,14 +10,38 @@ import type { PresetName } from './presets.js';
 export type ModuleCategory = 'agents' | 'skills' | 'commands' | 'docs';
 
 /**
+ * Extended description for better user understanding
+ */
+export interface ModuleExtendedInfo {
+  /** Detailed explanation of what this module does */
+  longDescription?: string;
+  /** List of specific capabilities or features */
+  whatItDoes?: string[];
+  /** When/why to use this module */
+  whenToUse?: string;
+  /** Technology stack this module is designed for */
+  techStack?: string[];
+  /** Alternative modules (e.g., "prisma" is alternative to "drizzle") */
+  alternativeTo?: string[];
+  /** Related modules that work well together */
+  relatedModules?: string[];
+  /** Skill level (beginner, intermediate, advanced) */
+  skillLevel?: 'beginner' | 'intermediate' | 'advanced';
+  /** Author or source of this module */
+  author?: string;
+  /** Version of the module */
+  version?: string;
+}
+
+/**
  * Module definition in registry
  */
-export interface ModuleDefinition {
+export interface ModuleDefinition extends ModuleExtendedInfo {
   /** Unique identifier */
   id: string;
   /** Display name */
   name: string;
-  /** Short description */
+  /** Short description (shown in selection lists) */
   description: string;
   /** Category this module belongs to */
   category: ModuleCategory;
@@ -48,7 +72,7 @@ export interface RegistryFile {
 /**
  * Registry item as stored in _registry.json
  */
-export interface RegistryFileItem {
+export interface RegistryFileItem extends Partial<ModuleExtendedInfo> {
   id: string;
   name: string;
   description?: string;

@@ -50,7 +50,15 @@ import {
   promptScaffoldOptions,
   selectItemsFromCategory,
   showPostInstallInstructions,
+  showSkippedMcpInstructions,
+  type SkippedMcpConfig,
 } from '../prompts/index.js';
+
+/** Extended config result that includes skipped MCP configurations */
+interface ConfigBuildResult {
+  config: ClaudeConfig;
+  skippedMcpConfigs: SkippedMcpConfig[];
+}
 
 // Package version (will be replaced at build time or read from package.json)
 const VERSION = '0.1.0';
@@ -146,14 +154,16 @@ async function runInit(path: string | undefined, options: InitOptions): Promise<
     );
 
     // Collect configuration through prompts or defaults
-    const config = options.yes
+    const buildResult = options.yes
       ? await buildDefaultConfig(projectPath, detection, options)
       : await buildInteractiveConfig(projectPath, detection, registry, options);
 
-    if (!config) {
+    if (!buildResult) {
       logger.warn('Configuration cancelled');
       return;
     }
+
+    const { config, skippedMcpConfigs } = buildResult;
 
     // Show final summary and confirm
     if (!options.yes && !options.dryRun) {
@@ -191,6 +201,11 @@ async function runInit(path: string | undefined, options: InitOptions): Promise<
     // Show post-install instructions
     showPostInstallInstructions(config);
 
+    // Show MCP configuration instructions for skipped fields
+    if (skippedMcpConfigs.length > 0) {
+      showSkippedMcpInstructions(skippedMcpConfigs, config.mcp.level);
+    }
+
     // Disable ESC listener after successful completion
     disableEscListener();
   } catch (error) {
@@ -208,14 +223,14 @@ async function buildDefaultConfig(
   projectPath: string,
   detection: Awaited<ReturnType<typeof detectProject>>,
   options: InitOptions
-): Promise<ClaudeConfig> {
+): Promise<ConfigBuildResult> {
   const presetName = options.preset || detection.suggestedPreset || 'minimal';
   const preset = getPreset(presetName);
 
   const projectName = (await getProjectName(projectPath)) || 'my-project';
   const projectDesc = (await getProjectDescription(projectPath)) || 'My project';
 
-  return {
+  const config: ClaudeConfig = {
     version: VERSION,
     templateSource: {
       type: 'local',
@@ -260,6 +275,11 @@ async function buildDefaultConfig(
       customFiles: [],
     },
   };
+
+  return {
+    config,
+    skippedMcpConfigs: [], // No MCP servers in default mode
+  };
 }
 
 /**
@@ -270,7 +290,7 @@ async function buildInteractiveConfig(
   detection: Awaited<ReturnType<typeof detectProject>>,
   registry: ModuleRegistry,
   options: InitOptions
-): Promise<ClaudeConfig | null> {
+): Promise<ConfigBuildResult | null> {
   // Project info
   const projectName = await getProjectName(projectPath);
   const projectDesc = await getProjectDescription(projectPath);
@@ -311,8 +331,12 @@ async function buildInteractiveConfig(
 
   // MCP configuration
   let mcpConfig: ClaudeConfig['mcp'] = { level: 'project', servers: [] };
+  let skippedMcpConfigs: SkippedMcpConfig[] = [];
+
   if (!options.noMcp) {
-    mcpConfig = await promptMcpConfig();
+    const mcpResult = await promptMcpConfig();
+    mcpConfig = mcpResult.config;
+    skippedMcpConfigs = mcpResult.skippedConfigs;
   }
 
   // Permissions configuration
@@ -321,7 +345,7 @@ async function buildInteractiveConfig(
   // Code style configuration
   const codeStyleConfig = await promptCodeStyleConfig();
 
-  return {
+  const config: ClaudeConfig = {
     version: VERSION,
     templateSource: {
       type: 'local',
@@ -353,6 +377,11 @@ async function buildInteractiveConfig(
       customFiles: [],
       permissions: permissionsConfig,
     },
+  };
+
+  return {
+    config,
+    skippedMcpConfigs,
   };
 }
 

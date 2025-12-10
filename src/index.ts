@@ -53,3 +53,7 @@ export { readConfig, writeConfig, hasConfig, createDefaultConfig } from './lib/c
 export { loadRegistry, resolveModules, installModules } from './lib/modules/index.js';
 export { replacePlaceholders } from './lib/placeholders/index.js';
 export { detectProject } from './lib/scaffold/detector.js';
+export { processTemplates, buildTemplateContext } from './lib/templates/index.js';
+
+// Export template types
+export type { TemplateContext, TemplateResult, TemplateProcessingReport } from './types/templates.js';

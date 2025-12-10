@@ -56,6 +56,10 @@ export {
   promptMcpConfig,
   showMcpSummary,
   confirmMcpConfig,
+  showSkippedMcpInstructions,
+  type McpConfigResult,
+  type SkippedMcpConfig,
+  type SkippedField,
 } from './mcp-config.js';
 
 // Permissions configuration

@@ -19,6 +19,7 @@ import {
   promptMcpConfig,
   promptPermissionsConfig,
   promptPreferences,
+  showSkippedMcpInstructions,
 } from '../prompts/index.js';
 import {
   type ModuleUpdate,
@@ -298,11 +299,16 @@ async function handleConfigUpdates(
   }
 
   if (reconfigureOptions.includes('mcp')) {
-    const mcpConfig = await promptMcpConfig({
+    const mcpResult = await promptMcpConfig({
       defaults: config.mcp,
     });
-    config.mcp = mcpConfig;
-    await installMcpServers(projectPath, mcpConfig);
+    config.mcp = mcpResult.config;
+    await installMcpServers(projectPath, mcpResult.config);
+
+    // Show instructions for skipped configurations
+    if (mcpResult.skippedConfigs.length > 0) {
+      showSkippedMcpInstructions(mcpResult.skippedConfigs, mcpResult.config.level);
+    }
   }
 
   if (reconfigureOptions.includes('permissions')) {
