@@ -62,19 +62,45 @@ export async function promptProjectInfo(options?: ProjectInfoOptions): Promise<P
     },
   });
 
-  const entityType = await input({
-    message: 'Primary entity type (e.g., product, article, user):',
-    default: options?.defaults?.entityType || 'item',
-    validate: (value) => {
-      if (!value.trim()) return 'Entity type is required';
-      return true;
-    },
+  // Ask for author (optional)
+  const author = await input({
+    message: 'Author (name or "Name <email>"):',
+    default: options?.defaults?.author || '',
   });
 
-  const entityTypePlural = await input({
-    message: 'Entity type plural:',
-    default: options?.defaults?.entityTypePlural || pluralize(entityType),
+  // Ask if user wants to configure entity type
+  let entityType = 'item';
+  let entityTypePlural = 'items';
+
+  const wantEntityConfig = await confirm({
+    message: 'Configure primary entity type? (Used for code examples and templates)',
+    default: false,
   });
+
+  if (wantEntityConfig) {
+    logger.info('The entity type is used in code examples and templates throughout the project.');
+    logger.info(
+      'For example, if your project manages "products", code examples will use product-related names.'
+    );
+    logger.newline();
+
+    entityType = await input({
+      message: 'Primary entity type (e.g., product, article, user, listing):',
+      default: options?.defaults?.entityType || 'item',
+      validate: (value) => {
+        if (!value.trim()) return 'Entity type is required';
+        return true;
+      },
+    });
+
+    entityTypePlural = await input({
+      message: 'Entity type plural:',
+      default: options?.defaults?.entityTypePlural || pluralize(entityType),
+    });
+  } else if (options?.defaults?.entityType) {
+    entityType = options.defaults.entityType;
+    entityTypePlural = options.defaults.entityTypePlural || pluralize(entityType);
+  }
 
   let domain: string | undefined;
   let location: string | undefined;
@@ -120,6 +146,7 @@ export async function promptProjectInfo(options?: ProjectInfoOptions): Promise<P
     entityType: entityType.trim().toLowerCase(),
     entityTypePlural: entityTypePlural.trim().toLowerCase(),
     location,
+    author: author.trim() || undefined,
   };
 }
 
@@ -146,6 +173,7 @@ export async function confirmProjectInfo(info: ProjectInfo): Promise<boolean> {
   logger.keyValue('Name', info.name);
   logger.keyValue('Description', info.description);
   logger.keyValue('GitHub', `${info.org}/${info.repo}`);
+  if (info.author) logger.keyValue('Author', info.author);
   logger.keyValue('Entity', `${info.entityType} / ${info.entityTypePlural}`);
   if (info.domain) logger.keyValue('Domain', info.domain);
   if (info.location) logger.keyValue('Location', info.location);

@@ -158,6 +158,42 @@ export async function installModules(
 }
 
 /**
+ * Install README file for a category
+ */
+async function installCategoryReadme(
+  category: ModuleCategory,
+  options: InstallOptions
+): Promise<void> {
+  const sourceReadme = joinPath(options.templatesPath, category, 'README.md');
+  const targetReadme = joinPath(options.targetPath, '.claude', category, 'README.md');
+
+  // Check if source README exists
+  if (!(await pathExists(sourceReadme))) {
+    logger.debug(`No README found for category: ${category}`);
+    return;
+  }
+
+  // Check if target exists
+  const targetExists = await pathExists(targetReadme);
+  if (targetExists && !options.overwrite) {
+    logger.debug(`README already exists for ${category}, skipping`);
+    return;
+  }
+
+  if (options.dryRun) {
+    logger.debug(`Would install README for ${category}`);
+    return;
+  }
+
+  try {
+    await copy(sourceReadme, targetReadme, { overwrite: options.overwrite });
+    logger.debug(`Installed README for ${category}`);
+  } catch (error) {
+    logger.debug(`Failed to install README for ${category}: ${error}`);
+  }
+}
+
+/**
  * Install all modules with progress tracking
  */
 export async function installAllModules(
@@ -190,6 +226,9 @@ export async function installAllModules(
         silent: options.dryRun,
       }
     );
+
+    // Install README for this category
+    await installCategoryReadme(category, options);
   }
 
   return results;

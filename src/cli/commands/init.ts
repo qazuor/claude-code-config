@@ -4,7 +4,9 @@
 
 import { Command } from 'commander';
 import { resolveBundles } from '../../lib/bundles/resolver.js';
+import { type CICDConfig, installCICDWithSpinner } from '../../lib/ci-cd/index.js';
 import { installCodeStyle, showCodeStyleInstructions } from '../../lib/code-style/index.js';
+import { installVSCodeConfig } from '../../lib/code-style/vscode-installer.js';
 import { writeConfig } from '../../lib/config/index.js';
 import {
   checkFeatureDependencies,
@@ -13,6 +15,10 @@ import {
   getRequiredFeatures,
   installDependencies,
 } from '../../lib/dependencies/index.js';
+import {
+  deriveHuskyConfigFromCodeStyle,
+  installHuskyWithSpinner,
+} from '../../lib/git-hooks/index.js';
 import { installHooks } from '../../lib/hooks/index.js';
 import { installMcpServers } from '../../lib/mcp/index.js';
 import { filterModules, loadRegistry } from '../../lib/modules/index.js';
@@ -27,6 +33,7 @@ import {
 } from '../../lib/npm/index.js';
 import { installPermissions, setCoAuthorSetting } from '../../lib/permissions/index.js';
 import { replacePlaceholders, showReplacementReport } from '../../lib/placeholders/index.js';
+import { generateClaudeMdWithSpinner } from '../../lib/scaffold/claude-md-generator.js';
 import {
   detectProject,
   generateScaffoldWithProgress,
@@ -55,6 +62,7 @@ import {
   promptQuickBundleSelection,
   showBundlesSummary,
 } from '../prompts/bundle-select.js';
+import { promptCICDConfig } from '../prompts/ci-cd-config.js';
 import { promptQuickFolderPreferences } from '../prompts/folder-preferences.js';
 import {
   type SkippedMcpConfig,
@@ -83,6 +91,7 @@ interface ConfigBuildResult {
   config: ClaudeConfig;
   skippedMcpConfigs: SkippedMcpConfig[];
   templateConfig?: Partial<TemplateConfig>;
+  cicdConfig?: CICDConfig;
 }
 
 // Package version (will be replaced at build time or read from package.json)
@@ -188,7 +197,7 @@ async function runInit(path: string | undefined, options: InitOptions): Promise<
       return;
     }
 
-    const { config, skippedMcpConfigs, templateConfig } = buildResult;
+    const { config, skippedMcpConfigs, templateConfig, cicdConfig } = buildResult;
 
     // Store template config in main config
     if (templateConfig) {
@@ -212,7 +221,7 @@ async function runInit(path: string | undefined, options: InitOptions): Promise<
     }
 
     // Execute installation
-    await executeInstallation(projectPath, config, registry, templatesPath, options);
+    await executeInstallation(projectPath, config, registry, templatesPath, options, cicdConfig);
 
     // Apply template configuration (replace {{PLACEHOLDER}} patterns)
     if (templateConfig && !options.noPlaceholders) {
@@ -465,6 +474,11 @@ async function buildInteractiveConfig(
   // Code style configuration
   const codeStyleConfig = await promptCodeStyleConfig();
 
+  // CI/CD configuration
+  const cicdConfig = await promptCICDConfig({
+    packageManager: preferences.packageManager,
+  });
+
   // Folder structure preferences (based on selected bundles)
   const folderPreferences = await promptQuickFolderPreferences({
     selectedBundles: bundleSelection.selectedBundles,
@@ -532,6 +546,7 @@ async function buildInteractiveConfig(
     config,
     skippedMcpConfigs,
     templateConfig: templateConfigResult,
+    cicdConfig,
   };
 }
 
@@ -616,7 +631,8 @@ async function executeInstallation(
   config: ClaudeConfig,
   registry: ModuleRegistry,
   templatesPath: string,
-  options: InitOptions
+  options: InitOptions,
+  cicdConfig?: CICDConfig
 ): Promise<void> {
   logger.newline();
   logger.title('Installing Configuration');
@@ -630,6 +646,18 @@ async function executeInstallation(
       ...scaffoldResult.createdDirs,
       ...scaffoldResult.createdFiles,
     ];
+  }
+
+  // Generate CLAUDE.md in project root
+  const claudeMdResult = await generateClaudeMdWithSpinner(projectPath, config.project, {
+    overwrite: options.force,
+    templateConfig: config.templateConfig,
+    claudeConfig: config,
+  });
+  if (claudeMdResult.error) {
+    logger.warn(`CLAUDE.md generation warning: ${claudeMdResult.error}`);
+  } else if (claudeMdResult.skipped) {
+    logger.info('CLAUDE.md already exists, skipped');
   }
 
   // Resolve modules (tags -> actual module definitions)
@@ -712,6 +740,38 @@ async function executeInstallation(
     if (codeStyleResult.errors.length > 0) {
       logger.warn(`Code style installation warnings: ${codeStyleResult.errors.join(', ')}`);
     }
+
+    // Install VSCode settings for code style tools
+    const vscodeResult = await installVSCodeConfig(projectPath, config.extras.codeStyle, {
+      overwrite: options.force,
+      merge: !options.force, // Merge with existing settings if not forcing
+    });
+    if (vscodeResult.settings.error) {
+      logger.warn(`VSCode settings warning: ${vscodeResult.settings.error}`);
+    } else if (vscodeResult.settings.created || vscodeResult.settings.updated) {
+      logger.info('VSCode settings configured for code style tools');
+    }
+
+    // Install Husky hooks if commitlint with husky integration is enabled
+    const huskyConfig = deriveHuskyConfigFromCodeStyle(config.extras.codeStyle);
+    if (huskyConfig) {
+      const huskyResult = await installHuskyWithSpinner(projectPath, huskyConfig, {
+        overwrite: options.force,
+      });
+      if (huskyResult.errors.length > 0) {
+        logger.warn(`Husky installation warnings: ${huskyResult.errors.join(', ')}`);
+      }
+    }
+  }
+
+  // Install CI/CD workflows
+  if (cicdConfig?.enabled) {
+    const cicdResult = await installCICDWithSpinner(projectPath, cicdConfig, {
+      overwrite: options.force,
+    });
+    if (cicdResult.errors.length > 0) {
+      logger.warn(`CI/CD installation warnings: ${cicdResult.errors.join(', ')}`);
+    }
   }
 
   // Write config
@@ -761,6 +821,7 @@ async function handlePackageJsonUpdate(
     project: {
       name: config.project.name,
       description: config.project.description,
+      author: config.project.author,
       repository:
         config.project.org && config.project.repo
           ? `https://github.com/${config.project.org}/${config.project.repo}`

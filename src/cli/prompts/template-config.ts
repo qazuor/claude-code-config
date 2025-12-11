@@ -378,6 +378,19 @@ export async function promptTemplateConfig(
 
   logger.section('Template Configuration', '📝');
 
+  // Explain why this is important
+  logger.newline();
+  logger.info('This step personalizes all Claude Code configuration files for YOUR project.');
+  logger.info('Your answers will be used to:');
+  logger.newline();
+  logger.item('Replace {{PLACEHOLDERS}} in agents, commands, and skills');
+  logger.item('Configure CLAUDE.md with your tech stack and commands');
+  logger.item('Set up quality targets (coverage, performance, accessibility)');
+  logger.item('Customize code examples to match your project structure');
+  logger.newline();
+  logger.info('Accurate configuration means better AI assistance tailored to your codebase!');
+  logger.newline();
+
   // Get global defaults if available
   const hasDefaults = await hasGlobalDefaults();
   const globalDefaults = hasDefaults ? await getGlobalTemplateConfig() : undefined;

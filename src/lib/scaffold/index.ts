@@ -15,3 +15,11 @@ export {
   generateScaffold,
   generateScaffoldWithProgress,
 } from './generator.js';
+
+// CLAUDE.md generator
+export {
+  generateClaudeMd,
+  generateClaudeMdWithSpinner,
+  type ClaudeMdOptions,
+  type ClaudeMdResult,
+} from './claude-md-generator.js';

@@ -452,16 +452,19 @@ export const TEMPLATE_PLACEHOLDERS: TemplatePlaceholderDefinition[] = [
     choices: [
       { name: 'React', value: 'React' },
       { name: 'Next.js', value: 'Next.js' },
+      { name: 'TanStack Start', value: 'TanStack Start' },
       { name: 'Vue', value: 'Vue' },
       { name: 'Nuxt', value: 'Nuxt' },
       { name: 'Svelte', value: 'Svelte' },
       { name: 'SvelteKit', value: 'SvelteKit' },
       { name: 'Astro', value: 'Astro' },
       { name: 'SolidJS', value: 'SolidJS' },
+      { name: 'Remix', value: 'Remix' },
       { name: 'Angular', value: 'Angular' },
       { name: 'None', value: 'None' },
     ],
     default: (ctx) => {
+      if (hasDependency(ctx, '@tanstack/start')) return 'TanStack Start';
       if (hasDependency(ctx, 'next')) return 'Next.js';
       if (hasDependency(ctx, 'nuxt')) return 'Nuxt';
       if (hasDependency(ctx, 'vue')) return 'Vue';
@@ -469,6 +472,7 @@ export const TEMPLATE_PLACEHOLDERS: TemplatePlaceholderDefinition[] = [
       if (hasDependency(ctx, '@sveltejs/kit')) return 'SvelteKit';
       if (hasDependency(ctx, 'astro')) return 'Astro';
       if (hasDependency(ctx, 'solid-js')) return 'SolidJS';
+      if (hasDependency(ctx, '@remix-run/react')) return 'Remix';
       if (hasDependency(ctx, '@angular/core')) return 'Angular';
       if (hasDependency(ctx, 'react')) return 'React';
       return 'None';
@@ -540,26 +544,32 @@ export const TEMPLATE_PLACEHOLDERS: TemplatePlaceholderDefinition[] = [
     description: 'Authentication approach',
     inputType: 'select',
     choices: [
+      { name: 'Better Auth', value: 'Better Auth' },
       { name: 'Clerk', value: 'Clerk' },
       { name: 'Auth.js (NextAuth)', value: 'Auth.js' },
       { name: 'Lucia', value: 'Lucia' },
       { name: 'Firebase Auth', value: 'Firebase' },
       { name: 'Supabase Auth', value: 'Supabase' },
+      { name: 'Kinde', value: 'Kinde' },
+      { name: 'WorkOS', value: 'WorkOS' },
       { name: 'Custom JWT', value: 'JWT' },
       { name: 'Session-based', value: 'Session' },
       { name: 'None', value: 'None' },
     ],
     default: (ctx) => {
+      if (hasDependency(ctx, 'better-auth')) return 'Better Auth';
       if (hasDependency(ctx, '@clerk/nextjs') || hasDependency(ctx, '@clerk/clerk-react'))
         return 'Clerk';
       if (hasDependency(ctx, 'next-auth') || hasDependency(ctx, '@auth/core')) return 'Auth.js';
       if (hasDependency(ctx, 'lucia')) return 'Lucia';
       if (hasDependency(ctx, 'firebase')) return 'Firebase';
       if (hasDependency(ctx, '@supabase/supabase-js')) return 'Supabase';
+      if (hasDependency(ctx, '@kinde-oss/kinde-auth-nextjs')) return 'Kinde';
+      if (hasDependency(ctx, '@workos-inc/authkit-nextjs')) return 'WorkOS';
       return 'None';
     },
     required: false,
-    example: 'Clerk',
+    example: 'Better Auth',
   },
   {
     key: 'STATE_MANAGEMENT',

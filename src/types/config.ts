@@ -42,6 +42,8 @@ export interface ProjectInfo {
   entityTypePlural: string;
   /** Location for examples (optional) */
   location?: string;
+  /** Author name or full author string (optional) */
+  author?: string;
 }
 
 /**

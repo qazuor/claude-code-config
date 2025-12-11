@@ -123,3 +123,6 @@ export {
   showFolderPreferencesSummary,
   confirmFolderPreferences,
 } from './folder-preferences.js';
+
+// CI/CD configuration prompts
+export { promptCICDConfig, showCICDSummary } from './ci-cd-config.js';
