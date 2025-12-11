@@ -81,5 +81,6 @@
   "bugs": {
     "url": "https://github.com/qazuor/claude-code-config/issues"
   },
-  "homepage": "https://github.com/qazuor/claude-code-config#readme"
+  "homepage": "https://github.com/qazuor/claude-code-config#readme",
+  "private": false
 }
