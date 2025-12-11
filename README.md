@@ -5,7 +5,7 @@
 [![Node.js Version](https://img.shields.io/node/v/@qazuor/claude-code-config.svg)](https://nodejs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
 
-A comprehensive CLI tool to install and manage Claude Code configurations in your projects. Configure AI agents, skills, commands, MCP servers, permissions, and template placeholders with an interactive wizard or preset-based setup.
+A comprehensive CLI tool to install and manage Claude Code configurations in your projects. Configure AI agents, skills, commands, MCP servers, permissions, and template placeholders with an interactive wizard or bundle-based setup.
 
 ## Table of Contents
 
@@ -21,7 +21,6 @@ A comprehensive CLI tool to install and manage Claude Code configurations in you
   - [remove](#remove-module)
   - [status](#status)
   - [update](#update)
-- [Presets](#presets)
 - [Bundles](#bundles)
 - [Modules](#modules)
   - [Agents](#agents-23-available)
@@ -48,8 +47,8 @@ A comprehensive CLI tool to install and manage Claude Code configurations in you
 
 - **Interactive Wizard**: Step-by-step configuration with intelligent defaults
 - **Auto-Detection**: Automatically detects project type, package manager, and tech stack
-- **7 Presets**: Pre-configured module sets for different project types
-- **Module Bundles**: Grouped modules for specific use cases (frontend-react, api-hono, etc.)
+- **23 Bundles**: Pre-grouped module sets organized by category (stacks, testing, quality, etc.)
+- **Bundle Categories**: Stack bundles (React+TanStack, Astro, Next.js), API bundles (Hono, Express), testing, quality, and more
 - **Template Configuration**: Interactive setup for `{{PLACEHOLDER}}` values with smart defaults
 - **MCP Server Integration**: Configure Model Context Protocol servers
 - **Permissions System**: Fine-grained control over Claude's capabilities
@@ -66,7 +65,7 @@ A comprehensive CLI tool to install and manage Claude Code configurations in you
 | **Commands** | 23 | Slash commands for workflows |
 | **Docs** | 18 | Reference documentation and guides |
 | **MCP Servers** | 9 | External tool integrations |
-| **Bundles** | 10+ | Pre-grouped module sets |
+| **Bundles** | 23 | Pre-grouped module sets |
 
 ### Smart Defaults
 
@@ -78,7 +77,7 @@ A comprehensive CLI tool to install and manage Claude Code configurations in you
 
 ## What's Included
 
-After running `claude-config init`, your project will have:
+After running `qazuor-claude-config init`, your project will have:
 
 ```
 .claude/
@@ -152,10 +151,10 @@ pnpm link --global
 
 ```bash
 # Initialize in current directory
-claude-config init
+qazuor-claude-config init
 
 # Initialize in specific directory
-claude-config init ./my-project
+qazuor-claude-config init ./my-project
 ```
 
 The wizard will guide you through:
@@ -163,37 +162,37 @@ The wizard will guide you through:
 1. **Project Information** - Name, description, organization, entity types
 2. **Preferences** - Language, co-author settings
 3. **Scaffold Options** - Claude-only or full project structure
-4. **Module Selection** - Choose preset or custom modules
+4. **Module Selection** - Choose bundles or custom modules
 5. **Hook Configuration** - Desktop/audio notifications
 6. **MCP Servers** - External tool integrations
 7. **Permissions** - What Claude can do
 8. **Code Style** - EditorConfig, Biome, Prettier, Commitlint
 9. **Template Configuration** - Auto-detected command/path/target values
 
-### Preset-based Setup
+### Bundle-based Setup
 
 ```bash
-# Quick setup with fullstack preset
-claude-config init --preset fullstack
+# Quick setup with specific bundles
+qazuor-claude-config init --bundles react-tanstack-stack,testing-complete
 
 # Skip all prompts with defaults
-claude-config init --preset minimal --yes
+qazuor-claude-config init --bundles hono-drizzle-stack --yes
 
 # Preview what would be created
-claude-config init --preset frontend --dry-run
+qazuor-claude-config init --bundles astro-react-stack --dry-run
 ```
 
 ### Post-Installation Configuration
 
 ```bash
 # Reconfigure template placeholders
-claude-config configure
+qazuor-claude-config configure
 
 # Scan for unconfigured placeholders
-claude-config configure --scan
+qazuor-claude-config configure --scan
 
 # Preview changes without applying
-claude-config configure --preview
+qazuor-claude-config configure --preview
 ```
 
 ## Commands
@@ -203,16 +202,16 @@ claude-config configure --preview
 Initialize Claude configuration in a project.
 
 ```bash
-claude-config init [options] [path]
+qazuor-claude-config init [options] [path]
 ```
 
 #### Options
 
 | Option | Description |
 |--------|-------------|
-| `-p, --preset <name>` | Use preset: `fullstack`, `frontend`, `backend`, `minimal`, `api-only`, `documentation`, `quality-focused` |
+| `-b, --bundles <ids>` | Comma-separated bundle IDs (e.g., `react-tanstack-stack,testing-complete`) |
 | `-t, --template <url>` | Remote git repository URL for custom templates |
-| `-b, --branch <name>` | Branch or tag for remote template (default: `main`) |
+| `--branch <name>` | Branch or tag for remote template (default: `main`) |
 | `-y, --yes` | Accept all defaults, skip interactive prompts |
 | `-f, --force` | Overwrite existing configuration |
 | `--dry-run` | Show what would be created without making changes |
@@ -225,16 +224,16 @@ claude-config init [options] [path]
 
 ```bash
 # Full interactive setup
-claude-config init
+qazuor-claude-config init
 
-# Quick setup with preset
-claude-config init --preset fullstack --yes
+# Quick setup with bundles
+qazuor-claude-config init --bundles react-tanstack-stack,testing-complete --yes
 
 # From custom template repository
-claude-config init --template https://github.com/your-org/claude-templates --branch v2.0
+qazuor-claude-config init --template https://github.com/your-org/claude-templates --branch v2.0
 
 # Force overwrite existing
-claude-config init --preset backend --force
+qazuor-claude-config init --bundles hono-drizzle-stack --force
 ```
 
 ### `configure`
@@ -242,7 +241,7 @@ claude-config init --preset backend --force
 Configure or reconfigure template placeholders interactively.
 
 ```bash
-claude-config configure [options] [path]
+qazuor-claude-config configure [options] [path]
 ```
 
 #### Options
@@ -259,27 +258,27 @@ claude-config configure [options] [path]
 
 ```bash
 # Interactive configuration
-claude-config configure
+qazuor-claude-config configure
 
 # Scan for unconfigured placeholders
-claude-config configure --scan
+qazuor-claude-config configure --scan
 
 # Configure only commands
-claude-config configure --category commands
+qazuor-claude-config configure --category commands
 
 # Preview what would be replaced
-claude-config configure --preview
+qazuor-claude-config configure --preview
 
 # Show global defaults
-claude-config configure --show-defaults
+qazuor-claude-config configure --show-defaults
 ```
 
 ### `list [type]`
 
-List available modules, presets, bundles, or MCP servers.
+List available modules, bundles, or MCP servers.
 
 ```bash
-claude-config list [options] [type]
+qazuor-claude-config list [options] [type]
 ```
 
 #### Types
@@ -290,8 +289,7 @@ claude-config list [options] [type]
 | `skills` | List all 25 available skills |
 | `commands` | List all 23 available commands |
 | `docs` | List all 18 documentation modules |
-| `presets` | List all 7 presets with their modules |
-| `bundles` | List all module bundles |
+| `bundles` | List all 23 module bundles |
 | `mcp` | List all 9 MCP servers |
 | *(none)* | List summary of all modules |
 
@@ -306,16 +304,16 @@ claude-config list [options] [type]
 
 ```bash
 # List all modules summary
-claude-config list
+qazuor-claude-config list
 
 # List agents with details
-claude-config list agents --verbose
+qazuor-claude-config list agents --verbose
 
-# List presets
-claude-config list presets
+# List bundles
+qazuor-claude-config list bundles
 
 # Export as JSON
-claude-config list agents --json > agents.json
+qazuor-claude-config list agents --json > agents.json
 ```
 
 ### `add <module>`
@@ -323,7 +321,7 @@ claude-config list agents --json > agents.json
 Add a module to the configuration.
 
 ```bash
-claude-config add [options] <module>
+qazuor-claude-config add [options] <module>
 ```
 
 #### Module Format
@@ -338,17 +336,17 @@ Categories: agent, skill, command, doc
 
 ```bash
 # Add an agent
-claude-config add agent:tech-lead
-claude-config add agent:prisma-engineer
+qazuor-claude-config add agent:tech-lead
+qazuor-claude-config add agent:prisma-engineer
 
 # Add a skill
-claude-config add skill:tdd-methodology
+qazuor-claude-config add skill:tdd-methodology
 
 # Add a command
-claude-config add command:security-audit
+qazuor-claude-config add command:security-audit
 
 # Force overwrite
-claude-config add agent:qa-engineer --force
+qazuor-claude-config add agent:qa-engineer --force
 ```
 
 ### `remove <module>`
@@ -356,17 +354,17 @@ claude-config add agent:qa-engineer --force
 Remove a module from the configuration.
 
 ```bash
-claude-config remove [options] <module>
+qazuor-claude-config remove [options] <module>
 ```
 
 #### Examples
 
 ```bash
 # Remove an agent
-claude-config remove agent:tech-lead
+qazuor-claude-config remove agent:tech-lead
 
 # Remove without confirmation
-claude-config remove skill:tdd-methodology --force
+qazuor-claude-config remove skill:tdd-methodology --force
 ```
 
 ### `status`
@@ -374,7 +372,7 @@ claude-config remove skill:tdd-methodology --force
 Show current Claude configuration status.
 
 ```bash
-claude-config status [options]
+qazuor-claude-config status [options]
 ```
 
 #### Options
@@ -390,7 +388,7 @@ claude-config status [options]
 Update configuration and modules.
 
 ```bash
-claude-config update [options]
+qazuor-claude-config update [options]
 ```
 
 #### Options
@@ -404,44 +402,72 @@ claude-config update [options]
 | `-f, --force` | Overwrite local changes |
 | `-i, --interactive` | Ask about each change |
 
-## Presets
-
-Presets are pre-configured module sets optimized for different project types.
-
-| Preset | Description | Agents | Skills | Commands |
-|--------|-------------|--------|--------|----------|
-| `fullstack` | Complete full-stack configuration | 14 | 9 | 8 |
-| `frontend` | React, Astro, TanStack projects | 7 | 4 | 4 |
-| `backend` | Hono, Drizzle, Node.js APIs | 7 | 5 | 5 |
-| `minimal` | Bare essentials | 2 | 2 | 2 |
-| `api-only` | Pure API/microservice | 4 | 3 | 3 |
-| `documentation` | Documentation focus | 3 | 2 | 3 |
-| `quality-focused` | Testing emphasis | 3 | 4 | 4 |
-
-### Full Stack Preset Details
-
-**Agents**: tech-lead, product-functional, product-technical, hono-engineer, db-drizzle-engineer, node-typescript-engineer, astro-engineer, tanstack-start-engineer, react-senior-dev, ux-ui-designer, qa-engineer, debugger, tech-writer, seo-ai-specialist
-
-**Skills**: tdd-methodology, security-testing, performance-testing, api-app-testing, web-app-testing, qa-criteria-validator, git-commit-helper, brand-guidelines, error-handling-patterns
-
-**Commands**: quality-check, code-check, commit, run-tests, review-code, add-new-entity, update-docs, start-feature-plan
-
-**Extras**: schemas, scripts, hooks, sessions
-
 ## Bundles
 
-Bundles are pre-grouped modules for specific use cases. They can be selected during setup or added later.
+Bundles are pre-grouped modules for specific use cases. Select them during `init` with `--bundles` or add interactively. The CLI includes 23 bundles organized by category.
 
-| Bundle | Description | Contents |
+### Stack Bundles
+
+Complete technology stacks for different project types.
+
+| Bundle | Description | Tech Stack |
+|--------|-------------|------------|
+| `react-tanstack-stack` | React + TanStack for SPAs/admin dashboards | React, TanStack Start/Router/Query, TypeScript |
+| `astro-react-stack` | Astro + React for content sites | Astro, React, Tailwind CSS, MDX |
+| `nextjs-prisma-stack` | Full-stack Next.js with Prisma | Next.js, React, Prisma, Tailwind CSS |
+| `express-prisma-stack` | Express API with Prisma ORM | Express.js, Prisma, PostgreSQL, Zod |
+| `hono-drizzle-stack` | Hono API with Drizzle ORM | Hono, Drizzle ORM, PostgreSQL, Zod |
+
+### Testing Bundles
+
+| Bundle | Description | Includes |
 |--------|-------------|----------|
-| `frontend-react` | React development | react-senior-dev, tanstack-start-engineer, web-app-testing |
-| `frontend-astro` | Astro development | astro-engineer, seo-ai-specialist, performance-testing |
-| `api-hono` | Hono API development | hono-engineer, api-app-testing, security-testing |
-| `api-express` | Express API development | express-engineer, api-app-testing, security-testing |
-| `database-drizzle` | Drizzle ORM | db-drizzle-engineer, schemas |
-| `database-prisma` | Prisma ORM | prisma-engineer, schemas |
-| `quality-full` | Complete quality tooling | qa-engineer, debugger, tdd-methodology, all testing skills |
-| `planning-full` | Feature planning | product-functional, product-technical, planning commands |
+| `testing-complete` | Full testing suite (TDD, E2E, performance, QA) | qa-engineer, tdd-methodology, web-app-testing, api-app-testing, performance-testing, qa-criteria-validator |
+| `testing-minimal` | Essential testing tools | tdd-methodology, api-app-testing, run-tests |
+
+### Quality Bundles
+
+| Bundle | Description | Includes |
+|--------|-------------|----------|
+| `quality-complete` | Full QA with security/performance/accessibility audits | qa-engineer, debugger, security-audit, performance-audit, accessibility-audit, review commands |
+| `quality-minimal` | Essential quality checks | quality-check, code-check, review-code |
+
+### Database Bundles
+
+| Bundle | Description | Includes |
+|--------|-------------|----------|
+| `drizzle-database` | Drizzle ORM patterns | db-drizzle-engineer, json-data-auditor |
+| `prisma-database` | Prisma ORM patterns | prisma-engineer, json-data-auditor |
+| `mongoose-database` | MongoDB + Mongoose | mongoose-engineer, json-data-auditor |
+
+### API Bundles
+
+| Bundle | Description | Includes |
+|--------|-------------|----------|
+| `hono-api` | Hono framework | hono-engineer, api-app-testing, error-handling-patterns |
+| `express-api` | Express.js framework | express-engineer, api-app-testing, error-handling-patterns |
+| `fastify-api` | Fastify framework | fastify-engineer, api-app-testing, error-handling-patterns |
+| `nestjs-api` | NestJS framework | nestjs-engineer, api-app-testing, error-handling-patterns |
+
+### Frontend Bundles
+
+| Bundle | Description | Includes |
+|--------|-------------|----------|
+| `react-ui` | React + Shadcn UI | react-senior-dev, ux-ui-designer, shadcn-specialist, brand-guidelines, accessibility-audit |
+| `react-forms` | React Hook Form + Zod | react-senior-dev, react-hook-form-patterns, shadcn-specialist |
+| `react-state-zustand` | Zustand state management | react-senior-dev, zustand-patterns, tanstack-query-patterns |
+| `react-state-redux` | Redux Toolkit | react-senior-dev, redux-toolkit-patterns |
+| `nextjs-auth` | NextAuth.js authentication | nextjs-engineer, nextauth-patterns, security-testing |
+| `nextjs-i18n` | Next.js internationalization | nextjs-engineer, i18n-specialist, i18n-patterns |
+
+### Workflow Bundles
+
+| Bundle | Description | Includes |
+|--------|-------------|----------|
+| `planning-complete` | Full planning workflow (PDR, tech analysis, tasks) | product-functional, product-technical, tech-lead, planning commands, templates |
+| `documentation-complete` | Documentation tools | tech-writer, mermaid-diagram-specialist, update-docs, documentation-standards |
+| `git-workflow` | Git commit conventions | git-commit-helper, commit command |
+| `cicd-github-actions` | GitHub Actions CI/CD | github-actions-specialist, cicd-workflows |
 
 ## Modules
 
@@ -493,9 +519,7 @@ Specialized AI agents for different development roles.
 | `seo-ai-specialist` | SEO Specialist | SEO optimization |
 | `i18n-specialist` | i18n Specialist | Internationalization |
 | `content-writer` | Content Writer | Web copywriting |
-| `enrichment-agent` | Enrichment Agent | Data enrichment |
-| `markdown-formatter` | Markdown Formatter | Document formatting |
-| `git-commit-helper` | Git Commit Helper | Commit message generation |
+| `enrichment-agent` | Enrichment Agent | Data enrichment and planning context |
 
 ### Skills (25 Available)
 
@@ -653,7 +677,7 @@ Save configuration as defaults for future projects:
 # "Save these values as global defaults for future projects?"
 
 # View saved defaults
-claude-config configure --show-defaults
+qazuor-claude-config configure --show-defaults
 ```
 
 Defaults are stored in `~/.claude/defaults.json`.
@@ -918,38 +942,34 @@ import {
   // Placeholders
   replacePlaceholders,
 
-  // Template Configuration
-  scanForPlaceholders,
-  replaceTemplatePlaceholders,
-  buildConfigContext,
+  // Templates
+  processTemplates,
+  buildTemplateContext,
 
-  // Global Defaults
-  readGlobalDefaults,
-  writeGlobalDefaults,
+  // Bundles
+  resolveBundles,
+  resolveBundle,
+  mergeBundleSelection,
+  BUNDLES,
+  getAllBundles,
+  getBundleById,
 
   // Constants
-  PRESETS,
   MCP_SERVERS,
+  DEPENDENCIES,
+  PLACEHOLDERS,
   PERMISSION_PRESETS,
-  TEMPLATE_PLACEHOLDERS,
 } from '@qazuor/claude-code-config';
 
 // Detect project type
 const detection = await detectProject('./my-project');
 console.log(detection.projectType);      // 'nextjs', 'astro', 'hono', etc.
 console.log(detection.packageManager);   // 'pnpm', 'npm', 'yarn', 'bun'
-console.log(detection.suggestedPreset);  // 'frontend', 'backend', etc.
 
-// Build context for template configuration
-const context = await buildConfigContext('./my-project');
-console.log(context.scripts);        // { test: 'vitest', lint: 'biome check' }
-console.log(context.dependencies);   // { react: '^18.0.0', drizzle-orm: '...' }
-console.log(context.packageManager); // 'pnpm'
-
-// Scan for placeholders
-const scan = await scanForPlaceholders('./.claude');
-console.log(scan.placeholders);      // ['{{TYPECHECK_COMMAND}}', ...]
-console.log(scan.byCategory);        // { commands: [...], paths: [...] }
+// Resolve bundles to module selections
+const bundleResult = resolveBundles(['react-tanstack-stack', 'testing-complete']);
+console.log(bundleResult.agents);    // ['react-senior-dev', 'tanstack-start-engineer', ...]
+console.log(bundleResult.skills);    // ['web-app-testing', 'tdd-methodology', ...]
 
 // Read/write configuration
 const config = await readConfig('./my-project');
@@ -962,26 +982,43 @@ await writeConfig('./my-project', config);
 import type {
   // Configuration
   ClaudeConfig,
-  ProjectInfo,
-  TemplateConfig,
-  TemplateConfigContext,
+  ModuleSelection,
+  HookConfig,
+  TemplateSource,
+  Preferences,
+  ScaffoldConfig,
+  Customizations,
 
   // Modules
   ModuleRegistry,
   ModuleDefinition,
   ModuleCategory,
+  ResolvedModule,
 
-  // Template
-  TemplatePlaceholderDefinition,
-  PlaceholderScanResult,
-
-  // Presets & Bundles
-  PresetName,
-  PresetDefinition,
+  // Bundles
+  BundleCategory,
   BundleDefinition,
+  BundleSelectionResult,
+  ResolvedBundle,
+
+  // Scaffold & Detection
+  ScaffoldType,
+  ProjectType,
+  ScaffoldOptions,
+  ScaffoldResult,
+  ProjectDetectionResult,
+
+  // Templates
+  TemplateContext,
+  TemplateResult,
+  TemplateProcessingReport,
 
   // MCP & Permissions
   McpServerDefinition,
+  McpCategory,
+  McpConfigField,
+  McpInstallation,
+  PermissionPreset,
   PermissionsConfig,
 } from '@qazuor/claude-code-config';
 ```
@@ -1056,10 +1093,10 @@ The main configuration is stored in `.claude/config.json`.
 
 ```bash
 # Use templates from custom repository
-claude-config init --template https://github.com/your-org/claude-templates
+qazuor-claude-config init --template https://github.com/your-org/claude-templates
 
 # Specify branch or tag
-claude-config init --template https://github.com/your-org/claude-templates --branch v2.0
+qazuor-claude-config init --template https://github.com/your-org/claude-templates --branch v2.0
 ```
 
 ### Template Structure
