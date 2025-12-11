@@ -99,10 +99,10 @@ describe('MCP_SERVERS', () => {
       expect(postgres?.requiresConfig).toBe(true);
     });
 
-    it('should include vercel', () => {
-      const vercel = MCP_SERVERS.find((s) => s.id === 'vercel');
-      expect(vercel).toBeDefined();
-      expect(vercel?.category).toBe('deployment');
+    it('should include cloudflare', () => {
+      const cloudflare = MCP_SERVERS.find((s) => s.id === 'cloudflare');
+      expect(cloudflare).toBeDefined();
+      expect(cloudflare?.category).toBe('deployment');
     });
   });
 });

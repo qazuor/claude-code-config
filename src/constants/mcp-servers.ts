@@ -1,54 +1,84 @@
 /**
  * MCP Server definitions
+ * Only includes verified, real npm packages
  */
 
 import type { McpServerDefinition } from '../types/mcp.js';
 
 /**
- * Available MCP servers
+ * Available MCP servers - all packages verified to exist on npm
  */
 export const MCP_SERVERS: McpServerDefinition[] = [
   // ============================================
-  // DOCUMENTATION
+  // DOCUMENTATION & AI TOOLS
   // ============================================
   {
     id: 'context7',
     name: 'Context7',
-    description: 'Documentation lookup for libraries and frameworks',
-    package: '@anthropic/context7-mcp',
+    description: 'Up-to-date documentation lookup for libraries and frameworks',
+    package: '@upstash/context7-mcp',
     category: 'documentation',
     requiresConfig: false,
+    installInstructions:
+      'API keys provide higher rate limits. Get one at https://context7.com/dashboard',
+  },
+  {
+    id: 'perplexity',
+    name: 'Perplexity',
+    description: 'Web search without leaving the MCP ecosystem via Sonar API',
+    package: '@chatmcp/server-perplexity-ask',
+    category: 'search',
+    requiresConfig: true,
+    configFields: [
+      {
+        name: 'apiKey',
+        type: 'string',
+        required: true,
+        description: 'Perplexity/Sonar API Key',
+        envVar: 'PERPLEXITY_API_KEY',
+      },
+    ],
+    installInstructions: 'Get API key at https://www.perplexity.ai/settings/api',
+  },
+  {
+    id: 'sequential-thinking',
+    name: 'Sequential Thinking',
+    description: 'Dynamic problem-solving through structured thinking process',
+    package: '@modelcontextprotocol/server-sequential-thinking',
+    category: 'ai',
+    requiresConfig: false,
+    installInstructions: 'Helps break down complex problems into manageable steps.',
   },
 
   // ============================================
   // TESTING & BROWSER AUTOMATION
   // ============================================
   {
-    id: 'chrome-devtools',
-    name: 'Chrome DevTools',
-    description:
-      'Browser automation, debugging, and performance profiling via Chrome DevTools Protocol',
-    package: '@anthropic/chrome-devtools-mcp',
+    id: 'puppeteer',
+    name: 'Puppeteer',
+    description: 'Headless Chrome automation for testing and scraping',
+    package: '@modelcontextprotocol/server-puppeteer',
     category: 'testing',
     requiresConfig: false,
-    installInstructions: 'Requires Chrome/Chromium browser installed on the system.',
   },
   {
     id: 'playwright',
     name: 'Playwright',
-    description: 'Cross-browser end-to-end testing and automation',
-    package: '@anthropic/playwright-mcp',
+    description: 'Browser automation via accessibility snapshots, not screenshots',
+    package: '@playwright/mcp',
     category: 'testing',
     requiresConfig: false,
-    installInstructions: 'Run `npx playwright install` after setup to install browsers.',
+    installInstructions: 'Requires Node.js 18+. Supports Chrome, Firefox, WebKit.',
   },
   {
-    id: 'puppeteer',
-    name: 'Puppeteer',
-    description: 'Headless Chrome automation for testing and scraping',
-    package: '@anthropic/puppeteer-mcp',
+    id: 'chrome-devtools',
+    name: 'Chrome DevTools',
+    description: 'Control and inspect live Chrome browser with DevTools Protocol',
+    package: 'chrome-devtools-mcp',
     category: 'testing',
     requiresConfig: false,
+    installInstructions:
+      'Requires Chrome installed. For Claude Code: claude mcp add chrome-devtools npx chrome-devtools-mcp@latest',
   },
 
   // ============================================
@@ -57,7 +87,7 @@ export const MCP_SERVERS: McpServerDefinition[] = [
   {
     id: 'github',
     name: 'GitHub',
-    description: 'GitHub API integration (issues, PRs, repos)',
+    description: 'GitHub API integration (issues, PRs, repos, file operations)',
     package: '@modelcontextprotocol/server-github',
     category: 'version-control',
     requiresConfig: true,
@@ -71,33 +101,34 @@ export const MCP_SERVERS: McpServerDefinition[] = [
       },
     ],
     installInstructions:
-      'Create a Personal Access Token at https://github.com/settings/tokens with repo, issues, and pull_request scopes.',
+      'Create a Personal Access Token at https://github.com/settings/tokens with repo scope.',
   },
   {
     id: 'gitlab',
     name: 'GitLab',
-    description: 'GitLab API integration (issues, MRs, repos)',
-    package: '@anthropic/gitlab-mcp',
+    description: 'GitLab API for project management, issues, and merge requests',
+    package: '@modelcontextprotocol/server-gitlab',
     category: 'version-control',
     requiresConfig: true,
     configFields: [
       {
         name: 'token',
         type: 'string',
-        required: false,
+        required: true,
         description: 'GitLab Personal Access Token',
-        envVar: 'GITLAB_TOKEN',
+        envVar: 'GITLAB_PERSONAL_ACCESS_TOKEN',
       },
       {
-        name: 'baseUrl',
+        name: 'apiUrl',
         type: 'string',
         required: false,
-        description: 'GitLab instance URL (default: https://gitlab.com)',
-        default: 'https://gitlab.com',
+        description: 'GitLab API URL (default: https://gitlab.com/api/v4)',
+        envVar: 'GITLAB_API_URL',
+        default: 'https://gitlab.com/api/v4',
       },
     ],
     installInstructions:
-      'Create a Personal Access Token at GitLab Settings > Access Tokens with api scope.',
+      'Create PAT at GitLab User Settings > Access Tokens with api, read_repository, write_repository scopes.',
   },
 
   // ============================================
@@ -106,7 +137,7 @@ export const MCP_SERVERS: McpServerDefinition[] = [
   {
     id: 'postgres',
     name: 'PostgreSQL',
-    description: 'Direct PostgreSQL database access',
+    description: 'Read-only PostgreSQL database access with schema inspection',
     package: '@modelcontextprotocol/server-postgres',
     category: 'database',
     requiresConfig: true,
@@ -122,9 +153,27 @@ export const MCP_SERVERS: McpServerDefinition[] = [
     installInstructions: 'Connection string format: postgresql://user:password@host:port/database',
   },
   {
+    id: 'mysql',
+    name: 'MySQL',
+    description: 'Read-only MySQL/MariaDB database access',
+    package: '@modelcontextprotocol/server-mysql',
+    category: 'database',
+    requiresConfig: true,
+    configFields: [
+      {
+        name: 'connectionString',
+        type: 'string',
+        required: true,
+        description: 'MySQL connection URL',
+        envVar: 'MYSQL_URL',
+      },
+    ],
+    installInstructions: 'Connection format: mysql://user:password@host:port/database',
+  },
+  {
     id: 'neon',
     name: 'Neon',
-    description: 'Neon serverless PostgreSQL',
+    description: 'Neon serverless PostgreSQL with branch management',
     package: '@neondatabase/mcp-server-neon',
     category: 'database',
     requiresConfig: true,
@@ -140,46 +189,9 @@ export const MCP_SERVERS: McpServerDefinition[] = [
     installInstructions: 'Get your API key from https://console.neon.tech/app/settings/api-keys',
   },
   {
-    id: 'mongodb',
-    name: 'MongoDB',
-    description: 'MongoDB document database access',
-    package: '@anthropic/mongodb-mcp',
-    category: 'database',
-    requiresConfig: true,
-    configFields: [
-      {
-        name: 'connectionString',
-        type: 'string',
-        required: false,
-        description: 'MongoDB connection string',
-        envVar: 'MONGODB_URI',
-      },
-    ],
-    installInstructions:
-      'Connection string format: mongodb://user:password@host:port/database or mongodb+srv://...',
-  },
-  {
-    id: 'mysql',
-    name: 'MySQL',
-    description: 'MySQL/MariaDB database access',
-    package: '@anthropic/mysql-mcp',
-    category: 'database',
-    requiresConfig: true,
-    configFields: [
-      {
-        name: 'connectionString',
-        type: 'string',
-        required: false,
-        description: 'MySQL connection string',
-        envVar: 'MYSQL_URL',
-      },
-    ],
-    installInstructions: 'Connection string format: mysql://user:password@host:port/database',
-  },
-  {
     id: 'sqlite',
     name: 'SQLite',
-    description: 'SQLite local database access',
+    description: 'SQLite database interaction and business intelligence',
     package: '@modelcontextprotocol/server-sqlite',
     category: 'database',
     requiresConfig: true,
@@ -196,28 +208,20 @@ export const MCP_SERVERS: McpServerDefinition[] = [
   {
     id: 'supabase',
     name: 'Supabase',
-    description: 'Supabase backend-as-a-service (DB, Auth, Storage)',
-    package: '@supabase/mcp-server',
+    description: 'Supabase projects, database, Edge Functions, and type generation',
+    package: '@supabase/mcp-server-supabase',
     category: 'database',
     requiresConfig: true,
     configFields: [
       {
-        name: 'url',
+        name: 'accessToken',
         type: 'string',
         required: false,
-        description: 'Supabase project URL',
-        envVar: 'SUPABASE_URL',
-      },
-      {
-        name: 'anonKey',
-        type: 'string',
-        required: false,
-        description: 'Supabase anon/public key',
-        envVar: 'SUPABASE_ANON_KEY',
+        description: 'Supabase Personal Access Token',
+        envVar: 'SUPABASE_ACCESS_TOKEN',
       },
     ],
-    installInstructions:
-      'Find your project URL and anon key in Supabase Dashboard > Settings > API',
+    installInstructions: 'Get your access token from https://supabase.com/dashboard/account/tokens',
   },
 
   // ============================================
@@ -226,8 +230,8 @@ export const MCP_SERVERS: McpServerDefinition[] = [
   {
     id: 'redis',
     name: 'Redis',
-    description: 'Redis cache and key-value store',
-    package: '@anthropic/redis-mcp',
+    description: 'Redis key-value store operations (set, get, delete, list)',
+    package: '@modelcontextprotocol/server-redis',
     category: 'cache',
     requiresConfig: true,
     configFields: [
@@ -240,29 +244,30 @@ export const MCP_SERVERS: McpServerDefinition[] = [
         default: 'redis://localhost:6379',
       },
     ],
-    installInstructions: 'Connection URL format: redis://[[user]:password@]host[:port][/db]',
+    installInstructions:
+      'Pass Redis URL as argument: npx @modelcontextprotocol/server-redis redis://localhost:6379',
   },
   {
     id: 'upstash',
     name: 'Upstash',
-    description: 'Upstash serverless Redis and Kafka',
+    description: 'Upstash Redis database management and commands',
     package: '@upstash/mcp-server',
     category: 'cache',
     requiresConfig: true,
     configFields: [
       {
-        name: 'url',
+        name: 'email',
         type: 'string',
         required: false,
-        description: 'Upstash Redis REST URL',
-        envVar: 'UPSTASH_REDIS_REST_URL',
+        description: 'Upstash account email',
+        envVar: 'UPSTASH_EMAIL',
       },
       {
-        name: 'token',
+        name: 'apiKey',
         type: 'string',
         required: false,
-        description: 'Upstash Redis REST token',
-        envVar: 'UPSTASH_REDIS_REST_TOKEN',
+        description: 'Upstash API Key',
+        envVar: 'UPSTASH_API_KEY',
       },
     ],
     installInstructions: 'Get credentials from https://console.upstash.com',
@@ -272,57 +277,13 @@ export const MCP_SERVERS: McpServerDefinition[] = [
   // DEPLOYMENT & INFRASTRUCTURE
   // ============================================
   {
-    id: 'vercel',
-    name: 'Vercel',
-    description: 'Vercel deployment and project management',
-    package: '@vercel/mcp',
-    category: 'deployment',
-    requiresConfig: true,
-    configFields: [
-      {
-        name: 'token',
-        type: 'string',
-        required: false,
-        description: 'Vercel Access Token',
-        envVar: 'VERCEL_TOKEN',
-      },
-    ],
-    installInstructions: 'Create an access token at https://vercel.com/account/tokens',
-  },
-  {
-    id: 'netlify',
-    name: 'Netlify',
-    description: 'Netlify deployment and site management',
-    package: '@anthropic/netlify-mcp',
-    category: 'deployment',
-    requiresConfig: true,
-    configFields: [
-      {
-        name: 'token',
-        type: 'string',
-        required: false,
-        description: 'Netlify Personal Access Token',
-        envVar: 'NETLIFY_TOKEN',
-      },
-    ],
-    installInstructions:
-      'Create a token at https://app.netlify.com/user/applications#personal-access-tokens',
-  },
-  {
     id: 'cloudflare',
     name: 'Cloudflare',
-    description: 'Cloudflare Workers, Pages, and DNS management',
-    package: '@cloudflare/mcp-server',
+    description: 'Cloudflare Workers, D1, KV, R2, and DNS management',
+    package: '@cloudflare/mcp-server-cloudflare',
     category: 'deployment',
     requiresConfig: true,
     configFields: [
-      {
-        name: 'apiToken',
-        type: 'string',
-        required: false,
-        description: 'Cloudflare API Token',
-        envVar: 'CLOUDFLARE_API_TOKEN',
-      },
       {
         name: 'accountId',
         type: 'string',
@@ -331,173 +292,91 @@ export const MCP_SERVERS: McpServerDefinition[] = [
         envVar: 'CLOUDFLARE_ACCOUNT_ID',
       },
     ],
-    installInstructions: 'Create an API token at https://dash.cloudflare.com/profile/api-tokens',
+    installInstructions: 'Run: npx @cloudflare/mcp-server-cloudflare init',
   },
   {
-    id: 'aws',
-    name: 'AWS',
-    description: 'Amazon Web Services integration',
-    package: '@anthropic/aws-mcp',
-    category: 'infrastructure',
-    requiresConfig: true,
-    configFields: [
-      {
-        name: 'accessKeyId',
-        type: 'string',
-        required: false,
-        description: 'AWS Access Key ID',
-        envVar: 'AWS_ACCESS_KEY_ID',
-      },
-      {
-        name: 'secretAccessKey',
-        type: 'string',
-        required: false,
-        description: 'AWS Secret Access Key',
-        envVar: 'AWS_SECRET_ACCESS_KEY',
-      },
-      {
-        name: 'region',
-        type: 'string',
-        required: false,
-        description: 'AWS Region',
-        envVar: 'AWS_REGION',
-        default: 'us-east-1',
-      },
-    ],
-    installInstructions: 'Create credentials in AWS IAM Console with appropriate permissions.',
-  },
-  {
-    id: 'docker',
-    name: 'Docker',
-    description: 'Docker container management',
-    package: '@anthropic/docker-mcp',
-    category: 'infrastructure',
-    requiresConfig: false,
-    installInstructions: 'Requires Docker Desktop or Docker Engine installed.',
-  },
-  {
-    id: 'kubernetes',
-    name: 'Kubernetes',
-    description: 'Kubernetes cluster management',
-    package: '@anthropic/kubernetes-mcp',
-    category: 'infrastructure',
-    requiresConfig: true,
-    configFields: [
-      {
-        name: 'kubeconfig',
-        type: 'string',
-        required: false,
-        description: 'Path to kubeconfig file',
-        default: '~/.kube/config',
-      },
-      {
-        name: 'context',
-        type: 'string',
-        required: false,
-        description: 'Kubernetes context to use',
-      },
-    ],
-    installInstructions: 'Requires kubectl installed and configured.',
-  },
-  {
-    id: 'filesystem',
-    name: 'Filesystem',
-    description: 'Enhanced filesystem operations',
-    package: '@modelcontextprotocol/server-filesystem',
-    category: 'infrastructure',
-    requiresConfig: false,
-  },
-
-  // ============================================
-  // PROJECT MANAGEMENT
-  // ============================================
-  {
-    id: 'linear',
-    name: 'Linear',
-    description: 'Linear project management integration',
-    package: '@anthropic/linear-mcp',
-    category: 'project-mgmt',
+    id: 'vercel',
+    name: 'Vercel',
+    description: 'Vercel deployments, DNS records, and project management',
+    package: 'vercel-mcp',
+    category: 'deployment',
     requiresConfig: true,
     configFields: [
       {
         name: 'apiKey',
         type: 'string',
-        required: false,
-        description: 'Linear API Key',
-        envVar: 'LINEAR_API_KEY',
+        required: true,
+        description: 'Vercel API Key',
+        envVar: 'VERCEL_API_KEY',
       },
     ],
-    installInstructions: 'Create an API key at https://linear.app/settings/api',
+    installInstructions: 'Get API key at https://vercel.com/account/tokens',
   },
   {
-    id: 'jira',
-    name: 'Jira',
-    description: 'Atlassian Jira issue tracking',
-    package: '@anthropic/jira-mcp',
-    category: 'project-mgmt',
-    requiresConfig: true,
-    configFields: [
-      {
-        name: 'host',
-        type: 'string',
-        required: false,
-        description: 'Jira instance URL',
-        envVar: 'JIRA_HOST',
-      },
-      {
-        name: 'email',
-        type: 'string',
-        required: false,
-        description: 'Jira account email',
-        envVar: 'JIRA_EMAIL',
-      },
-      {
-        name: 'token',
-        type: 'string',
-        required: false,
-        description: 'Jira API Token',
-        envVar: 'JIRA_TOKEN',
-      },
-    ],
-    installInstructions:
-      'Create an API token at https://id.atlassian.com/manage-profile/security/api-tokens',
+    id: 'filesystem',
+    name: 'Filesystem',
+    description: 'Secure file operations with configurable access controls',
+    package: '@modelcontextprotocol/server-filesystem',
+    category: 'infrastructure',
+    requiresConfig: false,
   },
+  {
+    id: 'memory',
+    name: 'Memory',
+    description: 'Knowledge graph-based persistent memory system',
+    package: '@modelcontextprotocol/server-memory',
+    category: 'infrastructure',
+    requiresConfig: false,
+    installInstructions: 'Memory is stored in memory.jsonl in the server directory by default.',
+  },
+
+  // ============================================
+  // PROJECT MANAGEMENT & PRODUCTIVITY
+  // ============================================
   {
     id: 'notion',
     name: 'Notion',
-    description: 'Notion workspace, pages, and databases',
-    package: '@anthropic/notion-mcp',
+    description: 'Official Notion API for pages, databases, and workspace',
+    package: '@notionhq/notion-mcp-server',
     category: 'project-mgmt',
     requiresConfig: true,
     configFields: [
       {
         name: 'token',
         type: 'string',
-        required: false,
+        required: true,
         description: 'Notion Integration Token',
         envVar: 'NOTION_TOKEN',
       },
     ],
     installInstructions:
-      'Create an integration at https://www.notion.so/my-integrations and share pages with it.',
+      'Create integration at https://www.notion.so/profile/integrations and share pages with it.',
   },
   {
-    id: 'asana',
-    name: 'Asana',
-    description: 'Asana project and task management',
-    package: '@anthropic/asana-mcp',
+    id: 'obsidian',
+    name: 'Obsidian',
+    description: 'Read and search Obsidian vaults and Markdown directories',
+    package: 'mcp-obsidian',
     category: 'project-mgmt',
     requiresConfig: true,
     configFields: [
       {
-        name: 'token',
+        name: 'vaultPath',
         type: 'string',
-        required: false,
-        description: 'Asana Personal Access Token',
-        envVar: 'ASANA_TOKEN',
+        required: true,
+        description: 'Path to Obsidian vault',
       },
     ],
-    installInstructions: 'Create a PAT at https://app.asana.com/0/my-apps',
+    installInstructions: 'Works with any Markdown directory. Point to your vault path.',
+  },
+  {
+    id: 'n8n',
+    name: 'n8n',
+    description: 'n8n workflow automation node documentation and management',
+    package: 'n8n-mcp',
+    category: 'project-mgmt',
+    requiresConfig: false,
+    installInstructions: 'Provides access to 543 n8n nodes documentation.',
   },
 
   // ============================================
@@ -506,7 +385,7 @@ export const MCP_SERVERS: McpServerDefinition[] = [
   {
     id: 'sentry',
     name: 'Sentry',
-    description: 'Error monitoring and tracking',
+    description: 'Query Sentry errors, issues, and project information',
     package: '@sentry/mcp-server',
     category: 'monitoring',
     requiresConfig: true,
@@ -518,47 +397,9 @@ export const MCP_SERVERS: McpServerDefinition[] = [
         description: 'Sentry Auth Token',
         envVar: 'SENTRY_AUTH_TOKEN',
       },
-      {
-        name: 'org',
-        type: 'string',
-        required: false,
-        description: 'Sentry Organization slug',
-      },
     ],
     installInstructions:
-      'Create an auth token at https://sentry.io/settings/account/api/auth-tokens/',
-  },
-  {
-    id: 'datadog',
-    name: 'Datadog',
-    description: 'Datadog monitoring and APM',
-    package: '@anthropic/datadog-mcp',
-    category: 'monitoring',
-    requiresConfig: true,
-    configFields: [
-      {
-        name: 'apiKey',
-        type: 'string',
-        required: false,
-        description: 'Datadog API Key',
-        envVar: 'DD_API_KEY',
-      },
-      {
-        name: 'appKey',
-        type: 'string',
-        required: false,
-        description: 'Datadog Application Key',
-        envVar: 'DD_APP_KEY',
-      },
-      {
-        name: 'site',
-        type: 'string',
-        required: false,
-        description: 'Datadog site (e.g., datadoghq.com)',
-        default: 'datadoghq.com',
-      },
-    ],
-    installInstructions: 'Find keys at https://app.datadoghq.com/organization-settings/api-keys',
+      'For Claude Code: claude mcp add --transport http sentry https://mcp.sentry.dev/mcp',
   },
 
   // ============================================
@@ -567,8 +408,8 @@ export const MCP_SERVERS: McpServerDefinition[] = [
   {
     id: 'slack',
     name: 'Slack',
-    description: 'Slack messaging and channel management',
-    package: '@anthropic/slack-mcp',
+    description: 'Slack messaging, channels, and workspace interaction',
+    package: '@modelcontextprotocol/server-slack',
     category: 'communication',
     requiresConfig: true,
     configFields: [
@@ -583,24 +424,6 @@ export const MCP_SERVERS: McpServerDefinition[] = [
     installInstructions:
       'Create a Slack app at https://api.slack.com/apps and install to your workspace.',
   },
-  {
-    id: 'discord',
-    name: 'Discord',
-    description: 'Discord bot and server management',
-    package: '@anthropic/discord-mcp',
-    category: 'communication',
-    requiresConfig: true,
-    configFields: [
-      {
-        name: 'token',
-        type: 'string',
-        required: false,
-        description: 'Discord Bot Token',
-        envVar: 'DISCORD_BOT_TOKEN',
-      },
-    ],
-    installInstructions: 'Create a bot at https://discord.com/developers/applications',
-  },
 
   // ============================================
   // DESIGN
@@ -608,20 +431,47 @@ export const MCP_SERVERS: McpServerDefinition[] = [
   {
     id: 'figma',
     name: 'Figma',
-    description: 'Figma design file access and inspection',
-    package: '@anthropic/figma-mcp',
+    description: 'Figma layout information for AI coding agents',
+    package: 'figma-developer-mcp',
     category: 'design',
     requiresConfig: true,
     configFields: [
       {
-        name: 'token',
+        name: 'apiKey',
         type: 'string',
-        required: false,
+        required: true,
         description: 'Figma Personal Access Token',
-        envVar: 'FIGMA_TOKEN',
+        envVar: 'FIGMA_API_KEY',
       },
     ],
-    installInstructions: 'Create a token at https://www.figma.com/developers/api#access-tokens',
+    installInstructions: 'Create token at https://www.figma.com/developers/api#access-tokens',
+  },
+  {
+    id: 'shadcn',
+    name: 'shadcn/ui',
+    description: 'shadcn/ui component docs, installation, and code generation',
+    package: '@heilgar/shadcn-ui-mcp-server',
+    category: 'ui-library',
+    requiresConfig: false,
+    installInstructions: 'Supports npm, pnpm, yarn, and bun package managers.',
+  },
+  {
+    id: 'magic-ui',
+    name: '21st.dev Magic',
+    description: 'AI-driven UI component generation through natural language',
+    package: '@21st-dev/magic',
+    category: 'ui-library',
+    requiresConfig: true,
+    configFields: [
+      {
+        name: 'apiKey',
+        type: 'string',
+        required: true,
+        description: '21st.dev Magic API Key',
+        envVar: 'TWENTYFIRST_API_KEY',
+      },
+    ],
+    installInstructions: 'Get API key at https://21st.dev/magic/console',
   },
 
   // ============================================
@@ -630,8 +480,8 @@ export const MCP_SERVERS: McpServerDefinition[] = [
   {
     id: 'stripe',
     name: 'Stripe',
-    description: 'Stripe payments API integration',
-    package: '@stripe/mcp-server',
+    description: 'Stripe payments API with MCP support via Agent Toolkit',
+    package: '@stripe/agent-toolkit',
     category: 'payments',
     requiresConfig: true,
     configFields: [
@@ -644,137 +494,54 @@ export const MCP_SERVERS: McpServerDefinition[] = [
       },
     ],
     installInstructions:
-      'Find your API keys at https://dashboard.stripe.com/apikeys (use test keys for development)',
+      'Get API keys at https://dashboard.stripe.com/apikeys. Run: npx -y @stripe/mcp --tools=all --api-key=YOUR_KEY',
+  },
+  {
+    id: 'mercadopago',
+    name: 'Mercado Pago',
+    description: 'Mercado Pago payments, refunds, and customer management',
+    package: 'mercado-pago-mcp',
+    category: 'payments',
+    requiresConfig: true,
+    configFields: [
+      {
+        name: 'accessToken',
+        type: 'string',
+        required: true,
+        description: 'Mercado Pago Access Token',
+        envVar: 'MERCADOPAGO_ACCESS_TOKEN',
+      },
+      {
+        name: 'environment',
+        type: 'string',
+        required: false,
+        description: 'Environment (sandbox or production)',
+        default: 'sandbox',
+      },
+    ],
+    installInstructions: 'Get credentials at https://www.mercadopago.com/developers/panel/app',
   },
 
   // ============================================
   // SEARCH
   // ============================================
   {
-    id: 'algolia',
-    name: 'Algolia',
-    description: 'Algolia search and discovery',
-    package: '@anthropic/algolia-mcp',
+    id: 'brave-search',
+    name: 'Brave Search',
+    description: 'Web and local search using Brave Search API',
+    package: '@modelcontextprotocol/server-brave-search',
     category: 'search',
     requiresConfig: true,
     configFields: [
       {
-        name: 'appId',
-        type: 'string',
-        required: false,
-        description: 'Algolia Application ID',
-        envVar: 'ALGOLIA_APP_ID',
-      },
-      {
         name: 'apiKey',
         type: 'string',
         required: false,
-        description: 'Algolia Admin API Key',
-        envVar: 'ALGOLIA_API_KEY',
+        description: 'Brave Search API Key',
+        envVar: 'BRAVE_API_KEY',
       },
     ],
-    installInstructions: 'Find credentials at https://www.algolia.com/account/api-keys/',
-  },
-  {
-    id: 'elasticsearch',
-    name: 'Elasticsearch',
-    description: 'Elasticsearch search engine',
-    package: '@anthropic/elasticsearch-mcp',
-    category: 'search',
-    requiresConfig: true,
-    configFields: [
-      {
-        name: 'node',
-        type: 'string',
-        required: false,
-        description: 'Elasticsearch node URL',
-        envVar: 'ELASTICSEARCH_NODE',
-        default: 'http://localhost:9200',
-      },
-      {
-        name: 'apiKey',
-        type: 'string',
-        required: false,
-        description: 'Elasticsearch API Key (optional)',
-        envVar: 'ELASTICSEARCH_API_KEY',
-      },
-    ],
-  },
-
-  // ============================================
-  // AI & ML
-  // ============================================
-  {
-    id: 'openai',
-    name: 'OpenAI',
-    description: 'OpenAI API for GPT and embeddings',
-    package: '@anthropic/openai-mcp',
-    category: 'ai',
-    requiresConfig: true,
-    configFields: [
-      {
-        name: 'apiKey',
-        type: 'string',
-        required: false,
-        description: 'OpenAI API Key',
-        envVar: 'OPENAI_API_KEY',
-      },
-    ],
-    installInstructions: 'Get your API key at https://platform.openai.com/api-keys',
-  },
-  {
-    id: 'pinecone',
-    name: 'Pinecone',
-    description: 'Pinecone vector database for embeddings',
-    package: '@anthropic/pinecone-mcp',
-    category: 'ai',
-    requiresConfig: true,
-    configFields: [
-      {
-        name: 'apiKey',
-        type: 'string',
-        required: false,
-        description: 'Pinecone API Key',
-        envVar: 'PINECONE_API_KEY',
-      },
-      {
-        name: 'environment',
-        type: 'string',
-        required: false,
-        description: 'Pinecone environment',
-        envVar: 'PINECONE_ENVIRONMENT',
-      },
-    ],
-    installInstructions: 'Get credentials at https://app.pinecone.io/',
-  },
-
-  // ============================================
-  // SECURITY
-  // ============================================
-  {
-    id: 'vault',
-    name: 'HashiCorp Vault',
-    description: 'Secrets management with HashiCorp Vault',
-    package: '@anthropic/vault-mcp',
-    category: 'security',
-    requiresConfig: true,
-    configFields: [
-      {
-        name: 'address',
-        type: 'string',
-        required: false,
-        description: 'Vault server address',
-        envVar: 'VAULT_ADDR',
-        default: 'http://127.0.0.1:8200',
-      },
-      {
-        name: 'token',
-        type: 'string',
-        required: false,
-        description: 'Vault token',
-        envVar: 'VAULT_TOKEN',
-      },
-    ],
+    installInstructions: 'Get an API key at https://brave.com/search/api/',
   },
 ];
 

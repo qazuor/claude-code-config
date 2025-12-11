@@ -4,6 +4,7 @@
 
 /**
  * MCP server categories
+ * Only includes categories with verified npm packages
  */
 export type McpCategory =
   | 'documentation'
@@ -12,14 +13,14 @@ export type McpCategory =
   | 'version-control'
   | 'deployment'
   | 'infrastructure'
-  | 'project-mgmt'
   | 'monitoring'
   | 'testing'
-  | 'security'
   | 'communication'
-  | 'design'
   | 'payments'
   | 'search'
+  | 'project-mgmt'
+  | 'design'
+  | 'ui-library'
   | 'ai'
   | 'custom';
 
