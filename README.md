@@ -64,7 +64,7 @@ A comprehensive CLI tool to install and manage Claude Code configurations in you
 | **Skills** | 25 | Reusable capabilities and knowledge |
 | **Commands** | 23 | Slash commands for workflows |
 | **Docs** | 18 | Reference documentation and guides |
-| **MCP Servers** | 9 | External tool integrations |
+| **MCP Servers** | 27 | External tool integrations |
 | **Bundles** | 23 | Pre-grouped module sets |
 
 ### Smart Defaults
@@ -290,7 +290,7 @@ qazuor-claude-config list [options] [type]
 | `commands` | List all 23 available commands |
 | `docs` | List all 18 documentation modules |
 | `bundles` | List all 23 module bundles |
-| `mcp` | List all 9 MCP servers |
+| `mcp` | List all 27 MCP servers |
 | *(none)* | List summary of all modules |
 
 #### Options
@@ -684,19 +684,73 @@ Defaults are stored in `~/.claude/defaults.json`.
 
 ## MCP Servers
 
-Model Context Protocol servers extend Claude's capabilities.
+Model Context Protocol servers extend Claude's capabilities. All 27 servers are verified npm packages.
 
-| ID | Name | Category | Requires Config |
-|----|------|----------|-----------------|
-| `context7` | Context7 | Documentation | No |
-| `github` | GitHub | Version Control | Yes (`GITHUB_TOKEN`) |
-| `postgres` | PostgreSQL | Database | Yes (`DATABASE_URL`) |
-| `neon` | Neon | Database | Yes (`NEON_API_KEY`) |
-| `vercel` | Vercel | Deployment | Yes (`VERCEL_TOKEN`) |
-| `docker` | Docker | Infrastructure | No |
-| `linear` | Linear | Project Mgmt | Yes (`LINEAR_API_KEY`) |
-| `sentry` | Sentry | Monitoring | Yes (`SENTRY_AUTH_TOKEN`) |
-| `filesystem` | Filesystem | Infrastructure | No |
+### By Category
+
+#### Documentation & Search
+| ID | Name | Requires Config |
+|----|------|-----------------|
+| `context7` | Context7 | No |
+| `brave-search` | Brave Search | Yes (`BRAVE_API_KEY`) |
+| `perplexity` | Perplexity | Yes (`PERPLEXITY_API_KEY`) |
+
+#### Database & Cache
+| ID | Name | Requires Config |
+|----|------|-----------------|
+| `postgres` | PostgreSQL | Yes (`DATABASE_URL`) |
+| `neon` | Neon | Yes (`NEON_API_KEY`) |
+| `mysql` | MySQL | Yes (`MYSQL_URL`) |
+| `redis` | Redis | Yes (`REDIS_URL`) |
+
+#### Version Control
+| ID | Name | Requires Config |
+|----|------|-----------------|
+| `github` | GitHub | Yes (`GITHUB_TOKEN`) |
+| `gitlab` | GitLab | Yes (`GITLAB_TOKEN`) |
+| `git` | Git | No |
+
+#### Deployment & Infrastructure
+| ID | Name | Requires Config |
+|----|------|-----------------|
+| `vercel` | Vercel | Yes (`VERCEL_TOKEN`) |
+| `cloudflare` | Cloudflare | Yes (`CLOUDFLARE_TOKEN`) |
+| `docker` | Docker | No |
+| `aws-kb-retrieval` | AWS KB | Yes (`AWS_ACCESS_KEY_ID`) |
+
+#### Testing & Debugging
+| ID | Name | Requires Config |
+|----|------|-----------------|
+| `playwright` | Playwright | No |
+| `chrome-devtools` | Chrome DevTools | No |
+
+#### Communication & Project Management
+| ID | Name | Requires Config |
+|----|------|-----------------|
+| `slack` | Slack | Yes (`SLACK_TOKEN`) |
+| `linear` | Linear | Yes (`LINEAR_API_KEY`) |
+| `notion` | Notion | Yes (`NOTION_TOKEN`) |
+
+#### Payments
+| ID | Name | Requires Config |
+|----|------|-----------------|
+| `stripe` | Stripe | Yes (`STRIPE_API_KEY`) |
+| `mercadopago` | Mercado Pago | Yes (`MP_ACCESS_TOKEN`) |
+
+#### Design & UI
+| ID | Name | Requires Config |
+|----|------|-----------------|
+| `figma` | Figma | Yes (`FIGMA_TOKEN`) |
+| `shadcn` | Shadcn UI | No |
+| `magic-ui` | Magic UI | No |
+
+#### Other
+| ID | Name | Requires Config |
+|----|------|-----------------|
+| `sentry` | Sentry | Yes (`SENTRY_AUTH_TOKEN`) |
+| `obsidian` | Obsidian | No |
+| `n8n` | n8n | Yes (`N8N_API_KEY`) |
+| `sequential-thinking` | Sequential Thinking | No |
 
 ### Configuration Levels
 
@@ -708,7 +762,7 @@ Model Context Protocol servers extend Claude's capabilities.
   "mcpServers": {
     "context7": {
       "command": "npx",
-      "args": ["-y", "@anthropic/context7-mcp"]
+      "args": ["-y", "@anthropic/claude-code-mcp-context7"]
     },
     "github": {
       "command": "npx",
