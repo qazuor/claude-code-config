@@ -5,6 +5,76 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+#### MCP Server Expansion
+
+- **27 Verified MCP servers** (up from 9), all validated npm packages:
+  - Documentation: context7
+  - Database: postgres, neon, mysql, redis
+  - Version Control: github, gitlab, git
+  - Deployment: vercel, cloudflare
+  - Infrastructure: docker, aws-kb-retrieval
+  - Monitoring: sentry
+  - Testing: playwright, chrome-devtools
+  - Communication: slack
+  - Payments: stripe, mercadopago
+  - Search: brave-search, perplexity
+  - Project Management: linear, notion
+  - Notes: obsidian
+  - Automation: n8n
+  - Design: figma
+  - UI Libraries: shadcn, magic-ui
+  - AI: sequential-thinking
+- New MCP categories: `project-mgmt`, `design`, `ui-library`, `ai`
+- Removed fictional/non-existent MCP packages
+
+#### CI/CD Configuration
+
+- GitHub Actions workflow generator for CI/CD
+- Support for multiple package managers (npm, yarn, pnpm, bun)
+- Configurable CI workflow (lint, test, typecheck, build)
+- Release workflow generation with GitHub Release support
+- Node.js version configuration
+- Dependency caching support
+
+#### VSCode Integration
+
+- VSCode settings.json generator
+- Extensions.json generator with recommended extensions
+- Biome/Prettier/EditorConfig integration
+- Language-specific settings for TypeScript, JavaScript, JSON
+- Merge support for existing settings
+
+#### Git Hooks (Husky)
+
+- Husky installer with automatic directory setup
+- commit-msg hook for commitlint integration
+- pre-commit hook for linting (Biome/lint-staged)
+- pre-push hook support
+- Configurable hook content based on code style settings
+
+#### CLAUDE.md Generator
+
+- Dynamic CLAUDE.md template generator
+- Project-specific placeholder replacement
+- Support for custom templates
+- Configurable overwrite behavior
+
+#### File Conflict Utilities
+
+- Backup file name generator with timestamps
+- Interactive file conflict resolution
+- Batch conflict policy prompts
+- Support for overwrite, skip, merge, and backup actions
+
+### Changed
+
+- Improved test coverage with 50+ new tests for new modules
+- Updated MCP types with new categories
+
 ## [0.1.0] - 2025-12-10
 
 ### Added
