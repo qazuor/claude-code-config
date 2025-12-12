@@ -45,7 +45,8 @@ A comprehensive CLI tool to install and manage Claude Code configurations in you
 
 ### Core Capabilities
 
-- **Interactive Wizard**: Step-by-step configuration with intelligent defaults
+- **Interactive Wizard**: Step-by-step configuration with intelligent defaults and **back navigation**
+- **Back Navigation**: Return to previous steps at any time to modify your choices
 - **Auto-Detection**: Automatically detects project type, package manager, and tech stack
 - **23 Bundles**: Pre-grouped module sets organized by category (stacks, testing, quality, etc.)
 - **Bundle Categories**: Stack bundles (React+TanStack, Astro, Next.js), API bundles (Hono, Express), testing, quality, and more
@@ -168,6 +169,8 @@ The wizard will guide you through:
 7. **Permissions** - What Claude can do
 8. **Code Style** - EditorConfig, Biome, Prettier, Commitlint
 9. **Template Configuration** - Auto-detected command/path/target values
+
+> **Tip**: You can go back to any previous step using the "← Back" option to modify your choices.
 
 ### Bundle-based Setup
 

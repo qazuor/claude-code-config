@@ -21,6 +21,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Skip conditions for conditional step execution
 - Graceful cancellation handling integrated with existing ESC support
 
+#### CLI Improvements
+
+- **Version display** in startup banner
+- **Update notification** - automatically checks npm for newer versions and displays upgrade instructions
+
 ## [0.2.0] - 2025-12-10
 
 ### Added
