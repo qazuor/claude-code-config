@@ -7,8 +7,9 @@ import figlet from 'figlet';
 
 /**
  * Display the CLI banner
+ * @param version - Optional version string to display
  */
-export function showBanner(): void {
+export function showBanner(version?: string): void {
   const bannerText = figlet.textSync('Qazuor', {
     font: 'Standard',
     horizontalLayout: 'default',
@@ -34,7 +35,8 @@ export function showBanner(): void {
     .join('\n');
 
   console.log(coloredBanner);
-  console.log(chalk.gray('  Claude Code Configuration & Project Setup'));
+  const versionText = version ? chalk.cyan(` v${version}`) : '';
+  console.log(chalk.gray('  Claude Code Configuration & Project Setup') + versionText);
   console.log(chalk.gray('  ─────────────────────────────────────'));
   console.log();
 }
