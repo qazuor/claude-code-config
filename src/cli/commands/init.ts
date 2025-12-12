@@ -52,39 +52,24 @@ import {
   showCancelHint,
 } from '../../lib/utils/prompt-cancel.js';
 import { spinner, withSpinner } from '../../lib/utils/spinner.js';
-import type { BundleSelectionResult } from '../../types/bundles.js';
+import { runWizard, showWizardSummary } from '../../lib/wizard/index.js';
+import {
+  type InitWizardContext,
+  type InitWizardValues,
+  createInitWizardConfig,
+} from '../../lib/wizard/init-steps.js';
 import type { ClaudeConfig } from '../../types/config.js';
 import type { ModuleCategory, ModuleDefinition, ModuleRegistry } from '../../types/modules.js';
 import type { DependencyGenerationConfig, ToolSelection } from '../../types/package-json.js';
 import type { TemplateConfig } from '../../types/template-config.js';
 import {
-  promptBundleMode,
-  promptQuickBundleSelection,
-  showBundlesSummary,
-} from '../prompts/bundle-select.js';
-import { promptCICDConfig } from '../prompts/ci-cd-config.js';
-import { promptQuickFolderPreferences } from '../prompts/folder-preferences.js';
-import {
   type SkippedMcpConfig,
   confirmFinalConfiguration,
-  confirmProjectInfo,
-  promptCodeStyleConfig,
   promptExistingProjectAction,
-  promptHookConfig,
-  promptMcpConfig,
-  promptPermissionsConfig,
-  promptPreferences,
-  promptProjectInfo,
-  promptScaffoldOptions,
-  selectItemsFromCategory,
   showPostInstallInstructions,
   showSkippedMcpInstructions,
 } from '../prompts/index.js';
-import {
-  buildConfigContext,
-  promptSaveGlobalDefaults,
-  promptTemplateConfig,
-} from '../prompts/template-config.js';
+import { promptSaveGlobalDefaults } from '../prompts/template-config.js';
 
 /** Extended config result that includes skipped MCP configurations */
 interface ConfigBuildResult {
@@ -410,7 +395,7 @@ async function buildDefaultConfig(
 }
 
 /**
- * Build configuration interactively
+ * Build configuration interactively using wizard with back navigation
  */
 async function buildInteractiveConfig(
   projectPath: string,
@@ -418,80 +403,84 @@ async function buildInteractiveConfig(
   registry: ModuleRegistry,
   options: InitOptions
 ): Promise<ConfigBuildResult | null> {
-  // Project info
+  // Get initial project info for defaults
   const projectName = await getProjectName(projectPath);
   const projectDesc = await getProjectDescription(projectPath);
 
-  const projectInfo = await promptProjectInfo({
-    defaults: {
-      name: projectName,
-      description: projectDesc || '',
+  // Create wizard configuration
+  const wizardConfig = createInitWizardConfig(
+    projectPath,
+    {
+      detected: detection.detected,
+      projectType: detection.projectType,
+      packageManager: detection.packageManager,
+      suggestedBundles: detection.suggestedBundles,
+      detectedTechnologies: detection.detectedTechnologies,
     },
-  });
+    registry
+  );
 
-  const confirmed = await confirmProjectInfo(projectInfo);
-  if (!confirmed) {
-    return buildInteractiveConfig(projectPath, detection, registry, options);
+  // Initial context with detected values and project info
+  const initialContext: Partial<InitWizardContext> = {
+    projectPath,
+    registry,
+    detection: {
+      detected: detection.detected,
+      projectType: detection.projectType,
+      packageManager: detection.packageManager,
+      suggestedBundles: detection.suggestedBundles,
+      detectedTechnologies: detection.detectedTechnologies,
+    },
+    projectInfo: {
+      name: projectName || '',
+      description: projectDesc || '',
+      org: '',
+      repo: projectName?.toLowerCase().replace(/\s+/g, '-') || '',
+      entityType: 'item',
+      entityTypePlural: 'items',
+    },
+  };
+
+  // Run the wizard with explicit types
+  const wizardResult = await runWizard<InitWizardValues, InitWizardContext>(
+    wizardConfig,
+    initialContext
+  );
+
+  if (wizardResult.cancelled) {
+    return null;
   }
 
-  // Preferences (including package manager)
-  const preferences = await promptPreferences({
-    detectedPackageManager: detection.packageManager,
-  });
+  // Show wizard completion summary
+  showWizardSummary(wizardResult.state);
 
-  // Scaffold options
-  const scaffoldOptions = await promptScaffoldOptions({
-    existingProject: detection.detected,
-    detectedType: detection.projectType,
-    detectedPackageManager: detection.packageManager,
-  });
+  // Extract values from wizard result
+  const {
+    projectInfo,
+    preferences,
+    scaffoldOptions,
+    bundleSelection,
+    hookConfig,
+    mcpConfig: mcpResult,
+    permissionsConfig,
+    codeStyleConfig,
+    cicdConfig,
+    folderPreferences,
+    templateConfig: templateConfigResult,
+  } = wizardResult.values;
 
-  // Module selection using bundles
-  const bundleSelection = await selectModulesWithBundles(registry, detection.suggestedBundles);
-
-  // Determine extras based on selected bundles
-  const hasPlanning = bundleSelection.selectedBundles.some((id) => id.includes('planning'));
-  const hasTesting = bundleSelection.selectedBundles.some((id) => id.includes('testing'));
-
-  // Hook configuration
-  const hookConfig = await promptHookConfig({
-    defaults: hasTesting ? { enabled: true } : undefined,
-  });
-
-  // MCP configuration
+  // Handle MCP skip option
   let mcpConfig: ClaudeConfig['mcp'] = { level: 'project', servers: [] };
   let skippedMcpConfigs: SkippedMcpConfig[] = [];
 
-  if (!options.noMcp) {
-    const mcpResult = await promptMcpConfig();
+  if (!options.noMcp && mcpResult) {
     mcpConfig = mcpResult.config;
     skippedMcpConfigs = mcpResult.skippedConfigs;
   }
 
-  // Permissions configuration
-  const permissionsConfig = await promptPermissionsConfig();
-
-  // Code style configuration
-  const codeStyleConfig = await promptCodeStyleConfig();
-
-  // CI/CD configuration
-  const cicdConfig = await promptCICDConfig({
-    packageManager: preferences.packageManager,
-  });
-
-  // Folder structure preferences (based on selected bundles)
-  const folderPreferences = await promptQuickFolderPreferences({
-    selectedBundles: bundleSelection.selectedBundles,
-    technologies: detection.detectedTechnologies || [],
-  });
-
-  // Template configuration ({{PLACEHOLDER}} values)
-  logger.newline();
-  const configContext = await buildConfigContext(projectPath);
-  const templateConfigResult = await promptTemplateConfig({
-    context: configContext,
-    mode: 'quick',
-  });
+  // Determine extras based on selected bundles
+  const hasPlanning = bundleSelection.selectedBundles.some((id) => id.includes('planning'));
+  const hasTesting = bundleSelection.selectedBundles.some((id) => id.includes('testing'));
 
   // Resolve bundles to modules
   const resolvedModules = resolveBundles(bundleSelection.selectedBundles);
@@ -548,79 +537,6 @@ async function buildInteractiveConfig(
     templateConfig: templateConfigResult,
     cicdConfig,
   };
-}
-
-/**
- * Select modules using bundle system
- */
-async function selectModulesWithBundles(
-  registry: ModuleRegistry,
-  suggestedBundles?: string[]
-): Promise<BundleSelectionResult> {
-  const categories: ModuleCategory[] = ['agents', 'skills', 'commands', 'docs'];
-
-  // Ask how to select modules
-  const mode = await promptBundleMode();
-
-  const result: BundleSelectionResult = {
-    selectedBundles: [],
-    additionalModules: {
-      agents: [],
-      skills: [],
-      commands: [],
-      docs: [],
-    },
-  };
-
-  if (mode === 'bundles' || mode === 'both') {
-    // Show suggested bundles if available
-    if (suggestedBundles && suggestedBundles.length > 0) {
-      logger.newline();
-      logger.info(
-        colors.muted(`Suggested bundles based on your project: ${suggestedBundles.join(', ')}`)
-      );
-    }
-
-    // Quick bundle selection or full selection
-    result.selectedBundles = await promptQuickBundleSelection();
-
-    // Show summary
-    if (result.selectedBundles.length > 0) {
-      showBundlesSummary(result.selectedBundles);
-    }
-  }
-
-  if (mode === 'individual' || mode === 'both') {
-    // Get preselected from bundles
-    const preselectedFromBundles = resolveBundles(result.selectedBundles);
-
-    // Individual selection per category
-    logger.newline();
-    logger.subtitle('Individual Module Selection');
-
-    for (const category of categories) {
-      const preselected =
-        mode === 'both'
-          ? preselectedFromBundles[category as keyof typeof preselectedFromBundles]
-          : [];
-
-      const categoryResult = await selectItemsFromCategory(category, registry[category], {
-        preselected,
-        showDescriptions: true,
-      });
-
-      // Store additional modules (not from bundles)
-      if (mode === 'both') {
-        result.additionalModules[category] = categoryResult.selectedItems.filter(
-          (id) => !preselected.includes(id)
-        );
-      } else {
-        result.additionalModules[category] = categoryResult.selectedItems;
-      }
-    }
-  }
-
-  return result;
 }
 
 /**
