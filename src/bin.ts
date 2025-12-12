@@ -7,6 +7,7 @@ import { createRequire } from 'node:module';
 import { program } from './cli/index.js';
 import { showBanner } from './lib/utils/banner.js';
 import { setupGracefulCancellation } from './lib/utils/prompt-cancel.js';
+import { startBackgroundVersionCheck } from './lib/utils/version-check.js';
 
 // Get version from package.json
 const require = createRequire(import.meta.url);
@@ -23,6 +24,8 @@ const shouldShowBanner = args.length === 0 || showBannerCommands.includes(args[0
 
 if (shouldShowBanner) {
   showBanner(VERSION);
+  // Check for updates in background (non-blocking)
+  void startBackgroundVersionCheck(VERSION);
 }
 
 program.parse(process.argv);
