@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2025-12-12
+
+### Added
+
+#### Wizard State Machine with Back Navigation
+
+- **Reusable wizard engine** for multi-step configuration flows
+- Back navigation support - return to previous steps at any time
+- History tracking - maintains record of all user modifications
+- "Keep or Reconfigure" flow when revisiting previously completed steps
+- Visual progress indicator with step status (`● ◉ ○`)
+- Skip conditions for conditional step execution
+- Graceful cancellation handling integrated with existing ESC support
+
+## [0.2.0] - 2025-12-10
+
 ### Added
 
 #### MCP Server Expansion
@@ -212,4 +228,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - TypeScript 5.7+
 - Node.js 18+ required
 
+[0.3.0]: https://github.com/qazuor/claude-code-config/releases/tag/v0.3.0
+[0.2.0]: https://github.com/qazuor/claude-code-config/releases/tag/v0.2.0
 [0.1.0]: https://github.com/qazuor/claude-code-config/releases/tag/v0.1.0
