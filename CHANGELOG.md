@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.1] - 2025-12-12
+
+### Added
+
+#### CLI Improvements
+
+- **Version display** in startup banner
+- **Update notification** - automatically checks npm for newer versions and displays upgrade instructions
+
 ## [0.3.0] - 2025-12-12
 
 ### Added
@@ -20,11 +29,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Visual progress indicator with step status (`● ◉ ○`)
 - Skip conditions for conditional step execution
 - Graceful cancellation handling integrated with existing ESC support
-
-#### CLI Improvements
-
-- **Version display** in startup banner
-- **Update notification** - automatically checks npm for newer versions and displays upgrade instructions
 
 ## [0.2.0] - 2025-12-10
 
@@ -233,6 +237,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - TypeScript 5.7+
 - Node.js 18+ required
 
+[0.3.1]: https://github.com/qazuor/claude-code-config/releases/tag/v0.3.1
 [0.3.0]: https://github.com/qazuor/claude-code-config/releases/tag/v0.3.0
 [0.2.0]: https://github.com/qazuor/claude-code-config/releases/tag/v0.2.0
 [0.1.0]: https://github.com/qazuor/claude-code-config/releases/tag/v0.1.0
