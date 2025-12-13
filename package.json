@@ -1,6 +1,6 @@
 {
   "name": "@qazuor/claude-code-config",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "CLI tool to install and manage Claude Code configurations",
   "type": "module",
   "bin": {
@@ -33,7 +33,12 @@
     "test:integration": "vitest run --config vitest.integration.config.ts",
     "typecheck": "tsc --noEmit",
     "prepublishOnly": "pnpm build && pnpm test:coverage",
-    "ci": "pnpm lint && pnpm typecheck && pnpm test:coverage"
+    "ci": "pnpm lint && pnpm typecheck && pnpm test:coverage",
+    "release": "release-it",
+    "release:patch": "release-it patch",
+    "release:minor": "release-it minor",
+    "release:major": "release-it major",
+    "release:dry": "release-it --dry-run"
   },
   "dependencies": {
     "@inquirer/core": "^11.0.2",
@@ -50,12 +55,14 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
+    "@release-it/conventional-changelog": "^10.0.3",
     "@types/figlet": "^1.7.0",
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^22.10.2",
     "@vitest/coverage-v8": "^2.1.8",
     "@vitest/ui": "^2.1.8",
     "memfs": "^4.14.1",
+    "release-it": "^19.1.0",
     "tsup": "^8.3.5",
     "typescript": "^5.7.2",
     "vitest": "^2.1.8"
