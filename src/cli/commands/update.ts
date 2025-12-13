@@ -301,6 +301,7 @@ async function handleConfigUpdates(
   if (reconfigureOptions.includes('mcp')) {
     const mcpResult = await promptMcpConfig({
       defaults: config.mcp,
+      projectPath,
     });
     config.mcp = mcpResult.config;
     await installMcpServers(projectPath, mcpResult.config);

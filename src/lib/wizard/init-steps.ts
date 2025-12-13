@@ -344,7 +344,7 @@ function createMcpConfigStep(): WizardStepDefinition<
       required: false,
     },
     computeDefaults: (ctx) => ctx.mcpConfig,
-    execute: async (_ctx, defaults) => {
+    execute: async (ctx, defaults) => {
       const goBack = await promptBackOption(5, 'Configure MCP servers or go back?');
       if (goBack) {
         return createResult(
@@ -353,7 +353,7 @@ function createMcpConfigStep(): WizardStepDefinition<
         );
       }
 
-      const result = await promptMcpConfig();
+      const result = await promptMcpConfig({ projectPath: ctx.projectPath });
       return createResult(result, 'next');
     },
   };

@@ -3,6 +3,7 @@
  */
 
 import { MCP_SERVERS, getMcpServer } from '../../constants/mcp-servers.js';
+import { getInstalledMcpServers } from '../../lib/mcp/configurator.js';
 import { colors, logger } from '../../lib/utils/logger.js';
 import { checkbox, confirm, input, password, select } from '../../lib/utils/prompt-cancel.js';
 import type { McpConfig } from '../../types/config.js';
@@ -10,6 +11,8 @@ import type { McpConfigField, McpInstallation, McpServerDefinition } from '../..
 
 interface McpPromptOptions {
   defaults?: Partial<McpConfig>;
+  /** Project path (used to check installed servers) */
+  projectPath?: string;
 }
 
 /** Track servers with skipped configuration */
@@ -56,6 +59,12 @@ export async function promptMcpConfig(options?: McpPromptOptions): Promise<McpCo
     };
   }
 
+  // Get already installed MCP servers at both user and project level
+  const projectPath = options?.projectPath || process.cwd();
+  const installedServers = await getInstalledMcpServers(projectPath);
+  const userInstalledSet = new Set(installedServers.user);
+  const projectInstalledSet = new Set(installedServers.project);
+
   // Select installation level
   const level = await select({
     message: 'Where should MCP servers be configured?',
@@ -80,15 +89,53 @@ export async function promptMcpConfig(options?: McpPromptOptions): Promise<McpCo
 
   logger.newline();
   logger.info('Select MCP servers to install:');
+
+  // Show info about already installed servers
+  const totalInstalled = userInstalledSet.size + projectInstalledSet.size;
+  if (totalInstalled > 0) {
+    const parts: string[] = [];
+    if (userInstalledSet.size > 0) {
+      parts.push(`${userInstalledSet.size} at user level`);
+    }
+    if (projectInstalledSet.size > 0) {
+      parts.push(`${projectInstalledSet.size} at project level`);
+    }
+    logger.info(colors.muted(`  (${parts.join(', ')} already installed)`));
+  }
   logger.newline();
 
   // Show grouped selection
   for (const [category, servers] of Object.entries(serversByCategory)) {
-    const choices = servers.map((s) => ({
-      name: `${s.name} - ${s.description}`,
-      value: s.id,
-      checked: options?.defaults?.servers?.some((i) => i.serverId === s.id) ?? false,
-    }));
+    const choices = servers.map((s) => {
+      const isInstalledAtUserLevel = userInstalledSet.has(s.id);
+      const isInstalledAtProjectLevel = projectInstalledSet.has(s.id);
+
+      // If already installed at user level, disable it
+      if (isInstalledAtUserLevel) {
+        return {
+          name: `${s.name} - ${s.description} ${colors.muted('(already installed at user level)')}`,
+          value: s.id,
+          checked: false,
+          disabled: 'already installed at user level',
+        };
+      }
+
+      // If already installed at project level, disable it
+      if (isInstalledAtProjectLevel) {
+        return {
+          name: `${s.name} - ${s.description} ${colors.muted('(already installed at project level)')}`,
+          value: s.id,
+          checked: false,
+          disabled: 'already installed at project level',
+        };
+      }
+
+      return {
+        name: `${s.name} - ${s.description}`,
+        value: s.id,
+        checked: options?.defaults?.servers?.some((i) => i.serverId === s.id) ?? false,
+      };
+    });
 
     const categoryLabel = formatCategory(category);
     const selected = await checkbox({
