@@ -35,3 +35,12 @@ export {
   hasUnconfiguredPlaceholders,
   scanStandardsPlaceholders,
 } from './scanner.js';
+
+// Template sync
+export {
+  checkTemplatesNeedUpdate,
+  formatSyncResult,
+  syncStandardsTemplates,
+  syncStandardsTemplatesWithSpinner,
+} from './template-sync.js';
+export type { TemplateSyncOptions, TemplateSyncResult } from './template-sync.js';

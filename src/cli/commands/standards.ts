@@ -6,11 +6,14 @@ import { Command } from 'commander';
 import { DEFAULT_STANDARDS_CONFIG } from '../../constants/standards-defaults.js';
 import { readConfig, writeConfig } from '../../lib/config/index.js';
 import {
+  checkTemplatesNeedUpdate,
   formatScanResult,
   formatStandardsReport,
+  formatSyncResult,
   previewStandardsReplacements,
   replaceStandardsWithSpinner,
   scanStandardsPlaceholders,
+  syncStandardsTemplatesWithSpinner,
 } from '../../lib/standards/index.js';
 import { joinPath, resolvePath } from '../../lib/utils/fs.js';
 import { colors, logger } from '../../lib/utils/logger.js';
@@ -27,6 +30,7 @@ interface StandardsOptions {
   preview?: boolean;
   yes?: boolean;
   verbose?: boolean;
+  updateTemplates?: boolean;
 }
 
 /**
@@ -44,6 +48,7 @@ export function createStandardsCommand(): Command {
     .option('--preview', 'Preview changes without applying')
     .option('-y, --yes', 'Accept defaults without prompts')
     .option('-v, --verbose', 'Detailed output')
+    .option('--update-templates', 'Update/sync templates from package to project')
     .action(runStandards);
 
   return cmd;
@@ -64,6 +69,12 @@ async function runStandards(path: string | undefined, options: StandardsOptions)
     // Scan mode - just show unconfigured placeholders
     if (options.scan) {
       await scanMode(claudePath, projectPath);
+      return;
+    }
+
+    // Update templates mode - sync templates from package to project
+    if (options.updateTemplates) {
+      await updateTemplatesMode(claudePath, options);
       return;
     }
 
@@ -108,6 +119,54 @@ async function scanMode(claudePath: string, projectPath: string): Promise<void> 
     logger.newline();
     logger.info('Run `claude-config standards` to configure them');
   }
+}
+
+/**
+ * Update templates mode - sync templates from package to project
+ */
+async function updateTemplatesMode(claudePath: string, options: StandardsOptions): Promise<void> {
+  logger.info('Checking for template updates...');
+  logger.newline();
+
+  // Check what needs updating
+  const status = await checkTemplatesNeedUpdate(claudePath);
+
+  if (!status.needsUpdate) {
+    logger.success('All templates are up to date!');
+    return;
+  }
+
+  // Show what needs updating
+  if (status.missing.length > 0) {
+    logger.info(`Missing templates (${status.missing.length}):`);
+    for (const template of status.missing) {
+      logger.info(`  ${colors.warning('+')} ${template}`);
+    }
+    logger.newline();
+  }
+
+  if (status.outdated.length > 0) {
+    logger.info(`Outdated templates (${status.outdated.length}):`);
+    for (const template of status.outdated) {
+      logger.info(`  ${colors.primary('~')} ${template}`);
+    }
+    logger.newline();
+  }
+
+  // Sync templates
+  const result = await syncStandardsTemplatesWithSpinner(claudePath, {
+    overwrite: true,
+    backup: true,
+  });
+
+  if (options.verbose) {
+    logger.newline();
+    logger.info(formatSyncResult(result));
+  }
+
+  logger.newline();
+  logger.success('Templates updated successfully!');
+  logger.info('Run `claude-config standards` to configure the new placeholders');
 }
 
 /**
@@ -165,6 +224,23 @@ async function defaultsMode(
   projectPath: string,
   options: StandardsOptions
 ): Promise<void> {
+  // Check if templates need updating first
+  const templateStatus = await checkTemplatesNeedUpdate(claudePath);
+  if (templateStatus.needsUpdate) {
+    logger.warn('Some templates are missing or outdated:');
+    if (templateStatus.missing.length > 0) {
+      logger.info(`  Missing: ${templateStatus.missing.length} template(s)`);
+    }
+    if (templateStatus.outdated.length > 0) {
+      logger.info(`  Outdated: ${templateStatus.outdated.length} template(s)`);
+    }
+    logger.newline();
+    logger.info(
+      `Run ${colors.primary('qazuor-claude-config standards --update-templates')} first to sync templates`
+    );
+    logger.newline();
+  }
+
   logger.info('Applying default standards configuration...');
   logger.newline();
 
@@ -182,6 +258,15 @@ async function defaultsMode(
     logger.info(formatStandardsReport(report));
   }
 
+  // Warn if no placeholders were replaced (templates might be old)
+  if (report.modifiedFiles.length === 0 && report.unusedPlaceholders.length > 0) {
+    logger.newline();
+    logger.warn('No placeholders were replaced in templates.');
+    logger.info(
+      `Your templates might be outdated. Run ${colors.primary('--update-templates')} to sync them.`
+    );
+  }
+
   // Update project config
   await saveStandardsConfig(projectPath, standardsConfig);
 
@@ -197,6 +282,23 @@ async function interactiveMode(
   projectPath: string,
   options: StandardsOptions
 ): Promise<void> {
+  // Check if templates need updating first
+  const templateStatus = await checkTemplatesNeedUpdate(claudePath);
+  if (templateStatus.needsUpdate) {
+    logger.warn('Some templates are missing or outdated:');
+    if (templateStatus.missing.length > 0) {
+      logger.info(`  Missing: ${templateStatus.missing.length} template(s)`);
+    }
+    if (templateStatus.outdated.length > 0) {
+      logger.info(`  Outdated: ${templateStatus.outdated.length} template(s)`);
+    }
+    logger.newline();
+    logger.info(
+      `Run ${colors.primary('qazuor-claude-config standards --update-templates')} first to sync templates`
+    );
+    logger.newline();
+  }
+
   // Get existing config
   const existingConfig = await readConfig(projectPath);
   const existingStandards = existingConfig?.extras?.standards;
@@ -220,6 +322,15 @@ async function interactiveMode(
   if (options.verbose) {
     logger.newline();
     logger.info(formatStandardsReport(report));
+  }
+
+  // Warn if no placeholders were replaced (templates might be old)
+  if (report.modifiedFiles.length === 0 && report.unusedPlaceholders.length > 0) {
+    logger.newline();
+    logger.warn('No placeholders were replaced in templates.');
+    logger.info(
+      `Your templates might be outdated. Run ${colors.primary('--update-templates')} to sync them.`
+    );
   }
 
   // Update project config
@@ -246,7 +357,7 @@ async function saveStandardsConfig(
     existingConfig.customizations.lastUpdated = new Date().toISOString();
 
     await writeConfig(projectPath, existingConfig);
-    logger.success('Configuration saved to .claude/config.json');
+    logger.success('Configuration saved to .claude/qazuor-claude-config.json');
   } else {
     logger.warn('No existing config found - standards not saved');
     logger.info('Run `claude-config init` first to initialize the project');
