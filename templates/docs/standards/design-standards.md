@@ -4,6 +4,19 @@
 
 This document defines the design system, ensuring visual consistency, accessibility, and maintainability across all applications (web, admin, and future mobile apps).
 
+---
+
+## Configuration
+
+<!-- AUTO-GENERATED: Configured values -->
+| Setting | Value |
+|---------|-------|
+| **CSS Framework** | {{CSS_FRAMEWORK}} |
+| **Component Library** | {{COMPONENT_LIBRARY}} |
+| **Accessibility Level** | WCAG {{ACCESSIBILITY_LEVEL}} |
+| **Dark Mode Support** | {{DARK_MODE_SUPPORT}} |
+<!-- END AUTO-GENERATED -->
+
 **Design System Stack:**
 
 - **Framework**: Tailwind CSS 4.x

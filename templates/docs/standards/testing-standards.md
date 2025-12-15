@@ -4,6 +4,21 @@ This document defines the testing standards and practices.
 
 ---
 
+## Configuration
+
+<!-- AUTO-GENERATED: Configured values -->
+| Setting | Value |
+|---------|-------|
+| **Coverage Target** | {{COVERAGE_TARGET}}% |
+| **TDD Required** | {{TDD_REQUIRED}} |
+| **Test Pattern** | {{TEST_PATTERN}} |
+| **Test Location** | {{TEST_LOCATION}} |
+| **Unit Test Max** | {{UNIT_TEST_MAX_MS}}ms |
+| **Integration Test Max** | {{INTEGRATION_TEST_MAX_MS}}ms |
+<!-- END AUTO-GENERATED -->
+
+---
+
 ## Table of Contents
 
 <!-- markdownlint-disable MD051 -->

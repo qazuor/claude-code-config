@@ -4,6 +4,19 @@ This document defines the documentation standards.
 
 ---
 
+## Configuration
+
+<!-- AUTO-GENERATED: Configured values -->
+| Setting | Value |
+|---------|-------|
+| **JSDoc Level** | {{JSDOC_LEVEL}} |
+| **Require Examples** | {{REQUIRE_EXAMPLES}} |
+| **Changelog Format** | {{CHANGELOG_FORMAT}} |
+| **Inline Comment Policy** | {{INLINE_COMMENT_POLICY}} |
+<!-- END AUTO-GENERATED -->
+
+---
+
 ## Table of Contents
 
 <!-- markdownlint-disable MD051 -->

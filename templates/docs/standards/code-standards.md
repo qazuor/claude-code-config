@@ -4,6 +4,26 @@ This document defines the coding standards. All code must follow these rules str
 
 ---
 
+## Configuration
+
+<!-- AUTO-GENERATED: Configured values -->
+| Setting | Value |
+|---------|-------|
+| **Indent Style** | {{INDENT_STYLE}} |
+| **Indent Size** | {{INDENT_SIZE}} |
+| **Max Line Length** | {{MAX_LINE_LENGTH}} |
+| **Max File Lines** | {{MAX_FILE_LINES}} |
+| **Quote Style** | {{QUOTE_STYLE}} |
+| **Semicolons** | {{USE_SEMICOLONS}} |
+| **Trailing Commas** | {{TRAILING_COMMAS}} |
+| **Allow any Type** | {{ALLOW_ANY}} |
+| **Named Exports Only** | {{NAMED_EXPORTS_ONLY}} |
+| **RO-RO Pattern** | {{RORO_PATTERN}} |
+| **JSDoc Required** | {{JSDOC_REQUIRED}} |
+<!-- END AUTO-GENERATED -->
+
+---
+
 ## Table of Contents
 
 <!-- markdownlint-disable MD051 -->
