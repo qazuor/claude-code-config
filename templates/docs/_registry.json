@@ -218,6 +218,60 @@
       "relatedModules": ["code-standards", "tech-lead", "product-technical"]
     },
     {
+      "id": "design-standards",
+      "name": "Design Standards",
+      "description": "UI/UX design standards and accessibility guidelines",
+      "file": "standards/design-standards.md",
+      "tags": ["standards", "design", "ui", "ux", "accessibility"],
+      "longDescription": "Standards for UI/UX design including CSS framework usage, component library guidelines, accessibility requirements (WCAG), and dark mode support.",
+      "whatItDoes": [
+        "Defines CSS framework usage",
+        "Specifies component library standards",
+        "Sets accessibility requirements",
+        "Documents responsive design patterns",
+        "Guides dark mode implementation"
+      ],
+      "whenToUse": "When building or reviewing UI components. Ensures design consistency and accessibility.",
+      "skillLevel": "intermediate",
+      "relatedModules": ["code-standards", "ux-ui-designer"]
+    },
+    {
+      "id": "security-standards",
+      "name": "Security Standards",
+      "description": "Security best practices and authentication patterns",
+      "file": "standards/security-standards.md",
+      "tags": ["standards", "security", "authentication", "validation"],
+      "longDescription": "Security standards covering authentication patterns (JWT, OAuth), input validation, CSRF protection, rate limiting, and secure coding practices.",
+      "whatItDoes": [
+        "Defines authentication patterns",
+        "Specifies input validation requirements",
+        "Documents CSRF protection",
+        "Sets rate limiting guidelines",
+        "Guides secure coding practices"
+      ],
+      "whenToUse": "When implementing authentication, authorization, or handling user input.",
+      "skillLevel": "advanced",
+      "relatedModules": ["code-standards", "security-audit"]
+    },
+    {
+      "id": "performance-standards",
+      "name": "Performance Standards",
+      "description": "Performance targets and optimization guidelines",
+      "file": "standards/performance-standards.md",
+      "tags": ["standards", "performance", "optimization", "web-vitals"],
+      "longDescription": "Performance standards including Core Web Vitals targets (LCP, FID, CLS), bundle size limits, API response time requirements, and optimization best practices.",
+      "whatItDoes": [
+        "Sets Core Web Vitals targets",
+        "Defines bundle size limits",
+        "Specifies API response requirements",
+        "Documents caching strategies",
+        "Guides performance optimization"
+      ],
+      "whenToUse": "When optimizing performance or reviewing code for performance impact.",
+      "skillLevel": "advanced",
+      "relatedModules": ["code-standards", "performance-audit"]
+    },
+    {
       "id": "pdr-template",
       "name": "PDR Template",
       "description": "Product Definition Report template",
