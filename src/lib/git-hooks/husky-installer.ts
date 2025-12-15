@@ -2,17 +2,20 @@
  * Husky installer - creates git hooks for commit linting and other automation
  */
 
-import type { CodeStyleConfig } from '../../types/config.js';
+import type { CodeStyleConfig, PreCommitConfig } from '../../types/config.js';
 import { ensureDir, joinPath, makeExecutable, pathExists, writeFile } from '../utils/fs.js';
 import { withSpinner } from '../utils/spinner.js';
+import { generatePreCommitScript, generateSimplePreCommitHook } from './precommit-generator.js';
 
 export interface HuskyConfig {
   /** Enable commitlint hook */
   commitlint: boolean;
   /** Enable pre-commit hook for linting */
   preCommit: boolean;
-  /** Linter command for pre-commit */
+  /** Linter command for pre-commit (simple mode) */
   lintCommand?: string;
+  /** Advanced pre-commit configuration */
+  preCommitConfig?: PreCommitConfig;
   /** Enable pre-push hook */
   prePush: boolean;
   /** Test command for pre-push */
@@ -44,13 +47,15 @@ npx --no -- commitlint --edit "\${1}"
 /**
  * Generate pre-commit hook content
  */
-function generatePreCommitHook(lintCommand?: string): string {
-  const command = lintCommand || 'pnpm lint-staged';
-  return `#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
+function generatePreCommitHook(lintCommand?: string, preCommitConfig?: PreCommitConfig): string {
+  // Use advanced config if provided
+  if (preCommitConfig) {
+    return generatePreCommitScript(preCommitConfig);
+  }
 
-${command}
-`;
+  // Fall back to simple hook
+  const command = lintCommand || 'pnpm lint-staged';
+  return generateSimplePreCommitHook(command);
 }
 
 /**
@@ -173,7 +178,10 @@ export async function installHusky(
     if (config.preCommit) {
       const preCommitPath = joinPath(huskyDir, 'pre-commit');
       if (!(await pathExists(preCommitPath)) || options?.overwrite) {
-        await writeFile(preCommitPath, generatePreCommitHook(config.lintCommand));
+        await writeFile(
+          preCommitPath,
+          generatePreCommitHook(config.lintCommand, config.preCommitConfig)
+        );
         await makeExecutable(preCommitPath);
         result.created.push('pre-commit');
       } else {
