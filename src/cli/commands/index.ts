@@ -9,3 +9,4 @@ export { createRemoveCommand } from './remove.js';
 export { createStatusCommand } from './status.js';
 export { createUpdateCommand } from './update.js';
 export { createConfigureCommand } from './configure.js';
+export { createStandardsCommand } from './standards.js';

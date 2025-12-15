@@ -6,6 +6,7 @@ import {
   createInitCommand,
   createListCommand,
   createRemoveCommand,
+  createStandardsCommand,
   createStatusCommand,
   createUpdateCommand,
 } from './commands/index.js';
@@ -25,5 +26,6 @@ program.addCommand(createRemoveCommand());
 program.addCommand(createStatusCommand());
 program.addCommand(createUpdateCommand());
 program.addCommand(createConfigureCommand());
+program.addCommand(createStandardsCommand());
 
 export { VERSION };
