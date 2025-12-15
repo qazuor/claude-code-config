@@ -75,7 +75,7 @@ describe('config lib', () => {
     it('should return true when config.json exists', async () => {
       const claudeDir = path.join(testDir, '.claude');
       await fse.ensureDir(claudeDir);
-      const configPath = path.join(claudeDir, 'config.json');
+      const configPath = path.join(claudeDir, 'qazuor-claude-config.json');
       await fse.writeJson(configPath, { version: '1.0.0' });
       // Verify file was created
       const fileExists = await fse.pathExists(configPath);
@@ -156,7 +156,7 @@ describe('config lib', () => {
   });
 
   describe('writeConfig', () => {
-    it('should write config to .claude/config.json', async () => {
+    it('should write config to .claude/qazuor-claude-config.json', async () => {
       const config = createDefaultConfig({
         version: '1.0.0',
         projectInfo: { ...createTestProjectInfo(), name: 'write-test' },
@@ -164,7 +164,7 @@ describe('config lib', () => {
       });
       await writeConfig(testDir, config);
 
-      const configPath = path.join(testDir, '.claude', 'config.json');
+      const configPath = path.join(testDir, '.claude', 'qazuor-claude-config.json');
       const exists = await fse.pathExists(configPath);
       expect(exists).toBe(true);
     });
@@ -190,14 +190,14 @@ describe('config lib', () => {
       });
       await writeConfig(testDir, config);
 
-      const configPath = path.join(testDir, '.claude', 'config.json');
+      const configPath = path.join(testDir, '.claude', 'qazuor-claude-config.json');
       const content = await fse.readJson(configPath);
       expect(content.project.name).toBe('json-test');
     });
   });
 
   describe('readConfig', () => {
-    it('should read config from .claude/config.json', async () => {
+    it('should read config from .claude/qazuor-claude-config.json', async () => {
       const config = createDefaultConfig({
         version: '1.0.0',
         projectInfo: {
@@ -245,7 +245,7 @@ describe('config lib', () => {
       await writeConfig(testDir, config);
 
       // Verify config file was created
-      const configPath = path.join(testDir, '.claude', 'config.json');
+      const configPath = path.join(testDir, '.claude', 'qazuor-claude-config.json');
       const fileExists = await fse.pathExists(configPath);
       expect(fileExists).toBe(true);
 
@@ -307,7 +307,7 @@ describe('config lib', () => {
   describe('getConfigPath', () => {
     it('should return correct config path', () => {
       const result = getConfigPath(testDir);
-      expect(result).toBe(path.join(testDir, '.claude', 'config.json'));
+      expect(result).toBe(path.join(testDir, '.claude', 'qazuor-claude-config.json'));
     });
   });
 
@@ -725,7 +725,7 @@ describe('config lib', () => {
   describe('readConfig with invalid JSON', () => {
     it('should return null for invalid JSON config', async () => {
       const claudeDir = path.join(testDir, '.claude');
-      const configPath = path.join(claudeDir, 'config.json');
+      const configPath = path.join(claudeDir, 'qazuor-claude-config.json');
       await fse.ensureDir(claudeDir);
       await fse.writeFile(configPath, 'invalid json content');
 

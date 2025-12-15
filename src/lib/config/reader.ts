@@ -6,7 +6,7 @@ import type { ClaudeConfig, PartialClaudeConfig } from '../../types/config.js';
 import { joinPath, pathExists, readJson } from '../utils/fs.js';
 import { logger } from '../utils/logger.js';
 
-const CONFIG_FILE = 'config.json';
+const CONFIG_FILE = 'qazuor-claude-config.json';
 const CLAUDE_DIR = '.claude';
 
 /**

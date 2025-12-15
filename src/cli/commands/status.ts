@@ -46,7 +46,7 @@ async function runStatus(options: StatusOptions): Promise<void> {
     const config = await readConfig(projectPath);
 
     if (!config) {
-      logger.warn('.claude directory exists but config.json is missing');
+      logger.warn('.claude directory exists but qazuor-claude-config.json is missing');
       logger.info('Run "claude-config init" to initialize properly');
       process.exit(0);
     }

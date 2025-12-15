@@ -252,7 +252,7 @@ async function interactiveMode(
     existingConfig.customizations.lastUpdated = new Date().toISOString();
 
     await writeConfig(projectPath, existingConfig);
-    logger.success('Configuration saved to .claude/config.json');
+    logger.success('Configuration saved to .claude/qazuor-claude-config.json');
   }
 
   // Offer to save as global defaults

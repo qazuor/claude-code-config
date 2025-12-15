@@ -7,7 +7,7 @@ import { backup, ensureDir, joinPath, pathExists, writeJson } from '../utils/fs.
 import { logger } from '../utils/logger.js';
 import { readConfig } from './reader.js';
 
-const CONFIG_FILE = 'config.json';
+const CONFIG_FILE = 'qazuor-claude-config.json';
 const CLAUDE_DIR = '.claude';
 
 /**

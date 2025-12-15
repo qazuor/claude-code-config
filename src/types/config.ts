@@ -491,7 +491,7 @@ export interface ExtrasConfig {
 }
 
 /**
- * Main Claude configuration stored in .claude/config.json
+ * Main Claude configuration stored in .claude/qazuor-claude-config.json
  */
 export interface ClaudeConfig {
   /** CLI version that created this config */
