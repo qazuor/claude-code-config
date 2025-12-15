@@ -14,6 +14,53 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+#### Standards Wizard
+
+- **New `standards` command** for interactive project standards configuration
+- **6 Standard categories**: code, testing, documentation, design, security, performance
+- **Configurable placeholders** in documentation templates (e.g., `{{COVERAGE_TARGET}}`, `{{AUTH_PATTERN}}`)
+- **Standards presets**: strict, balanced, relaxed, startup, enterprise
+- **Placeholder scanner** to detect unconfigured standards (`--scan` option)
+- **Preview mode** for reviewing changes before applying (`--preview` option)
+- **Category filtering** to configure specific categories (`--category` option)
+- **Template sync** for existing installations (`--update-templates` option) - syncs new templates with backup
+- **New templates**: `security-standards.md` and `performance-standards.md`
+- **Updated templates**: code-standards, testing-standards, documentation-standards, design-standards with configurable placeholders
+
+#### Configurable Pre-commit Hooks
+
+- **Enhanced Husky integration** with configurable validation steps
+- **Pre-commit generator** that creates sophisticated bash scripts from configuration
+- **Configurable validations**: lint, typecheck, tests, format check
+- **Test modes**: none, affected (changed files only), all
+- **Custom commands support** with order and allowFailure options
+- **Pre-commit presets**: minimal (lint only), standard (lint + typecheck), strict (all checks)
+- **Execution options**: showTiming for step durations, continueOnFailure for running all checks
+- **Tool-specific commands**: Biome, ESLint, Prettier support
+
+#### Response Style Configuration
+
+- **Response style wizard** for configuring Claude's communication style
+- **Tone options**: friendly, professional, formal, strict, mentor
+- **Verbosity levels**: concise, balanced, detailed
+- **Error reporting styles**: supportive, neutral, direct
+- **Configurable options**: emojis, explain reasoning, offer alternatives, proactivity
+- **Response style presets**: friendly, professional, strict, mentor
+- **CLAUDE.md guidelines generator** that outputs configured style as documentation
+
+#### Init Wizard Improvements
+
+- **Persistent configuration defaults** - When running `init` on existing projects, previously saved choices are used as defaults
+- **Smoother re-configuration** - Both "Merge" and "Overwrite" options now pre-populate prompts with existing values
+
+### Changed
+
+- **Documentation count** increased from 18 to 21 (added security, performance, and design standards)
+- **Husky installer** updated to use new pre-commit generator when config provided
+- **README** updated with comprehensive documentation for all new features
+
 ## [0.3.1] - 2025-12-12
 
 ### Added

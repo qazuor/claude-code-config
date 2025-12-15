@@ -16,6 +16,7 @@ A comprehensive CLI tool to install and manage Claude Code configurations in you
 - [Commands](#commands)
   - [init](#init-path)
   - [configure](#configure)
+  - [standards](#standards)
   - [list](#list-type)
   - [add](#add-module)
   - [remove](#remove-module)
@@ -26,8 +27,11 @@ A comprehensive CLI tool to install and manage Claude Code configurations in you
   - [Agents](#agents-23-available)
   - [Skills](#skills-25-available)
   - [Commands](#commands-23-available)
-  - [Documentation](#documentation-18-available)
+  - [Documentation](#documentation-21-available)
 - [Template Configuration](#template-configuration)
+- [Standards Configuration](#standards-configuration)
+- [Pre-commit Hooks](#pre-commit-hooks)
+- [Response Style](#response-style)
 - [MCP Servers](#mcp-servers)
 - [Permissions](#permissions)
 - [Code Style](#code-style)
@@ -51,6 +55,9 @@ A comprehensive CLI tool to install and manage Claude Code configurations in you
 - **23 Bundles**: Pre-grouped module sets organized by category (stacks, testing, quality, etc.)
 - **Bundle Categories**: Stack bundles (React+TanStack, Astro, Next.js), API bundles (Hono, Express), testing, quality, and more
 - **Template Configuration**: Interactive setup for `{{PLACEHOLDER}}` values with smart defaults
+- **Standards Wizard**: Configure code, testing, documentation, design, security, and performance standards
+- **Pre-commit Hooks**: Configurable git hooks with lint, typecheck, tests, and custom commands
+- **Response Style**: Configure Claude's tone, verbosity, and communication preferences
 - **MCP Server Integration**: Configure Model Context Protocol servers
 - **Permissions System**: Fine-grained control over Claude's capabilities
 - **Code Style Tools**: EditorConfig, Biome, Prettier, and Commitlint configuration
@@ -64,9 +71,10 @@ A comprehensive CLI tool to install and manage Claude Code configurations in you
 | **Agents** | 23 | Specialized AI agents for different roles |
 | **Skills** | 25 | Reusable capabilities and knowledge |
 | **Commands** | 23 | Slash commands for workflows |
-| **Docs** | 18 | Reference documentation and guides |
+| **Docs** | 21 | Reference documentation and guides |
 | **MCP Servers** | 27 | External tool integrations |
 | **Bundles** | 23 | Pre-grouped module sets |
+| **Standards** | 6 | Configurable project standards (code, testing, docs, design, security, performance) |
 
 ### Smart Defaults
 
@@ -100,7 +108,7 @@ After running `qazuor-claude-config init`, your project will have:
 │   ├── git/                 # Commit helper
 │   ├── meta/                # Create agent/command/skill, help
 │   └── formatting/          # Markdown formatter
-├── docs/                    # 18 documentation files
+├── docs/                    # 21 documentation files
 │   ├── workflows/           # Decision tree, phases, protocols
 │   ├── standards/           # Code, testing, docs standards
 │   └── templates/           # PDR, tech analysis, TODOs
@@ -276,6 +284,58 @@ qazuor-claude-config configure --preview
 qazuor-claude-config configure --show-defaults
 ```
 
+### `standards`
+
+Configure project standards interactively. This wizard helps you define code style, testing, documentation, design, security, and performance standards for your project.
+
+```bash
+qazuor-claude-config standards [options] [path]
+```
+
+#### Options
+
+| Option | Description |
+|--------|-------------|
+| `--scan` | Scan for unconfigured standard placeholders only |
+| `-c, --category <name>` | Configure specific category: `code`, `testing`, `documentation`, `design`, `security`, `performance` |
+| `--preview` | Preview changes without applying |
+| `--update-templates` | Update/sync templates from package to project (for existing installations) |
+| `-y, --yes` | Accept defaults without prompts |
+| `-v, --verbose` | Show detailed output |
+
+#### Categories
+
+| Category | Configures |
+|----------|------------|
+| `code` | Indent style, quotes, semicolons, max lines, TypeScript rules |
+| `testing` | Coverage target, TDD, test patterns, test location |
+| `documentation` | JSDoc level, examples, changelog format, comments |
+| `design` | CSS framework, component library, accessibility, dark mode |
+| `security` | Auth pattern, validation library, CSRF, rate limiting |
+| `performance` | Core Web Vitals (LCP, FID, CLS), bundle size, API response time |
+
+#### Examples
+
+```bash
+# Full interactive standards wizard
+qazuor-claude-config standards
+
+# Configure only code standards
+qazuor-claude-config standards --category code
+
+# Scan for unconfigured placeholders
+qazuor-claude-config standards --scan
+
+# Preview changes without applying
+qazuor-claude-config standards --preview
+
+# Update templates from package (for existing installations)
+qazuor-claude-config standards --update-templates
+
+# Accept all defaults
+qazuor-claude-config standards --yes
+```
+
 ### `list [type]`
 
 List available modules, bundles, or MCP servers.
@@ -291,7 +351,7 @@ qazuor-claude-config list [options] [type]
 | `agents` | List all 23 available agents |
 | `skills` | List all 25 available skills |
 | `commands` | List all 23 available commands |
-| `docs` | List all 18 documentation modules |
+| `docs` | List all 21 documentation modules |
 | `bundles` | List all 23 module bundles |
 | `mcp` | List all 27 MCP servers |
 | *(none)* | List summary of all modules |
@@ -621,7 +681,7 @@ Slash commands for common workflows.
 |---------|-------------|
 | `/format-markdown` | Format markdown files |
 
-### Documentation (18 Available)
+### Documentation (20 Available)
 
 Reference documentation and workflow guides.
 
@@ -635,9 +695,12 @@ Reference documentation and workflow guides.
 | `phase-2-implementation` | Implementation guide |
 | `phase-3-validation` | Validation guide |
 | `phase-4-finalization` | Finalization guide |
-| `code-standards` | Coding standards |
-| `testing-standards` | Testing guidelines |
-| `documentation-standards` | Documentation guidelines |
+| `code-standards` | Coding standards (configurable) |
+| `testing-standards` | Testing guidelines (configurable) |
+| `documentation-standards` | Documentation guidelines (configurable) |
+| `design-standards` | Design system standards (configurable) |
+| `security-standards` | Security standards (configurable) |
+| `performance-standards` | Performance standards (configurable) |
 | `architecture-patterns` | Architecture patterns |
 | `pdr-template` | Product Definition Report template |
 | `tech-analysis-template` | Technical analysis template |
@@ -684,6 +747,223 @@ qazuor-claude-config configure --show-defaults
 ```
 
 Defaults are stored in `~/.claude/defaults.json`.
+
+## Standards Configuration
+
+The standards wizard (`qazuor-claude-config standards`) allows you to configure project-wide standards that are automatically applied to documentation templates.
+
+### Standard Categories
+
+#### Code Standards
+
+| Setting | Options | Default |
+|---------|---------|---------|
+| Indent Style | `space`, `tab` | `space` |
+| Indent Size | `2`, `4` | `2` |
+| Max Line Length | `80`, `100`, `120` | `100` |
+| Max File Lines | `300`, `500`, `800`, `1000` | `500` |
+| Quote Style | `single`, `double` | `single` |
+| Semicolons | `true`, `false` | `true` |
+| Trailing Commas | `all`, `es5`, `none` | `all` |
+| Allow `any` Type | `true`, `false` | `false` |
+| Named Exports Only | `true`, `false` | `true` |
+| RO-RO Pattern | `true`, `false` | `true` |
+| JSDoc Required | `true`, `false` | `true` |
+
+#### Testing Standards
+
+| Setting | Options | Default |
+|---------|---------|---------|
+| Coverage Target | `60%`, `70%`, `80%`, `90%`, `95%` | `90%` |
+| TDD Required | `true`, `false` | `true` |
+| Test Pattern | `aaa` (Arrange-Act-Assert), `gwt` (Given-When-Then) | `aaa` |
+| Test Location | `separate` (test/ folder), `colocated` (__tests__) | `separate` |
+| Unit Test Max | `50ms`, `100ms`, `200ms` | `100ms` |
+| Integration Test Max | `500ms`, `1000ms`, `2000ms` | `1000ms` |
+
+#### Documentation Standards
+
+| Setting | Options | Default |
+|---------|---------|---------|
+| JSDoc Level | `minimal`, `standard`, `comprehensive` | `standard` |
+| Require Examples | `true`, `false` | `true` |
+| Changelog Format | `conventional`, `keepachangelog` | `conventional` |
+| Inline Comment Policy | `why-not-what`, `minimal`, `extensive` | `why-not-what` |
+
+#### Design Standards
+
+| Setting | Options | Default |
+|---------|---------|---------|
+| CSS Framework | `tailwind`, `css-modules`, `styled-components`, `vanilla` | `tailwind` |
+| Component Library | `shadcn`, `radix`, `headless`, `none` | `shadcn` |
+| Accessibility Level | `A`, `AA`, `AAA` | `AA` |
+| Dark Mode Support | `true`, `false` | `true` |
+
+#### Security Standards
+
+| Setting | Options | Default |
+|---------|---------|---------|
+| Auth Pattern | `jwt`, `session`, `oauth`, `none` | `jwt` |
+| Input Validation | `zod`, `yup`, `joi`, `manual` | `zod` |
+| CSRF Protection | `true`, `false` | `true` |
+| Rate Limiting | `true`, `false` | `true` |
+
+#### Performance Standards
+
+| Setting | Options | Default |
+|---------|---------|---------|
+| LCP Target | `1500ms`, `2000ms`, `2500ms`, `4000ms` | `2500ms` |
+| FID Target | `50ms`, `100ms`, `200ms`, `300ms` | `100ms` |
+| CLS Target | `0.05`, `0.1`, `0.15`, `0.25` | `0.1` |
+| Bundle Size Target | `100KB`, `150KB`, `250KB`, `500KB` | `250KB` |
+| API Response Target | `100ms`, `200ms`, `300ms`, `500ms` | `200ms` |
+
+### Presets
+
+| Preset | Description |
+|--------|-------------|
+| `strict` | High coverage (95%), strict TypeScript, comprehensive docs |
+| `balanced` | Standard settings for most projects (default) |
+| `relaxed` | Lower coverage (70%), more flexible rules |
+| `startup` | Fast iteration, minimal overhead |
+| `enterprise` | Maximum standards, full documentation |
+
+## Pre-commit Hooks
+
+Configurable pre-commit hooks powered by Husky. The wizard generates sophisticated bash scripts based on your configuration.
+
+### Configuration Options
+
+| Option | Description | Default |
+|--------|-------------|---------|
+| `enabled` | Enable/disable pre-commit hook | `true` |
+| `lint.enabled` | Run linting | `true` |
+| `lint.stagedOnly` | Only lint staged files | `true` |
+| `lint.tool` | Linting tool (`biome`, `eslint`, `custom`) | `biome` |
+| `typecheck.enabled` | Run TypeScript type checking | `true` |
+| `tests.enabled` | Run tests | `true` |
+| `tests.mode` | Test mode (`none`, `affected`, `all`) | `affected` |
+| `tests.coverageThreshold` | Minimum coverage (0 = disabled) | `0` |
+| `formatCheck.enabled` | Check formatting | `false` |
+| `formatCheck.tool` | Format tool (`biome`, `prettier`, `custom`) | `biome` |
+| `showTiming` | Show execution time for each step | `true` |
+| `continueOnFailure` | Run all checks even if one fails | `false` |
+
+### Custom Commands
+
+Add custom validation commands:
+
+```json
+{
+  "customCommands": [
+    {
+      "name": "Security Scan",
+      "command": "pnpm audit --audit-level=high",
+      "allowFailure": true,
+      "order": 50
+    }
+  ]
+}
+```
+
+### Presets
+
+| Preset | Description |
+|--------|-------------|
+| `minimal` | Lint only (staged files) |
+| `standard` | Lint + typecheck (default) |
+| `strict` | Lint + typecheck + affected tests |
+
+### Generated Hook Example
+
+```bash
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Pre-commit hook - Generated by @qazuor/claude-code-config
+echo "🔍 Running pre-commit checks..."
+
+# Linting
+echo ""
+echo "📝 Linting..."
+step_start
+pnpm biome check --staged --no-errors-on-unmatched || { echo "  ❌ Lint failed"; exit 1; }
+echo "  ✅ Lint passed"
+step_end
+
+# Type checking
+echo ""
+echo "🔷 Type checking..."
+step_start
+pnpm typecheck || { echo "  ❌ Type check failed"; exit 1; }
+echo "  ✅ Types OK"
+step_end
+
+echo ""
+echo "✨ All checks passed!"
+```
+
+## Response Style
+
+Configure Claude's communication style and tone for your project.
+
+### Configuration Options
+
+| Option | Description | Options |
+|--------|-------------|---------|
+| `tone` | Overall response tone | `friendly`, `professional`, `formal`, `strict`, `mentor` |
+| `verbosity` | Level of detail in responses | `concise`, `balanced`, `detailed` |
+| `responseLanguage` | Language for responses (code always in English) | `en`, `es`, `auto` |
+| `useEmojis` | Use emojis in responses | `true`, `false` |
+| `errorStyle` | How to report errors | `supportive`, `neutral`, `direct` |
+| `explainReasoning` | Include explanation of "why" | `true`, `false` |
+| `offerAlternatives` | Suggest multiple solutions | `true`, `false` |
+| `proactivity` | Level of unsolicited suggestions | `minimal`, `moderate`, `high` |
+| `confirmBeforeBigChanges` | Ask before major changes | `true`, `false` |
+
+### Tone Options
+
+| Tone | Description |
+|------|-------------|
+| `friendly` | Casual, approachable, occasional emojis |
+| `professional` | Professional but accessible |
+| `formal` | Formal, technical language |
+| `strict` | Direct, no-nonsense, to the point |
+| `mentor` | Educational, explains the "why" |
+
+### Presets
+
+| Preset | Tone | Verbosity | Emojis | Error Style |
+|--------|------|-----------|--------|-------------|
+| `friendly` | friendly | balanced | ✓ | supportive |
+| `professional` | professional | balanced | ✗ | neutral |
+| `strict` | strict | concise | ✗ | direct |
+| `mentor` | mentor | detailed | ✗ | supportive |
+
+### Generated Guidelines
+
+The configuration generates guidelines in CLAUDE.md:
+
+```markdown
+## Response Style
+
+**Tone:** Professional
+**Verbosity:** Balanced
+**Language:** Spanish (code in English)
+**Emojis:** No
+**Error Style:** Neutral
+**Explain Reasoning:** Yes
+**Offer Alternatives:** Yes
+**Proactivity:** Moderate
+**Confirm Big Changes:** Yes
+
+### Guidelines
+- Respond in Spanish, write code/comments in English
+- Be professional but accessible
+- Explain the "why" behind decisions
+- Present alternatives when multiple valid approaches exist
+- Ask for confirmation before architectural changes
+```
 
 ## MCP Servers
 
@@ -1082,7 +1362,7 @@ import type {
 
 ## Configuration File
 
-The main configuration is stored in `.claude/config.json`.
+The main configuration is stored in `.claude/qazuor-claude-config.json`.
 
 ```json
 {
