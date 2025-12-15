@@ -6,6 +6,7 @@ import type { FolderPreferences } from './folder-preferences.js';
 import type { McpInstallation } from './mcp.js';
 import type { PermissionsConfig } from './permissions.js';
 import type { PackageManager } from './scaffold.js';
+import type { StandardsConfig } from './standards.js';
 import type { TemplateConfig } from './template-config.js';
 
 /**
@@ -328,6 +329,144 @@ export interface CodeStyleConfig {
 }
 
 /**
+ * Pre-commit test mode options
+ */
+export type PreCommitTestMode = 'none' | 'affected' | 'all';
+
+/**
+ * Pre-commit validation configuration for a single check
+ */
+export interface PreCommitValidation {
+  /** Whether this validation is enabled */
+  enabled: boolean;
+  /** Custom command override */
+  command?: string;
+  /** Allow failures without blocking commit */
+  allowFailure?: boolean;
+  /** Timeout in milliseconds */
+  timeout?: number;
+}
+
+/**
+ * Pre-commit lint validation configuration
+ */
+export interface PreCommitLintConfig extends PreCommitValidation {
+  /** Lint only staged files (faster) */
+  stagedOnly: boolean;
+  /** Linter tool */
+  tool?: 'biome' | 'eslint' | 'custom';
+}
+
+/**
+ * Pre-commit test validation configuration
+ */
+export interface PreCommitTestConfig extends PreCommitValidation {
+  /** Test mode: none, affected files only, or all tests */
+  mode: PreCommitTestMode;
+  /** Coverage threshold (0-100, 0 means no threshold) */
+  coverageThreshold: number;
+}
+
+/**
+ * Pre-commit format check configuration
+ */
+export interface PreCommitFormatConfig extends PreCommitValidation {
+  /** Formatter tool */
+  tool?: 'biome' | 'prettier' | 'custom';
+}
+
+/**
+ * Custom pre-commit command
+ */
+export interface PreCommitCustomCommand {
+  /** Display name for the command */
+  name: string;
+  /** Command to execute */
+  command: string;
+  /** Allow failure without blocking */
+  allowFailure?: boolean;
+  /** Run order (lower runs first) */
+  order?: number;
+}
+
+/**
+ * Pre-commit hook configuration
+ */
+export interface PreCommitConfig {
+  /** Whether pre-commit hooks are enabled */
+  enabled: boolean;
+  /** Linting configuration */
+  lint: PreCommitLintConfig;
+  /** Type checking configuration */
+  typecheck: PreCommitValidation;
+  /** Test configuration */
+  tests: PreCommitTestConfig;
+  /** Format check configuration */
+  formatCheck: PreCommitFormatConfig;
+  /** Custom commands to run */
+  customCommands: PreCommitCustomCommand[];
+  /** Show elapsed time for each step */
+  showTiming: boolean;
+  /** Continue running checks after first failure */
+  continueOnFailure: boolean;
+}
+
+/**
+ * Response tone options
+ */
+export type ResponseTone =
+  | 'friendly' // Friendly, casual, occasionally uses emojis
+  | 'professional' // Professional but accessible
+  | 'formal' // Formal, technical
+  | 'strict' // Strict, direct, no fluff
+  | 'mentor'; // Educational, explains the why
+
+/**
+ * Response verbosity level
+ */
+export type ResponseVerbosity =
+  | 'concise' // Minimum necessary
+  | 'balanced' // Balance between brevity and detail
+  | 'detailed'; // Complete explanations
+
+/**
+ * Error response style
+ */
+export type ErrorResponseStyle =
+  | 'supportive' // "Don't worry, this is common..."
+  | 'neutral' // "The error indicates that..."
+  | 'direct'; // "Error: X. Solution: Y."
+
+/**
+ * Proactivity level
+ */
+export type ProactivityLevel = 'minimal' | 'moderate' | 'high';
+
+/**
+ * Response style configuration
+ */
+export interface ResponseStyleConfig {
+  /** General response tone */
+  tone: ResponseTone;
+  /** Detail level */
+  verbosity: ResponseVerbosity;
+  /** Response language (code always in English) */
+  responseLanguage: 'es' | 'en' | 'auto';
+  /** Use emojis in responses */
+  useEmojis: boolean;
+  /** Style when reporting errors */
+  errorStyle: ErrorResponseStyle;
+  /** Include explanation of the "why" */
+  explainReasoning: boolean;
+  /** Offer alternatives when multiple solutions exist */
+  offerAlternatives: boolean;
+  /** Proactivity level (suggest unsolicited improvements) */
+  proactivity: ProactivityLevel;
+  /** Confirm before big changes */
+  confirmBeforeBigChanges: boolean;
+}
+
+/**
  * Extra components configuration
  */
 export interface ExtrasConfig {
@@ -343,6 +482,12 @@ export interface ExtrasConfig {
   codeStyle?: CodeStyleConfig;
   /** Folder structure preferences */
   folderPreferences?: FolderPreferences;
+  /** Standards configuration */
+  standards?: StandardsConfig;
+  /** Pre-commit hook configuration */
+  preCommit?: PreCommitConfig;
+  /** Response style configuration */
+  responseStyle?: ResponseStyleConfig;
 }
 
 /**
