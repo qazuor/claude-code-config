@@ -8,6 +8,7 @@ import type {
   BiomeOptions,
   CommitlintOptions,
   EditorConfigOptions,
+  PreCommitConfig,
   PrettierOptions,
 } from '../types/config.js';
 
@@ -191,5 +192,122 @@ export const CODE_STYLE_PRESETS: Record<CodeStylePreset, CodeStylePresetConfig> 
     editorconfig: DEFAULT_EDITORCONFIG_OPTIONS,
     biome: DEFAULT_BIOME_FORMATTER_OPTIONS,
     prettier: DEFAULT_PRETTIER_OPTIONS,
+  },
+};
+
+/**
+ * Default pre-commit hook configuration
+ */
+export const DEFAULT_PRECOMMIT_CONFIG: PreCommitConfig = {
+  enabled: true,
+  lint: {
+    enabled: true,
+    stagedOnly: true,
+    tool: 'biome',
+    allowFailure: false,
+  },
+  typecheck: {
+    enabled: true,
+    allowFailure: false,
+  },
+  tests: {
+    enabled: false,
+    mode: 'none',
+    coverageThreshold: 0,
+    allowFailure: false,
+  },
+  formatCheck: {
+    enabled: false,
+    tool: 'biome',
+    allowFailure: false,
+  },
+  customCommands: [],
+  showTiming: true,
+  continueOnFailure: false,
+};
+
+/**
+ * Pre-commit presets for quick selection
+ */
+export type PreCommitPreset = 'minimal' | 'standard' | 'strict' | 'custom';
+
+export interface PreCommitPresetConfig {
+  name: string;
+  description: string;
+  config: PreCommitConfig;
+}
+
+export const PRECOMMIT_PRESETS: Record<PreCommitPreset, PreCommitPresetConfig> = {
+  minimal: {
+    name: 'Minimal',
+    description: 'Only lint staged files (fastest)',
+    config: {
+      enabled: true,
+      lint: {
+        enabled: true,
+        stagedOnly: true,
+        tool: 'biome',
+        allowFailure: false,
+      },
+      typecheck: {
+        enabled: false,
+        allowFailure: false,
+      },
+      tests: {
+        enabled: false,
+        mode: 'none',
+        coverageThreshold: 0,
+        allowFailure: false,
+      },
+      formatCheck: {
+        enabled: false,
+        tool: 'biome',
+        allowFailure: false,
+      },
+      customCommands: [],
+      showTiming: false,
+      continueOnFailure: false,
+    },
+  },
+  standard: {
+    name: 'Standard',
+    description: 'Lint + typecheck (recommended)',
+    config: DEFAULT_PRECOMMIT_CONFIG,
+  },
+  strict: {
+    name: 'Strict',
+    description: 'Lint + typecheck + tests + format check',
+    config: {
+      enabled: true,
+      lint: {
+        enabled: true,
+        stagedOnly: true,
+        tool: 'biome',
+        allowFailure: false,
+      },
+      typecheck: {
+        enabled: true,
+        allowFailure: false,
+      },
+      tests: {
+        enabled: true,
+        mode: 'affected',
+        coverageThreshold: 80,
+        allowFailure: false,
+      },
+      formatCheck: {
+        enabled: true,
+        tool: 'biome',
+        allowFailure: false,
+      },
+      customCommands: [],
+      showTiming: true,
+      continueOnFailure: false,
+    },
+  },
+  custom: {
+    name: 'Custom',
+    description: 'Configure each validation manually',
+    config: DEFAULT_PRECOMMIT_CONFIG,
   },
 };
