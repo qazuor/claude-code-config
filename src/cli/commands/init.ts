@@ -7,7 +7,7 @@ import { resolveBundles } from '../../lib/bundles/resolver.js';
 import { type CICDConfig, installCICDWithSpinner } from '../../lib/ci-cd/index.js';
 import { installCodeStyle, showCodeStyleInstructions } from '../../lib/code-style/index.js';
 import { installVSCodeConfig } from '../../lib/code-style/vscode-installer.js';
-import { writeConfig } from '../../lib/config/index.js';
+import { readConfig, writeConfig } from '../../lib/config/index.js';
 import {
   checkFeatureDependencies,
   formatDependencyReport,
@@ -138,7 +138,9 @@ async function runInit(path: string | undefined, options: InitOptions): Promise<
   }
 
   try {
-    // Check for existing configuration
+    // Check for existing configuration and read it for defaults
+    let existingConfig: ClaudeConfig | null = null;
+
     if (await hasExistingClaudeConfig(projectPath)) {
       if (!options.force) {
         const action = await promptExistingProjectAction();
@@ -148,6 +150,12 @@ async function runInit(path: string | undefined, options: InitOptions): Promise<
         }
         if (action !== 'overwrite' && action !== 'merge') {
           return;
+        }
+
+        // Read existing config to use as defaults (for both merge and overwrite)
+        existingConfig = await readConfig(projectPath);
+        if (existingConfig) {
+          logger.info('Using existing configuration as defaults');
         }
       }
     }
@@ -175,7 +183,7 @@ async function runInit(path: string | undefined, options: InitOptions): Promise<
     // Collect configuration through prompts or defaults
     const buildResult = options.yes
       ? await buildDefaultConfig(projectPath, detection, options)
-      : await buildInteractiveConfig(projectPath, detection, registry, options);
+      : await buildInteractiveConfig(projectPath, detection, registry, options, existingConfig);
 
     if (!buildResult) {
       logger.warn('Configuration cancelled');
@@ -401,7 +409,8 @@ async function buildInteractiveConfig(
   projectPath: string,
   detection: Awaited<ReturnType<typeof detectProject>>,
   registry: ModuleRegistry,
-  options: InitOptions
+  options: InitOptions,
+  existingConfig?: ClaudeConfig | null
 ): Promise<ConfigBuildResult | null> {
   // Get initial project info for defaults
   const projectName = await getProjectName(projectPath);
@@ -420,25 +429,50 @@ async function buildInteractiveConfig(
     registry
   );
 
-  // Initial context with detected values and project info
+  // Use existing config values as defaults if available
+  const existingProject = existingConfig?.project;
+  const existingPrefs = existingConfig?.preferences;
+
+  // Initial context with detected values, existing config, and project info
   const initialContext: Partial<InitWizardContext> = {
     projectPath,
     registry,
     detection: {
       detected: detection.detected,
       projectType: detection.projectType,
-      packageManager: detection.packageManager,
+      packageManager: existingPrefs?.packageManager || detection.packageManager,
       suggestedBundles: detection.suggestedBundles,
       detectedTechnologies: detection.detectedTechnologies,
     },
+    // Use existing project info as defaults, fallback to detected values
     projectInfo: {
-      name: projectName || '',
-      description: projectDesc || '',
-      org: '',
-      repo: projectName?.toLowerCase().replace(/\s+/g, '-') || '',
-      entityType: 'item',
-      entityTypePlural: 'items',
+      name: existingProject?.name || projectName || '',
+      description: existingProject?.description || projectDesc || '',
+      org: existingProject?.org || '',
+      repo: existingProject?.repo || projectName?.toLowerCase().replace(/\s+/g, '-') || '',
+      entityType: existingProject?.entityType || 'item',
+      entityTypePlural: existingProject?.entityTypePlural || 'items',
+      domain: existingProject?.domain,
+      location: existingProject?.location,
+      author: existingProject?.author,
     },
+    // Use existing preferences as defaults
+    preferences: existingPrefs
+      ? {
+          language: existingPrefs.language,
+          responseLanguage: existingPrefs.responseLanguage,
+          includeCoAuthor: existingPrefs.includeCoAuthor,
+          packageManager: existingPrefs.packageManager,
+        }
+      : undefined,
+    // Use existing hook config as defaults
+    hookConfig: existingConfig?.extras?.hooks,
+    // Use existing code style config as defaults
+    codeStyleConfig: existingConfig?.extras?.codeStyle,
+    // Use existing folder preferences as defaults
+    folderPreferences: existingConfig?.extras?.folderPreferences,
+    // Use existing permissions config as defaults
+    permissionsConfig: existingConfig?.customizations?.permissions,
   };
 
   // Run the wizard with explicit types
