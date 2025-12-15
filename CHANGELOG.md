@@ -6,6 +6,30 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.5.0](///compare/v0.4.0...v0.5.0) (2025-12-15)
+
+### Features
+
+* **cli:** add prompts for standards, pre-commit and response style aa76c3b
+* **cli:** add standards command with scan, preview and category options 8d3c195
+* **constants:** add pre-commit config defaults and presets e4ff6bb
+* **constants:** add response style defaults and guidelines generator e5b038b
+* **constants:** add standards defaults and presets ca1d2c7
+* **docs:** register security, performance and design standards modules e0bb338
+* **git-hooks:** add configurable pre-commit hook generator f1ae86b
+* **init:** use existing config values as defaults when re-running c605b5e
+* **lib:** add standards library with definitions, replacer and scanner 6df3e5f
+* **standards:** add template sync functionality with --update-templates option a17968e
+* **templates:** add security and performance templates, add placeholders to existing 119af3f
+
+### Refactoring
+
+* **config:** rename config file to qazuor-claude-config.json 5576e55
+
+### Documentation
+
+* update changelog and readme for v0.5.0 features 81bd901
+
 ## [0.4.0](///compare/v0.3.1...v0.4.0) (2025-12-13)
 
 ### Features
