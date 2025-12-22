@@ -187,14 +187,14 @@ describe('bundle resolver', () => {
 
   describe('findBundlesContainingModule', () => {
     it('should find bundles containing a module', () => {
-      const bundles = findBundlesContainingModule('react-senior-dev', 'agents');
+      const bundles = findBundlesContainingModule('frontend-engineer', 'agents');
 
       expect(bundles.length).toBeGreaterThan(0);
 
       // All returned bundles should contain the module
       for (const bundle of bundles) {
         const hasModule = bundle.modules.some(
-          (m) => m.id === 'react-senior-dev' && m.category === 'agents'
+          (m) => m.id === 'frontend-engineer' && m.category === 'agents'
         );
         expect(hasModule).toBe(true);
       }
@@ -209,7 +209,7 @@ describe('bundle resolver', () => {
   describe('getSuggestedBundles', () => {
     it('should suggest bundles based on selected modules', () => {
       const selected: ModuleSelectionResult = {
-        agents: ['react-senior-dev'],
+        agents: ['frontend-engineer'],
         skills: ['web-app-testing'],
         commands: [],
         docs: [],
