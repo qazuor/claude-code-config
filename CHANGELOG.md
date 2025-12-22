@@ -6,6 +6,63 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.6.0] - 2025-12-22
+
+### Added
+
+#### Framework-Agnostic Agent Architecture
+
+- **Generic engineering agents**: Replaced 11 framework-specific agents with 3 generic role-based agents
+  - `api-engineer`: Works with any API framework (Hono, Express, Fastify, NestJS)
+  - `database-engineer`: Works with any ORM (Drizzle, Prisma, Mongoose)
+  - `frontend-engineer`: Works with any frontend framework (React, Next.js, Astro, TanStack)
+- **Related skills system**: Agents now have `relatedSkills` property linking them to framework-specific patterns
+- **Conditional skill selection**: Wizard prompts for framework skills based on selected agents
+
+#### Framework-Specific Skills (11 new)
+
+- **API Frameworks**: `hono-patterns`, `express-patterns`, `fastify-patterns`, `nestjs-patterns`
+- **Database ORMs**: `drizzle-patterns`, `prisma-patterns`, `mongoose-patterns`
+- **Frontend Frameworks**: `react-patterns`, `nextjs-patterns`, `astro-patterns`, `tanstack-start-patterns`
+
+#### Methodology Skills (5 new)
+
+- **Development methodologies** (mutually exclusive):
+  - `bdd-methodology`: Behavior-Driven Development with Gherkin syntax
+  - `atdd-methodology`: Acceptance Test-Driven Development
+- **Architectural methodologies**:
+  - `clean-architecture`: Concentric layers with dependency inversion
+  - `hexagonal-architecture`: Ports and Adapters pattern
+  - `vertical-slice-architecture`: Feature-based code organization
+
+#### Intelligent Mutual Exclusivity System
+
+- **Smart skill selection**: Automatically detects conflicting skills (e.g., TDD vs BDD vs ATDD)
+- **Dynamic disabling**: Incompatible options are disabled with explanatory reasons
+- **Compatibility awareness**: Allows combining compatible methodologies (e.g., TDD + Clean Architecture)
+- **Exclusivity groups**: Clean/Hexagonal are alternatives; Vertical Slice is alternative to both
+
+#### Claude Code Settings Integration
+
+- **New settings wizard step**: Configure Claude Code model, API choice, permissions, and behavior
+- **Settings generator**: Creates `.claude/settings.json` with configured options
+- **Model selection**: Support for different Claude models
+- **Permission presets**: Configurable Claude permissions
+
+### Changed
+
+- **Agent count**: 23 → 15 (consolidated framework-specific into generic)
+- **Skill count**: 25 → 41 (added framework and methodology skills)
+- **Bundles updated**: All bundles now use new generic agent IDs with framework skills
+- **Wizard flow**: Added Claude settings as final configuration step
+
+### Removed
+
+- **Framework-specific agents**: Removed in favor of generic agents + framework skills
+  - astro-engineer, nextjs-engineer, react-senior-dev, tanstack-start-engineer
+  - hono-engineer, express-engineer, fastify-engineer, nestjs-engineer
+  - db-drizzle-engineer, prisma-engineer, mongoose-engineer
+
 ## [0.5.0](///compare/v0.4.0...v0.5.0) (2025-12-15)
 
 ### Features
@@ -35,55 +92,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Features
 
 * **mcp:** show already installed servers as disabled in selection 4e5a950
-
-## [Unreleased]
-
-### Added
-
-#### Standards Wizard
-
-- **New `standards` command** for interactive project standards configuration
-- **6 Standard categories**: code, testing, documentation, design, security, performance
-- **Configurable placeholders** in documentation templates (e.g., `{{COVERAGE_TARGET}}`, `{{AUTH_PATTERN}}`)
-- **Standards presets**: strict, balanced, relaxed, startup, enterprise
-- **Placeholder scanner** to detect unconfigured standards (`--scan` option)
-- **Preview mode** for reviewing changes before applying (`--preview` option)
-- **Category filtering** to configure specific categories (`--category` option)
-- **Template sync** for existing installations (`--update-templates` option) - syncs new templates with backup
-- **New templates**: `security-standards.md` and `performance-standards.md`
-- **Updated templates**: code-standards, testing-standards, documentation-standards, design-standards with configurable placeholders
-
-#### Configurable Pre-commit Hooks
-
-- **Enhanced Husky integration** with configurable validation steps
-- **Pre-commit generator** that creates sophisticated bash scripts from configuration
-- **Configurable validations**: lint, typecheck, tests, format check
-- **Test modes**: none, affected (changed files only), all
-- **Custom commands support** with order and allowFailure options
-- **Pre-commit presets**: minimal (lint only), standard (lint + typecheck), strict (all checks)
-- **Execution options**: showTiming for step durations, continueOnFailure for running all checks
-- **Tool-specific commands**: Biome, ESLint, Prettier support
-
-#### Response Style Configuration
-
-- **Response style wizard** for configuring Claude's communication style
-- **Tone options**: friendly, professional, formal, strict, mentor
-- **Verbosity levels**: concise, balanced, detailed
-- **Error reporting styles**: supportive, neutral, direct
-- **Configurable options**: emojis, explain reasoning, offer alternatives, proactivity
-- **Response style presets**: friendly, professional, strict, mentor
-- **CLAUDE.md guidelines generator** that outputs configured style as documentation
-
-#### Init Wizard Improvements
-
-- **Persistent configuration defaults** - When running `init` on existing projects, previously saved choices are used as defaults
-- **Smoother re-configuration** - Both "Merge" and "Overwrite" options now pre-populate prompts with existing values
-
-### Changed
-
-- **Documentation count** increased from 18 to 21 (added security, performance, and design standards)
-- **Husky installer** updated to use new pre-commit generator when config provided
-- **README** updated with comprehensive documentation for all new features
 
 ## [0.3.1] - 2025-12-12
 

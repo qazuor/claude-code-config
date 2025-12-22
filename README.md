@@ -68,13 +68,28 @@ A comprehensive CLI tool to install and manage Claude Code configurations in you
 
 | Category | Count | Description |
 |----------|-------|-------------|
-| **Agents** | 23 | Specialized AI agents for different roles |
-| **Skills** | 25 | Reusable capabilities and knowledge |
+| **Agents** | 15 | Specialized AI agents for different roles (generic + specialized) |
+| **Skills** | 41 | Reusable capabilities including framework-specific patterns |
 | **Commands** | 23 | Slash commands for workflows |
 | **Docs** | 21 | Reference documentation and guides |
 | **MCP Servers** | 27 | External tool integrations |
 | **Bundles** | 23 | Pre-grouped module sets |
 | **Standards** | 6 | Configurable project standards (code, testing, docs, design, security, performance) |
+
+### Framework-Agnostic Design
+
+Agents are designed to be **framework-agnostic** and use **related skills** for framework-specific patterns:
+
+- **api-engineer** + `hono-patterns` / `express-patterns` / `fastify-patterns` / `nestjs-patterns`
+- **database-engineer** + `drizzle-patterns` / `prisma-patterns` / `mongoose-patterns`
+- **frontend-engineer** + `react-patterns` / `nextjs-patterns` / `astro-patterns` / `tanstack-start-patterns`
+
+### Intelligent Skill Selection
+
+The wizard includes an **intelligent mutual exclusivity system** that:
+- Detects conflicting skills (e.g., TDD vs BDD vs ATDD)
+- Automatically disables incompatible options
+- Allows combining compatible methodologies (e.g., TDD + Clean Architecture)
 
 ### Smart Defaults
 
@@ -91,15 +106,20 @@ After running `qazuor-claude-config init`, your project will have:
 ```
 .claude/
 ├── config.json              # Configuration storage
+├── settings.json            # Claude Code settings (model, permissions)
 ├── settings.local.json      # Local permissions & MCP
-├── agents/                  # 23 specialized AI agents
-│   ├── engineering/         # Backend, frontend, DB engineers
+├── agents/                  # 15 specialized AI agents
+│   ├── engineering/         # Generic engineers (API, Database, Frontend)
 │   ├── product/             # Product functional & technical
 │   ├── quality/             # QA, debugger
 │   ├── design/              # UX/UI designer
 │   └── specialized/         # SEO, i18n, content, tech writer
-├── skills/                  # 25 development skills
+├── skills/                  # 41 development skills
 │   ├── testing/             # TDD, security, performance, QA
+│   ├── patterns/            # Architecture patterns (Clean, Hexagonal, etc.)
+│   ├── api-frameworks/      # Hono, Express, Fastify, NestJS patterns
+│   ├── database/            # Drizzle, Prisma, Mongoose patterns
+│   ├── frontend-frameworks/ # React, Next.js, Astro, TanStack patterns
 │   ├── development/         # Git, Vercel, Shadcn, diagrams
 │   └── design/              # Brand, errors, markdown, PDF
 ├── commands/                # 23 slash commands
@@ -171,12 +191,15 @@ The wizard will guide you through:
 1. **Project Information** - Name, description, organization, entity types
 2. **Preferences** - Language, co-author settings
 3. **Scaffold Options** - Claude-only or full project structure
-4. **Module Selection** - Choose bundles or custom modules
+4. **Module Selection** - Choose bundles or custom modules (with smart skill selection)
 5. **Hook Configuration** - Desktop/audio notifications
 6. **MCP Servers** - External tool integrations
 7. **Permissions** - What Claude can do
 8. **Code Style** - EditorConfig, Biome, Prettier, Commitlint
-9. **Template Configuration** - Auto-detected command/path/target values
+9. **CI/CD** - GitHub Actions workflows
+10. **Folder Preferences** - Test, planning, docs locations
+11. **Template Configuration** - Auto-detected command/path/target values
+12. **Claude Settings** - Model, API choice, permissions, behavior
 
 > **Tip**: You can go back to any previous step using the "← Back" option to modify your choices.
 
@@ -348,8 +371,8 @@ qazuor-claude-config list [options] [type]
 
 | Type | Description |
 |------|-------------|
-| `agents` | List all 23 available agents |
-| `skills` | List all 25 available skills |
+| `agents` | List all 15 available agents |
+| `skills` | List all 41 available skills |
 | `commands` | List all 23 available commands |
 | `docs` | List all 21 documentation modules |
 | `bundles` | List all 23 module bundles |
@@ -400,10 +423,11 @@ Categories: agent, skill, command, doc
 ```bash
 # Add an agent
 qazuor-claude-config add agent:tech-lead
-qazuor-claude-config add agent:prisma-engineer
+qazuor-claude-config add agent:api-engineer
 
 # Add a skill
 qazuor-claude-config add skill:tdd-methodology
+qazuor-claude-config add skill:hono-patterns
 
 # Add a command
 qazuor-claude-config add command:security-audit
@@ -499,29 +523,29 @@ Complete technology stacks for different project types.
 
 | Bundle | Description | Includes |
 |--------|-------------|----------|
-| `drizzle-database` | Drizzle ORM patterns | db-drizzle-engineer, json-data-auditor |
-| `prisma-database` | Prisma ORM patterns | prisma-engineer, json-data-auditor |
-| `mongoose-database` | MongoDB + Mongoose | mongoose-engineer, json-data-auditor |
+| `drizzle-database` | Drizzle ORM patterns | database-engineer, drizzle-patterns, json-data-auditor |
+| `prisma-database` | Prisma ORM patterns | database-engineer, prisma-patterns, json-data-auditor |
+| `mongoose-database` | MongoDB + Mongoose | database-engineer, mongoose-patterns, json-data-auditor |
 
 ### API Bundles
 
 | Bundle | Description | Includes |
 |--------|-------------|----------|
-| `hono-api` | Hono framework | hono-engineer, api-app-testing, error-handling-patterns |
-| `express-api` | Express.js framework | express-engineer, api-app-testing, error-handling-patterns |
-| `fastify-api` | Fastify framework | fastify-engineer, api-app-testing, error-handling-patterns |
-| `nestjs-api` | NestJS framework | nestjs-engineer, api-app-testing, error-handling-patterns |
+| `hono-api` | Hono framework | api-engineer, hono-patterns, api-app-testing, error-handling-patterns |
+| `express-api` | Express.js framework | api-engineer, express-patterns, api-app-testing, error-handling-patterns |
+| `fastify-api` | Fastify framework | api-engineer, fastify-patterns, api-app-testing, error-handling-patterns |
+| `nestjs-api` | NestJS framework | api-engineer, nestjs-patterns, api-app-testing, error-handling-patterns |
 
 ### Frontend Bundles
 
 | Bundle | Description | Includes |
 |--------|-------------|----------|
-| `react-ui` | React + Shadcn UI | react-senior-dev, ux-ui-designer, shadcn-specialist, brand-guidelines, accessibility-audit |
-| `react-forms` | React Hook Form + Zod | react-senior-dev, react-hook-form-patterns, shadcn-specialist |
-| `react-state-zustand` | Zustand state management | react-senior-dev, zustand-patterns, tanstack-query-patterns |
-| `react-state-redux` | Redux Toolkit | react-senior-dev, redux-toolkit-patterns |
-| `nextjs-auth` | NextAuth.js authentication | nextjs-engineer, nextauth-patterns, security-testing |
-| `nextjs-i18n` | Next.js internationalization | nextjs-engineer, i18n-specialist, i18n-patterns |
+| `react-ui` | React + Shadcn UI | frontend-engineer, react-patterns, ux-ui-designer, shadcn-specialist, brand-guidelines, accessibility-audit |
+| `react-forms` | React Hook Form + Zod | frontend-engineer, react-patterns, react-hook-form-patterns, shadcn-specialist |
+| `react-state-zustand` | Zustand state management | frontend-engineer, react-patterns, zustand-patterns, tanstack-query-patterns |
+| `react-state-redux` | Redux Toolkit | frontend-engineer, react-patterns, redux-toolkit-patterns |
+| `nextjs-auth` | NextAuth.js authentication | frontend-engineer, nextjs-patterns, nextauth-patterns, security-testing |
+| `nextjs-i18n` | Next.js internationalization | frontend-engineer, nextjs-patterns, i18n-specialist, i18n-patterns |
 
 ### Workflow Bundles
 
@@ -534,25 +558,19 @@ Complete technology stacks for different project types.
 
 ## Modules
 
-### Agents (23 Available)
+### Agents (15 Available)
 
-Specialized AI agents for different development roles.
+Specialized AI agents for different development roles. Engineering agents are **framework-agnostic** and use **related skills** for framework-specific patterns.
 
 #### Engineering Agents
 
-| ID | Name | Description |
-|----|------|-------------|
-| `tech-lead` | Tech Lead | Architecture, coordination, code review |
-| `hono-engineer` | Hono Engineer | Hono API development |
-| `express-engineer` | Express Engineer | Express.js API development |
-| `fastify-engineer` | Fastify Engineer | Fastify API development |
-| `nestjs-engineer` | NestJS Engineer | NestJS framework development |
-| `db-drizzle-engineer` | Drizzle Engineer | Database with Drizzle ORM |
-| `prisma-engineer` | Prisma Engineer | Database with Prisma ORM |
-| `node-typescript-engineer` | Node/TS Engineer | Node.js/TypeScript development |
-| `astro-engineer` | Astro Engineer | Astro framework development |
-| `tanstack-start-engineer` | TanStack Engineer | TanStack Router/Query |
-| `react-senior-dev` | React Developer | React component development |
+| ID | Name | Description | Related Skills |
+|----|------|-------------|----------------|
+| `tech-lead` | Tech Lead | Architecture, coordination, code review | - |
+| `api-engineer` | API Engineer | Generic backend API development | hono, express, fastify, nestjs patterns |
+| `database-engineer` | Database Engineer | Generic database design and development | drizzle, prisma, mongoose patterns |
+| `frontend-engineer` | Frontend Engineer | Generic frontend development | react, nextjs, astro, tanstack patterns |
+| `node-typescript-engineer` | Node/TS Engineer | Node.js/TypeScript development | - |
 
 #### Product Agents
 
@@ -584,15 +602,62 @@ Specialized AI agents for different development roles.
 | `content-writer` | Content Writer | Web copywriting |
 | `enrichment-agent` | Enrichment Agent | Data enrichment and planning context |
 
-### Skills (25 Available)
+### Skills (41 Available)
 
-Reusable capabilities that can be invoked by agents.
+Reusable capabilities that can be invoked by agents. Skills are organized by category and some have **mutual exclusivity** constraints.
+
+#### Framework-Specific Skills
+
+**API Frameworks** (use with api-engineer):
+
+| ID | Name | Description |
+|----|------|-------------|
+| `hono-patterns` | Hono Patterns | Hono framework patterns and best practices |
+| `express-patterns` | Express Patterns | Express.js patterns and middleware |
+| `fastify-patterns` | Fastify Patterns | Fastify plugins and hooks |
+| `nestjs-patterns` | NestJS Patterns | NestJS modules, controllers, providers |
+
+**Database ORMs** (use with database-engineer):
+
+| ID | Name | Description |
+|----|------|-------------|
+| `drizzle-patterns` | Drizzle Patterns | Drizzle ORM schemas and queries |
+| `prisma-patterns` | Prisma Patterns | Prisma client and migrations |
+| `mongoose-patterns` | Mongoose Patterns | Mongoose schemas and models |
+
+**Frontend Frameworks** (use with frontend-engineer):
+
+| ID | Name | Description |
+|----|------|-------------|
+| `react-patterns` | React Patterns | React hooks, components, state |
+| `nextjs-patterns` | Next.js Patterns | Next.js App Router, SSR, SSG |
+| `astro-patterns` | Astro Patterns | Astro islands, content collections |
+| `tanstack-start-patterns` | TanStack Start | TanStack Router and Query patterns |
+
+#### Methodology Skills
+
+**Development Methodologies** (mutually exclusive - pick one):
+
+| ID | Name | Description |
+|----|------|-------------|
+| `tdd-methodology` | TDD Methodology | Test-driven development (Red-Green-Refactor) |
+| `bdd-methodology` | BDD Methodology | Behavior-driven development with Gherkin |
+| `atdd-methodology` | ATDD Methodology | Acceptance test-driven development |
+
+**Architectural Methodologies** (can combine with development methodologies):
+
+| ID | Name | Description |
+|----|------|-------------|
+| `clean-architecture` | Clean Architecture | Concentric layers with dependency inversion |
+| `hexagonal-architecture` | Hexagonal Architecture | Ports and Adapters pattern |
+| `vertical-slice-architecture` | Vertical Slice | Feature-based code organization |
+
+> **Note:** Clean and Hexagonal are alternatives (similar approaches). Vertical Slice is an alternative to both layered architectures.
 
 #### Testing Skills
 
 | ID | Name | Description |
 |----|------|-------------|
-| `tdd-methodology` | TDD Methodology | Test-driven development |
 | `security-testing` | Security Testing | Security vulnerability testing |
 | `performance-testing` | Performance Testing | Performance optimization |
 | `api-app-testing` | API Testing | API testing strategies |
