@@ -55,6 +55,8 @@ export interface ModuleDefinition extends ModuleExtendedInfo {
   includedInBundles?: string[];
   /** Placeholders used in this module's files */
   placeholders?: string[];
+  /** Related skills that should be prompted when this agent is selected (agents only) */
+  relatedSkills?: string[];
 }
 
 /**
@@ -77,6 +79,8 @@ export interface RegistryFileItem extends Partial<ModuleExtendedInfo> {
   file: string;
   dependencies?: string[];
   tags?: string[];
+  /** Related skills that should be prompted when this agent is selected (agents only) */
+  relatedSkills?: string[];
 }
 
 /**

@@ -8,6 +8,7 @@
 
 import type { SkippedMcpConfig } from '../../cli/prompts/mcp-config.js';
 import type { BundleSelectionResult } from '../../types/bundles.js';
+import type { ClaudeSettingsConfig } from '../../types/claude-settings.js';
 import type {
   CodeStyleConfig,
   HookConfig,
@@ -29,6 +30,7 @@ import {
   showBundlesSummary,
 } from '../../cli/prompts/bundle-select.js';
 import { promptCICDConfig } from '../../cli/prompts/ci-cd-config.js';
+import { promptClaudeSettings } from '../../cli/prompts/claude-settings.js';
 import { promptCodeStyleConfig } from '../../cli/prompts/code-style.js';
 import { promptQuickFolderPreferences } from '../../cli/prompts/folder-preferences.js';
 import { promptHookConfig } from '../../cli/prompts/hook-config.js';
@@ -37,6 +39,10 @@ import { promptMcpConfig } from '../../cli/prompts/mcp-config.js';
 import { promptPermissionsConfig } from '../../cli/prompts/permissions.js';
 import { promptPreferences } from '../../cli/prompts/preferences.js';
 import { confirmProjectInfo, promptProjectInfo } from '../../cli/prompts/project-info.js';
+import {
+  filterOutRelatedSkills,
+  promptAllRelatedSkills,
+} from '../../cli/prompts/related-skills.js';
 import { promptScaffoldOptions } from '../../cli/prompts/scaffold.js';
 import { buildConfigContext, promptTemplateConfig } from '../../cli/prompts/template-config.js';
 import type { ModuleCategory, ModuleRegistry } from '../../types/modules.js';
@@ -60,6 +66,7 @@ export interface InitWizardValues {
   cicdConfig: CICDConfig;
   folderPreferences: FolderPreferences | null;
   templateConfig: Partial<TemplateConfig>;
+  claudeSettings: ClaudeSettingsConfig;
   /** Index signature to satisfy Record<string, unknown> constraint */
   [key: string]: unknown;
 }
@@ -77,6 +84,7 @@ export interface InitWizardContext extends Partial<InitWizardValues> {
     suggestedBundles?: string[];
     detectedTechnologies?: string[];
   };
+  claudeSettings?: ClaudeSettingsConfig;
 }
 
 /**
@@ -266,13 +274,92 @@ function createBundleSelectionStep(): WizardStepDefinition<
       if (mode === 'individual' || mode === 'both') {
         // Get preselected from bundles
         const preselectedFromBundles = resolveBundles(result.selectedBundles);
-        const categories: ModuleCategory[] = ['agents', 'skills', 'commands', 'docs'];
 
         if (ctx.registry) {
           logger.newline();
           logger.subtitle('Individual Module Selection');
 
-          for (const category of categories) {
+          // Step 1: Select Agents first
+          const agentPreselected = mode === 'both' ? preselectedFromBundles.agents : [];
+
+          const agentResult = await selectItemsFromCategory('agents', ctx.registry.agents, {
+            preselected: agentPreselected,
+            showDescriptions: true,
+          });
+
+          // Store agent selection
+          if (mode === 'both') {
+            result.additionalModules.agents = agentResult.selectedItems.filter(
+              (id) => !agentPreselected.includes(id)
+            );
+          } else {
+            result.additionalModules.agents = agentResult.selectedItems;
+          }
+
+          // Combine all selected agents (from bundles + additional)
+          const allSelectedAgents = [
+            ...preselectedFromBundles.agents,
+            ...result.additionalModules.agents,
+          ];
+
+          // Step 2: Prompt for related skills based on selected agents
+          const relatedSkillsResult = await promptAllRelatedSkills(
+            allSelectedAgents,
+            ctx.registry,
+            {
+              preselectedSkills: mode === 'both' ? preselectedFromBundles.skills : [],
+              allowMultiplePerAgent: true,
+            }
+          );
+
+          // Step 3: Select remaining skills (excluding related ones that were already handled)
+          const skillPreselected = mode === 'both' ? preselectedFromBundles.skills : [];
+
+          // Filter out related skills from the selection pool
+          const independentSkills = filterOutRelatedSkills(
+            ctx.registry.skills,
+            relatedSkillsResult.allRelatedSkillIds
+          );
+
+          // Also filter preselected to not include related skills (they were already handled)
+          const independentPreselected = skillPreselected.filter(
+            (id) => !relatedSkillsResult.allRelatedSkillIds.includes(id)
+          );
+
+          let independentSkillsSelected: string[] = [];
+          if (independentSkills.length > 0) {
+            logger.newline();
+            logger.info(
+              colors.muted('Now selecting general-purpose skills (not framework-specific):')
+            );
+
+            const skillResult = await selectItemsFromCategory('skills', independentSkills, {
+              preselected: independentPreselected,
+              showDescriptions: true,
+            });
+
+            independentSkillsSelected = skillResult.selectedItems;
+          }
+
+          // Combine related skills + independent skills
+          const allSelectedSkills = [
+            ...relatedSkillsResult.relatedSkillsSelected,
+            ...independentSkillsSelected,
+          ];
+
+          // Store skill selection (only additional ones not from bundles)
+          if (mode === 'both') {
+            result.additionalModules.skills = allSelectedSkills.filter(
+              (id) => !skillPreselected.includes(id)
+            );
+          } else {
+            result.additionalModules.skills = allSelectedSkills;
+          }
+
+          // Step 4: Select commands and docs
+          const otherCategories: ModuleCategory[] = ['commands', 'docs'];
+
+          for (const category of otherCategories) {
             const preselected =
               mode === 'both'
                 ? preselectedFromBundles[category as keyof typeof preselectedFromBundles]
@@ -497,6 +584,33 @@ function createTemplateConfigStep(): WizardStepDefinition<
   };
 }
 
+/**
+ * Step 12: Claude Code Settings
+ */
+function createClaudeSettingsStep(): WizardStepDefinition<ClaudeSettingsConfig, InitWizardContext> {
+  return {
+    metadata: {
+      id: 'claudeSettings',
+      name: 'Claude Code Settings',
+      description: 'Configure Claude Code model, permissions, and behavior',
+      required: false,
+    },
+    computeDefaults: (ctx) => ctx.claudeSettings,
+    execute: async (ctx, defaults) => {
+      const goBack = await promptBackOption(11, 'Configure Claude Code settings or go back?');
+      if (goBack) {
+        return createResult(defaults as ClaudeSettingsConfig, 'back');
+      }
+
+      const value = await promptClaudeSettings({
+        defaults,
+        includeCoAuthor: ctx.preferences?.includeCoAuthor,
+      });
+      return createResult(value, 'next');
+    },
+  };
+}
+
 // ============================================================================
 // Wizard Configuration Builder
 // ============================================================================
@@ -560,6 +674,10 @@ export function createInitWizardConfig(
     {
       id: 'templateConfig',
       definition: createTemplateConfigStep() as WizardStepDefinition<unknown, InitWizardContext>,
+    },
+    {
+      id: 'claudeSettings',
+      definition: createClaudeSettingsStep() as WizardStepDefinition<unknown, InitWizardContext>,
     },
   ];
 
