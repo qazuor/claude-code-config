@@ -38,14 +38,9 @@ export const BUNDLES: BundleDefinition[] = [
     moduleDetails: {
       agents: [
         {
-          id: 'react-senior-dev',
-          role: 'React Architecture',
+          id: 'frontend-engineer',
+          role: 'Frontend Development',
           responsibilities: ['Component design', 'State management', 'Performance optimization'],
-        },
-        {
-          id: 'tanstack-start-engineer',
-          role: 'TanStack Specialist',
-          responsibilities: ['Router setup', 'Query patterns', 'SSR configuration'],
         },
         {
           id: 'ux-ui-designer',
@@ -54,6 +49,8 @@ export const BUNDLES: BundleDefinition[] = [
         },
       ],
       skills: [
+        { id: 'react-patterns', purpose: 'React component patterns' },
+        { id: 'tanstack-start-patterns', purpose: 'TanStack Router/Start patterns' },
         { id: 'web-app-testing', purpose: 'React Testing Library patterns' },
         { id: 'shadcn-specialist', purpose: 'Shadcn UI component usage' },
         { id: 'accessibility-audit', purpose: 'WCAG compliance' },
@@ -65,9 +62,10 @@ export const BUNDLES: BundleDefinition[] = [
       docs: [{ id: 'design-standards', topic: 'UI/UX design standards' }],
     },
     modules: [
-      { id: 'react-senior-dev', category: 'agents' },
-      { id: 'tanstack-start-engineer', category: 'agents' },
+      { id: 'frontend-engineer', category: 'agents' },
       { id: 'ux-ui-designer', category: 'agents' },
+      { id: 'react-patterns', category: 'skills' },
+      { id: 'tanstack-start-patterns', category: 'skills' },
       { id: 'web-app-testing', category: 'skills' },
       { id: 'shadcn-specialist', category: 'skills' },
       { id: 'accessibility-audit', category: 'skills' },
@@ -104,14 +102,9 @@ export const BUNDLES: BundleDefinition[] = [
     moduleDetails: {
       agents: [
         {
-          id: 'astro-engineer',
-          role: 'Astro Specialist',
+          id: 'frontend-engineer',
+          role: 'Frontend Development',
           responsibilities: ['Routing', 'Islands architecture', 'Build optimization'],
-        },
-        {
-          id: 'react-senior-dev',
-          role: 'React Components',
-          responsibilities: ['Interactive components', 'Client hydration'],
         },
         {
           id: 'seo-ai-specialist',
@@ -120,6 +113,8 @@ export const BUNDLES: BundleDefinition[] = [
         },
       ],
       skills: [
+        { id: 'astro-patterns', purpose: 'Astro-specific patterns' },
+        { id: 'react-patterns', purpose: 'React island components' },
         { id: 'web-app-testing', purpose: 'Component testing' },
         { id: 'vercel-specialist', purpose: 'Deployment optimization' },
         { id: 'performance-audit', purpose: 'Core Web Vitals' },
@@ -128,9 +123,10 @@ export const BUNDLES: BundleDefinition[] = [
       docs: [],
     },
     modules: [
-      { id: 'astro-engineer', category: 'agents' },
-      { id: 'react-senior-dev', category: 'agents' },
+      { id: 'frontend-engineer', category: 'agents' },
       { id: 'seo-ai-specialist', category: 'agents' },
+      { id: 'astro-patterns', category: 'skills' },
+      { id: 'react-patterns', category: 'skills' },
       { id: 'web-app-testing', category: 'skills' },
       { id: 'vercel-specialist', category: 'skills' },
       { id: 'performance-audit', category: 'skills' },
@@ -164,17 +160,12 @@ export const BUNDLES: BundleDefinition[] = [
     moduleDetails: {
       agents: [
         {
-          id: 'nextjs-engineer',
-          role: 'Next.js Specialist',
-          responsibilities: ['App Router', 'Server Actions', 'Caching strategies'],
+          id: 'frontend-engineer',
+          role: 'Frontend Development',
+          responsibilities: ['App Router', 'Server Actions', 'Client components'],
         },
         {
-          id: 'react-senior-dev',
-          role: 'React Components',
-          responsibilities: ['Client components', 'State management'],
-        },
-        {
-          id: 'prisma-engineer',
+          id: 'database-engineer',
           role: 'Database',
           responsibilities: ['Schema design', 'Migrations', 'Query optimization'],
         },
@@ -185,6 +176,9 @@ export const BUNDLES: BundleDefinition[] = [
         },
       ],
       skills: [
+        { id: 'nextjs-patterns', purpose: 'Next.js App Router patterns' },
+        { id: 'react-patterns', purpose: 'React component patterns' },
+        { id: 'prisma-patterns', purpose: 'Prisma ORM patterns' },
         { id: 'web-app-testing', purpose: 'Next.js testing patterns' },
         { id: 'shadcn-specialist', purpose: 'UI components' },
         { id: 'vercel-specialist', purpose: 'Deployment' },
@@ -196,10 +190,12 @@ export const BUNDLES: BundleDefinition[] = [
       docs: [],
     },
     modules: [
-      { id: 'nextjs-engineer', category: 'agents' },
-      { id: 'react-senior-dev', category: 'agents' },
-      { id: 'prisma-engineer', category: 'agents' },
+      { id: 'frontend-engineer', category: 'agents' },
+      { id: 'database-engineer', category: 'agents' },
       { id: 'ux-ui-designer', category: 'agents' },
+      { id: 'nextjs-patterns', category: 'skills' },
+      { id: 'react-patterns', category: 'skills' },
+      { id: 'prisma-patterns', category: 'skills' },
       { id: 'web-app-testing', category: 'skills' },
       { id: 'shadcn-specialist', category: 'skills' },
       { id: 'vercel-specialist', category: 'skills' },
@@ -236,12 +232,12 @@ export const BUNDLES: BundleDefinition[] = [
     moduleDetails: {
       agents: [
         {
-          id: 'express-engineer',
-          role: 'Express Specialist',
+          id: 'api-engineer',
+          role: 'API Development',
           responsibilities: ['Route design', 'Middleware', 'Error handling'],
         },
         {
-          id: 'prisma-engineer',
+          id: 'database-engineer',
           role: 'Database',
           responsibilities: ['Schema', 'Migrations', 'Queries'],
         },
@@ -252,6 +248,8 @@ export const BUNDLES: BundleDefinition[] = [
         },
       ],
       skills: [
+        { id: 'express-patterns', purpose: 'Express.js patterns' },
+        { id: 'prisma-patterns', purpose: 'Prisma ORM patterns' },
         { id: 'api-app-testing', purpose: 'API testing with supertest' },
         { id: 'error-handling-patterns', purpose: 'Error middleware' },
         { id: 'security-testing', purpose: 'Security best practices' },
@@ -260,9 +258,11 @@ export const BUNDLES: BundleDefinition[] = [
       docs: [{ id: 'architecture-patterns', topic: 'API architecture patterns' }],
     },
     modules: [
-      { id: 'express-engineer', category: 'agents' },
-      { id: 'prisma-engineer', category: 'agents' },
+      { id: 'api-engineer', category: 'agents' },
+      { id: 'database-engineer', category: 'agents' },
       { id: 'node-typescript-engineer', category: 'agents' },
+      { id: 'express-patterns', category: 'skills' },
+      { id: 'prisma-patterns', category: 'skills' },
       { id: 'api-app-testing', category: 'skills' },
       { id: 'error-handling-patterns', category: 'skills' },
       { id: 'security-testing', category: 'skills' },
@@ -297,13 +297,13 @@ export const BUNDLES: BundleDefinition[] = [
     moduleDetails: {
       agents: [
         {
-          id: 'hono-engineer',
-          role: 'Hono Specialist',
+          id: 'api-engineer',
+          role: 'API Development',
           responsibilities: ['Route handlers', 'Middleware', 'OpenAPI integration'],
         },
         {
-          id: 'db-drizzle-engineer',
-          role: 'Drizzle Database',
+          id: 'database-engineer',
+          role: 'Database',
           responsibilities: ['Schema design', 'Migrations', 'Type-safe queries'],
         },
         {
@@ -313,6 +313,8 @@ export const BUNDLES: BundleDefinition[] = [
         },
       ],
       skills: [
+        { id: 'hono-patterns', purpose: 'Hono framework patterns' },
+        { id: 'drizzle-patterns', purpose: 'Drizzle ORM patterns' },
         { id: 'api-app-testing', purpose: 'Hono testing patterns' },
         { id: 'error-handling-patterns', purpose: 'Error middleware' },
         { id: 'security-testing', purpose: 'Security validation' },
@@ -321,9 +323,11 @@ export const BUNDLES: BundleDefinition[] = [
       docs: [{ id: 'architecture-patterns', topic: 'API architecture patterns' }],
     },
     modules: [
-      { id: 'hono-engineer', category: 'agents' },
-      { id: 'db-drizzle-engineer', category: 'agents' },
+      { id: 'api-engineer', category: 'agents' },
+      { id: 'database-engineer', category: 'agents' },
       { id: 'node-typescript-engineer', category: 'agents' },
+      { id: 'hono-patterns', category: 'skills' },
+      { id: 'drizzle-patterns', category: 'skills' },
       { id: 'api-app-testing', category: 'skills' },
       { id: 'error-handling-patterns', category: 'skills' },
       { id: 'security-testing', category: 'skills' },
@@ -560,7 +564,8 @@ export const BUNDLES: BundleDefinition[] = [
     tags: ['database', 'drizzle', 'orm'],
     alternativeTo: ['prisma-database', 'mongoose-database'],
     modules: [
-      { id: 'db-drizzle-engineer', category: 'agents' },
+      { id: 'database-engineer', category: 'agents' },
+      { id: 'drizzle-patterns', category: 'skills' },
       { id: 'json-data-auditor', category: 'skills' },
     ],
   },
@@ -575,7 +580,8 @@ export const BUNDLES: BundleDefinition[] = [
     tags: ['database', 'prisma', 'orm'],
     alternativeTo: ['drizzle-database', 'mongoose-database'],
     modules: [
-      { id: 'prisma-engineer', category: 'agents' },
+      { id: 'database-engineer', category: 'agents' },
+      { id: 'prisma-patterns', category: 'skills' },
       { id: 'json-data-auditor', category: 'skills' },
     ],
   },
@@ -590,7 +596,8 @@ export const BUNDLES: BundleDefinition[] = [
     tags: ['database', 'mongodb', 'mongoose', 'nosql'],
     alternativeTo: ['drizzle-database', 'prisma-database'],
     modules: [
-      { id: 'mongoose-engineer', category: 'agents' },
+      { id: 'database-engineer', category: 'agents' },
+      { id: 'mongoose-patterns', category: 'skills' },
       { id: 'json-data-auditor', category: 'skills' },
     ],
   },
@@ -609,7 +616,8 @@ export const BUNDLES: BundleDefinition[] = [
     tags: ['api', 'hono', 'backend'],
     alternativeTo: ['express-api', 'fastify-api', 'nestjs-api'],
     modules: [
-      { id: 'hono-engineer', category: 'agents' },
+      { id: 'api-engineer', category: 'agents' },
+      { id: 'hono-patterns', category: 'skills' },
       { id: 'api-app-testing', category: 'skills' },
       { id: 'error-handling-patterns', category: 'skills' },
     ],
@@ -625,7 +633,8 @@ export const BUNDLES: BundleDefinition[] = [
     tags: ['api', 'express', 'backend'],
     alternativeTo: ['hono-api', 'fastify-api', 'nestjs-api'],
     modules: [
-      { id: 'express-engineer', category: 'agents' },
+      { id: 'api-engineer', category: 'agents' },
+      { id: 'express-patterns', category: 'skills' },
       { id: 'api-app-testing', category: 'skills' },
       { id: 'error-handling-patterns', category: 'skills' },
     ],
@@ -641,7 +650,8 @@ export const BUNDLES: BundleDefinition[] = [
     tags: ['api', 'fastify', 'backend', 'performance'],
     alternativeTo: ['hono-api', 'express-api', 'nestjs-api'],
     modules: [
-      { id: 'fastify-engineer', category: 'agents' },
+      { id: 'api-engineer', category: 'agents' },
+      { id: 'fastify-patterns', category: 'skills' },
       { id: 'api-app-testing', category: 'skills' },
       { id: 'error-handling-patterns', category: 'skills' },
     ],
@@ -657,7 +667,8 @@ export const BUNDLES: BundleDefinition[] = [
     tags: ['api', 'nestjs', 'backend', 'enterprise'],
     alternativeTo: ['hono-api', 'express-api', 'fastify-api'],
     modules: [
-      { id: 'nestjs-engineer', category: 'agents' },
+      { id: 'api-engineer', category: 'agents' },
+      { id: 'nestjs-patterns', category: 'skills' },
       { id: 'api-app-testing', category: 'skills' },
       { id: 'error-handling-patterns', category: 'skills' },
     ],
@@ -676,8 +687,9 @@ export const BUNDLES: BundleDefinition[] = [
     techStack: ['React', 'Shadcn UI', 'Tailwind CSS', 'Radix UI'],
     tags: ['react', 'ui', 'components'],
     modules: [
-      { id: 'react-senior-dev', category: 'agents' },
+      { id: 'frontend-engineer', category: 'agents' },
       { id: 'ux-ui-designer', category: 'agents' },
+      { id: 'react-patterns', category: 'skills' },
       { id: 'shadcn-specialist', category: 'skills' },
       { id: 'brand-guidelines', category: 'skills' },
       { id: 'accessibility-audit', category: 'skills' },
@@ -693,7 +705,8 @@ export const BUNDLES: BundleDefinition[] = [
     techStack: ['React Hook Form', 'Zod', 'React', 'TypeScript'],
     tags: ['react', 'forms', 'validation'],
     modules: [
-      { id: 'react-senior-dev', category: 'agents' },
+      { id: 'frontend-engineer', category: 'agents' },
+      { id: 'react-patterns', category: 'skills' },
       { id: 'react-hook-form-patterns', category: 'skills' },
       { id: 'shadcn-specialist', category: 'skills' },
     ],
@@ -709,7 +722,8 @@ export const BUNDLES: BundleDefinition[] = [
     tags: ['react', 'state', 'zustand'],
     alternativeTo: ['react-state-redux'],
     modules: [
-      { id: 'react-senior-dev', category: 'agents' },
+      { id: 'frontend-engineer', category: 'agents' },
+      { id: 'react-patterns', category: 'skills' },
       { id: 'zustand-patterns', category: 'skills' },
       { id: 'tanstack-query-patterns', category: 'skills' },
     ],
@@ -725,7 +739,8 @@ export const BUNDLES: BundleDefinition[] = [
     tags: ['react', 'state', 'redux'],
     alternativeTo: ['react-state-zustand'],
     modules: [
-      { id: 'react-senior-dev', category: 'agents' },
+      { id: 'frontend-engineer', category: 'agents' },
+      { id: 'react-patterns', category: 'skills' },
       { id: 'redux-toolkit-patterns', category: 'skills' },
       { id: 'tanstack-query-patterns', category: 'skills', optional: true },
     ],
@@ -740,7 +755,8 @@ export const BUNDLES: BundleDefinition[] = [
     techStack: ['NextAuth.js', 'Auth.js', 'Next.js', 'Prisma'],
     tags: ['nextjs', 'auth', 'oauth'],
     modules: [
-      { id: 'nextjs-engineer', category: 'agents' },
+      { id: 'frontend-engineer', category: 'agents' },
+      { id: 'nextjs-patterns', category: 'skills' },
       { id: 'nextauth-patterns', category: 'skills' },
       { id: 'security-testing', category: 'skills' },
     ],
@@ -755,8 +771,9 @@ export const BUNDLES: BundleDefinition[] = [
     techStack: ['next-intl', 'Next.js', 'React', 'TypeScript'],
     tags: ['nextjs', 'i18n', 'internationalization'],
     modules: [
-      { id: 'nextjs-engineer', category: 'agents' },
+      { id: 'frontend-engineer', category: 'agents' },
       { id: 'i18n-specialist', category: 'agents', optional: true },
+      { id: 'nextjs-patterns', category: 'skills' },
       { id: 'i18n-patterns', category: 'skills' },
     ],
   },
@@ -879,7 +896,7 @@ export const BUNDLES: BundleDefinition[] = [
         },
       ],
       skills: [
-        { id: 'documentation-writer', purpose: 'Documentation best practices' },
+        { id: 'markdown-formatter', purpose: 'Markdown formatting' },
         { id: 'mermaid-diagram-specialist', purpose: 'Diagram creation' },
       ],
       commands: [
@@ -894,7 +911,7 @@ export const BUNDLES: BundleDefinition[] = [
     },
     modules: [
       { id: 'tech-writer', category: 'agents' },
-      { id: 'documentation-writer', category: 'skills' },
+      { id: 'markdown-formatter', category: 'skills' },
       { id: 'mermaid-diagram-specialist', category: 'skills' },
       { id: 'update-docs', category: 'commands' },
       { id: 'markdown-format', category: 'commands' },

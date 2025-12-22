@@ -126,3 +126,34 @@ export {
 
 // CI/CD configuration prompts
 export { promptCICDConfig, showCICDSummary } from './ci-cd-config.js';
+
+// Claude settings prompts
+export {
+  promptClaudeSettings,
+  showClaudeSettingsSummary,
+  confirmClaudeSettings,
+} from './claude-settings.js';
+
+// Related skills prompts
+export {
+  promptRelatedSkillsForAgent,
+  promptAllRelatedSkills,
+  getAgentsWithRelatedSkills,
+  getAllRelatedSkillIds,
+  getIndependentSkills,
+  filterOutRelatedSkills,
+  type RelatedSkillsResult,
+} from './related-skills.js';
+
+// Mutual exclusivity handling
+export {
+  filterByMutualExclusivity,
+  createChoicesWithExclusivity,
+  validateNoConflicts,
+  groupByExclusivity,
+  getExclusivityGroupDescription,
+  getAlternativesFor,
+  getConflictingSelections,
+  type MutualExclusivityResult,
+  type ChoiceWithExclusivity,
+} from './mutual-exclusivity.js';
