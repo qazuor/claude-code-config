@@ -18,6 +18,23 @@ export type {
   PartialClaudeConfig,
 } from './config.js';
 
+// Claude settings types
+export type {
+  ClaudeModel,
+  PermissionMode,
+  StopNotificationType,
+  SandboxConfig,
+  SandboxNetworkConfig,
+  PermissionsSettingsConfig,
+  AttributionConfig,
+  EnvConfig,
+  HookEntry,
+  HookEventConfig,
+  HooksConfig,
+  ClaudeSettingsConfig,
+  PartialClaudeSettingsConfig,
+} from './claude-settings.js';
+
 // Module types
 export type {
   ModuleCategory,

@@ -23,3 +23,13 @@ export {
   type ClaudeMdOptions,
   type ClaudeMdResult,
 } from './claude-md-generator.js';
+
+// Settings generator
+export {
+  generateSettings,
+  generateSettingsWithSpinner,
+  generateSettingsLocal,
+  generateSettingsLocalWithSpinner,
+  type SettingsGeneratorOptions,
+  type SettingsGeneratorResult,
+} from './settings-generator.js';

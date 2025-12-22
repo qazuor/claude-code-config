@@ -3,6 +3,7 @@
  */
 
 import type { ClaudeConfig, ProjectInfo } from '../../types/config.js';
+import type { StandardsConfig } from '../../types/standards.js';
 import type {
   TemplateConfig,
   TemplateConfigCommands,
@@ -120,6 +121,7 @@ function processTemplate(
   const commands = options?.templateConfig?.commands;
   const targets = options?.templateConfig?.targets;
   const preferences = options?.claudeConfig?.preferences;
+  const standards = options?.claudeConfig?.extras?.standards;
 
   // Basic project info replacements
   content = content
@@ -135,9 +137,16 @@ function processTemplate(
   const packageManager = preferences?.packageManager || 'pnpm';
   content = content.replace(/\{\{PACKAGE_MANAGER\}\}/g, packageManager);
 
-  // Coverage target
-  const coverageTarget = targets && 'coverage' in targets ? String(targets.coverage) : '90';
+  // Coverage target - from standards or targets
+  const coverageTarget = standards?.testing?.coverageTarget
+    ? String(standards.testing.coverageTarget)
+    : targets && 'coverage' in targets
+      ? String(targets.coverage)
+      : '90';
   content = content.replace(/\{\{COVERAGE_TARGET\}\}/g, coverageTarget);
+
+  // Process standards-based placeholders
+  content = processStandardsPlaceholders(content, standards, preferences);
 
   // Domain handling with conditional
   if (projectInfo.domain) {
@@ -289,6 +298,103 @@ function generateCommandsSection(commands: TemplateConfigCommands, packageManage
   lines.push('```');
 
   return lines.join('\n');
+}
+
+/**
+ * Process standards-based placeholders
+ */
+function processStandardsPlaceholders(
+  content: string,
+  standards?: StandardsConfig,
+  preferences?: { language?: string; responseLanguage?: string; includeCoAuthor?: boolean }
+): string {
+  let result = content;
+
+  // Primary language (default to TypeScript)
+  const primaryLanguage = 'TypeScript'; // Could be extended to detect from project
+  result = result.replace(/\{\{PRIMARY_LANGUAGE\}\}/g, primaryLanguage);
+
+  // Max file lines
+  const maxFileLines = standards?.code?.maxFileLines?.toString() || '500';
+  result = result.replace(/\{\{MAX_FILE_LINES\}\}/g, maxFileLines);
+
+  // Test pattern
+  const testPattern =
+    standards?.testing?.testPattern === 'gwt'
+      ? 'GWT (Given-When-Then)'
+      : 'AAA (Arrange, Act, Assert)';
+  result = result.replace(/\{\{TEST_PATTERN\}\}/g, testPattern);
+
+  // Response language
+  const responseLanguage =
+    preferences?.responseLanguage === 'es'
+      ? 'Spanish'
+      : preferences?.responseLanguage === 'en'
+        ? 'English'
+        : 'Spanish';
+  result = result.replace(/\{\{RESPONSE_LANGUAGE\}\}/g, responseLanguage);
+
+  // Boolean conditionals
+  // NAMED_EXPORTS_ONLY
+  if (standards?.code?.namedExportsOnly) {
+    result = result.replace(/\{\{#if NAMED_EXPORTS_ONLY\}\}/g, '').replace(/\{\{\/if\}\}/g, '');
+  } else {
+    result = result.replace(/\{\{#if NAMED_EXPORTS_ONLY\}\}[\s\S]*?\{\{\/if\}\}/g, '');
+  }
+
+  // JSDOC_REQUIRED
+  if (standards?.code?.jsDocRequired) {
+    result = result.replace(/\{\{#if JSDOC_REQUIRED\}\}/g, '').replace(/\{\{\/if\}\}/g, '');
+  } else {
+    result = result.replace(/\{\{#if JSDOC_REQUIRED\}\}[\s\S]*?\{\{\/if\}\}/g, '');
+  }
+
+  // RORO_PATTERN
+  if (standards?.code?.roroPattern) {
+    result = result.replace(/\{\{#if RORO_PATTERN\}\}/g, '').replace(/\{\{\/if\}\}/g, '');
+  } else {
+    result = result.replace(/\{\{#if RORO_PATTERN\}\}[\s\S]*?\{\{\/if\}\}/g, '');
+  }
+
+  // TDD_REQUIRED
+  if (standards?.testing?.tddRequired) {
+    result = result
+      .replace(/\{\{#if TDD_REQUIRED\}\}/g, '')
+      .replace(/\{\{else\}\}[\s\S]*?\{\{\/if\}\}/g, '');
+  } else {
+    result = result
+      .replace(/\{\{#if TDD_REQUIRED\}\}[\s\S]*?\{\{else\}\}/g, '')
+      .replace(/\{\{\/if\}\}/g, '');
+  }
+
+  // TEST_LOCATION
+  const testLocation = standards?.testing?.testLocation;
+  if (testLocation) {
+    const testLocationText =
+      testLocation === 'colocated' ? 'Co-located with source' : 'Separate test directory';
+    result = result
+      .replace(/\{\{#if TEST_LOCATION\}\}/g, '')
+      .replace(/\{\{\/if\}\}/g, '')
+      .replace(/\{\{TEST_LOCATION\}\}/g, testLocationText);
+  } else {
+    result = result.replace(/\{\{#if TEST_LOCATION\}\}[\s\S]*?\{\{\/if\}\}/g, '');
+  }
+
+  // INCLUDE_CO_AUTHOR
+  if (preferences?.includeCoAuthor) {
+    result = result.replace(/\{\{#if INCLUDE_CO_AUTHOR\}\}/g, '').replace(/\{\{\/if\}\}/g, '');
+  } else {
+    result = result.replace(/\{\{#if INCLUDE_CO_AUTHOR\}\}[\s\S]*?\{\{\/if\}\}/g, '');
+  }
+
+  // RESPONSE_LANGUAGE conditional
+  if (preferences?.responseLanguage) {
+    result = result.replace(/\{\{#if RESPONSE_LANGUAGE\}\}/g, '').replace(/\{\{\/if\}\}/g, '');
+  } else {
+    result = result.replace(/\{\{#if RESPONSE_LANGUAGE\}\}[\s\S]*?\{\{\/if\}\}/g, '');
+  }
+
+  return result;
 }
 
 /**

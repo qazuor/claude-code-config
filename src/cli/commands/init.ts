@@ -41,6 +41,10 @@ import {
   getProjectName,
   hasExistingClaudeConfig,
 } from '../../lib/scaffold/index.js';
+import {
+  generateSettingsLocalWithSpinner,
+  generateSettingsWithSpinner,
+} from '../../lib/scaffold/settings-generator.js';
 import { replaceTemplateConfigWithSpinner } from '../../lib/templates/config-replacer.js';
 import { joinPath, resolvePath } from '../../lib/utils/fs.js';
 import { colors, logger } from '../../lib/utils/logger.js';
@@ -58,6 +62,7 @@ import {
   type InitWizardValues,
   createInitWizardConfig,
 } from '../../lib/wizard/init-steps.js';
+import type { ClaudeSettingsConfig } from '../../types/claude-settings.js';
 import type { ClaudeConfig } from '../../types/config.js';
 import type { ModuleCategory, ModuleDefinition, ModuleRegistry } from '../../types/modules.js';
 import type { DependencyGenerationConfig, ToolSelection } from '../../types/package-json.js';
@@ -77,6 +82,7 @@ interface ConfigBuildResult {
   skippedMcpConfigs: SkippedMcpConfig[];
   templateConfig?: Partial<TemplateConfig>;
   cicdConfig?: CICDConfig;
+  claudeSettings?: ClaudeSettingsConfig;
 }
 
 // Package version (will be replaced at build time or read from package.json)
@@ -190,7 +196,7 @@ async function runInit(path: string | undefined, options: InitOptions): Promise<
       return;
     }
 
-    const { config, skippedMcpConfigs, templateConfig, cicdConfig } = buildResult;
+    const { config, skippedMcpConfigs, templateConfig, cicdConfig, claudeSettings } = buildResult;
 
     // Store template config in main config
     if (templateConfig) {
@@ -214,7 +220,15 @@ async function runInit(path: string | undefined, options: InitOptions): Promise<
     }
 
     // Execute installation
-    await executeInstallation(projectPath, config, registry, templatesPath, options, cicdConfig);
+    await executeInstallation(
+      projectPath,
+      config,
+      registry,
+      templatesPath,
+      options,
+      cicdConfig,
+      claudeSettings
+    );
 
     // Apply template configuration (replace {{PLACEHOLDER}} patterns)
     if (templateConfig && !options.noPlaceholders) {
@@ -501,6 +515,7 @@ async function buildInteractiveConfig(
     cicdConfig,
     folderPreferences,
     templateConfig: templateConfigResult,
+    claudeSettings,
   } = wizardResult.values;
 
   // Handle MCP skip option
@@ -570,6 +585,7 @@ async function buildInteractiveConfig(
     skippedMcpConfigs,
     templateConfig: templateConfigResult,
     cicdConfig,
+    claudeSettings,
   };
 }
 
@@ -582,7 +598,8 @@ async function executeInstallation(
   registry: ModuleRegistry,
   templatesPath: string,
   options: InitOptions,
-  cicdConfig?: CICDConfig
+  cicdConfig?: CICDConfig,
+  claudeSettings?: ClaudeSettingsConfig
 ): Promise<void> {
   logger.newline();
   logger.title('Installing Configuration');
@@ -608,6 +625,31 @@ async function executeInstallation(
     logger.warn(`CLAUDE.md generation warning: ${claudeMdResult.error}`);
   } else if (claudeMdResult.skipped) {
     logger.info('CLAUDE.md already exists, skipped');
+  }
+
+  // Generate settings.json and settings.local.json
+  if (claudeSettings) {
+    const settingsResult = await generateSettingsWithSpinner(projectPath, {
+      claudeSettings,
+      includeCoAuthor: config.preferences.includeCoAuthor,
+      overwrite: options.force,
+    });
+    if (settingsResult.error) {
+      logger.warn(`settings.json generation warning: ${settingsResult.error}`);
+    } else if (settingsResult.skipped) {
+      logger.info('settings.json already exists, skipped');
+    }
+
+    const settingsLocalResult = await generateSettingsLocalWithSpinner(projectPath, {
+      claudeSettings,
+      includeCoAuthor: config.preferences.includeCoAuthor,
+      overwrite: options.force,
+    });
+    if (settingsLocalResult.error) {
+      logger.warn(`settings.local.json generation warning: ${settingsLocalResult.error}`);
+    } else if (settingsLocalResult.skipped) {
+      logger.info('settings.local.json already exists, skipped');
+    }
   }
 
   // Resolve modules (tags -> actual module definitions)

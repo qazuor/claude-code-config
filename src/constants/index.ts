@@ -95,3 +95,16 @@ export type {
   PackageScript,
   ToolDependencies,
 } from './npm-dependencies.js';
+
+// Claude Settings Defaults
+export {
+  DEFAULT_CLAUDE_SETTINGS,
+  ATTRIBUTION_NO_COAUTHOR,
+  ATTRIBUTION_WITH_COAUTHOR,
+  BEEP_COMMAND,
+  MODEL_DESCRIPTIONS,
+  PERMISSION_MODE_DESCRIPTIONS,
+  STOP_NOTIFICATION_DESCRIPTIONS,
+  CLAUDE_SETTINGS_PRESETS,
+  PRESET_DESCRIPTIONS as CLAUDE_PRESET_DESCRIPTIONS,
+} from './claude-settings-defaults.js';
