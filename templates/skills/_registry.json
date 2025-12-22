@@ -2,6 +2,215 @@
   "category": "skills",
   "modules": [
     {
+      "id": "hono-patterns",
+      "name": "Hono Patterns",
+      "description": "Hono framework patterns and best practices",
+      "file": "api-frameworks/hono-patterns.md",
+      "tags": ["api", "hono", "backend", "framework"],
+      "longDescription": "Framework-specific patterns for building APIs with Hono. Covers route definitions, middleware, error handling, and testing patterns.",
+      "whatItDoes": [
+        "Defines route patterns with Hono",
+        "Implements middleware chains",
+        "Handles request validation with Zod",
+        "Creates typed API responses",
+        "Provides testing patterns with app.fetch()"
+      ],
+      "whenToUse": "When building backend APIs with the Hono framework.",
+      "techStack": ["Hono", "TypeScript", "Zod"],
+      "skillLevel": "intermediate",
+      "relatedModules": ["api-engineer"]
+    },
+    {
+      "id": "express-patterns",
+      "name": "Express Patterns",
+      "description": "Express.js framework patterns and best practices",
+      "file": "api-frameworks/express-patterns.md",
+      "tags": ["api", "express", "backend", "framework"],
+      "longDescription": "Framework-specific patterns for building APIs with Express.js. Covers route definitions, middleware, error handling, and testing with Supertest.",
+      "whatItDoes": [
+        "Defines router patterns with Express",
+        "Implements controller-service architecture",
+        "Creates async error handling middleware",
+        "Uses express-validator for validation",
+        "Provides testing patterns with Supertest"
+      ],
+      "whenToUse": "When building backend APIs with Express.js.",
+      "techStack": ["Express.js", "TypeScript", "express-validator"],
+      "skillLevel": "intermediate",
+      "relatedModules": ["api-engineer"]
+    },
+    {
+      "id": "fastify-patterns",
+      "name": "Fastify Patterns",
+      "description": "Fastify framework patterns and best practices",
+      "file": "api-frameworks/fastify-patterns.md",
+      "tags": ["api", "fastify", "backend", "framework"],
+      "longDescription": "Framework-specific patterns for building high-performance APIs with Fastify. Covers plugins, schema validation, decorators, and inject-based testing.",
+      "whatItDoes": [
+        "Creates typed routes with TypeBox schemas",
+        "Implements plugin architecture",
+        "Uses decorators for shared utilities",
+        "Generates OpenAPI docs from schemas",
+        "Provides testing with fastify.inject()"
+      ],
+      "whenToUse": "When building high-performance APIs with Fastify.",
+      "techStack": ["Fastify", "TypeBox", "TypeScript"],
+      "skillLevel": "intermediate",
+      "relatedModules": ["api-engineer"]
+    },
+    {
+      "id": "nestjs-patterns",
+      "name": "NestJS Patterns",
+      "description": "NestJS framework patterns and best practices",
+      "file": "api-frameworks/nestjs-patterns.md",
+      "tags": ["api", "nestjs", "backend", "framework", "enterprise"],
+      "longDescription": "Framework-specific patterns for building enterprise applications with NestJS. Covers modules, DTOs, guards, interceptors, and testing patterns.",
+      "whatItDoes": [
+        "Creates modular application architecture",
+        "Implements DTOs with class-validator",
+        "Uses guards for authentication",
+        "Creates interceptors for response transformation",
+        "Provides testing patterns with TestingModule"
+      ],
+      "whenToUse": "When building enterprise applications with NestJS.",
+      "techStack": ["NestJS", "TypeScript", "class-validator", "class-transformer"],
+      "skillLevel": "advanced",
+      "relatedModules": ["api-engineer"]
+    },
+    {
+      "id": "drizzle-patterns",
+      "name": "Drizzle Patterns",
+      "description": "Drizzle ORM patterns and best practices",
+      "file": "database/drizzle-patterns.md",
+      "tags": ["database", "drizzle", "orm", "backend"],
+      "longDescription": "ORM-specific patterns for database operations with Drizzle. Covers schema definitions, relations, migrations, queries, and transactions.",
+      "whatItDoes": [
+        "Defines database schemas with Drizzle",
+        "Implements relations between tables",
+        "Creates and runs migrations",
+        "Writes type-safe queries",
+        "Handles transactions and error recovery"
+      ],
+      "whenToUse": "When using Drizzle ORM for database access.",
+      "techStack": ["Drizzle ORM", "PostgreSQL", "SQLite", "MySQL", "TypeScript"],
+      "skillLevel": "intermediate",
+      "relatedModules": ["database-engineer"]
+    },
+    {
+      "id": "prisma-patterns",
+      "name": "Prisma Patterns",
+      "description": "Prisma ORM patterns and best practices",
+      "file": "database/prisma-patterns.md",
+      "tags": ["database", "prisma", "orm", "backend"],
+      "longDescription": "ORM-specific patterns for database operations with Prisma. Covers schema definitions, relations, migrations, queries, and transactions.",
+      "whatItDoes": [
+        "Defines schemas in Prisma schema file",
+        "Implements relations and nested operations",
+        "Creates and runs migrations",
+        "Writes type-safe queries with Prisma Client",
+        "Handles transactions with $transaction"
+      ],
+      "whenToUse": "When using Prisma ORM for database access.",
+      "techStack": ["Prisma", "PostgreSQL", "MySQL", "SQLite", "MongoDB", "TypeScript"],
+      "skillLevel": "intermediate",
+      "relatedModules": ["database-engineer"]
+    },
+    {
+      "id": "mongoose-patterns",
+      "name": "Mongoose Patterns",
+      "description": "Mongoose ODM patterns and best practices",
+      "file": "database/mongoose-patterns.md",
+      "tags": ["database", "mongoose", "mongodb", "backend"],
+      "longDescription": "ODM-specific patterns for MongoDB with Mongoose. Covers schema definitions, virtuals, middleware, population, and aggregation pipelines.",
+      "whatItDoes": [
+        "Defines typed schemas with Mongoose",
+        "Implements virtuals and middleware",
+        "Uses population for references",
+        "Creates aggregation pipelines",
+        "Handles indexes and query optimization"
+      ],
+      "whenToUse": "When using MongoDB with Mongoose ODM.",
+      "techStack": ["Mongoose", "MongoDB", "TypeScript"],
+      "skillLevel": "intermediate",
+      "relatedModules": ["database-engineer"]
+    },
+    {
+      "id": "react-patterns",
+      "name": "React Patterns",
+      "description": "React component patterns and best practices",
+      "file": "frontend-frameworks/react-patterns.md",
+      "tags": ["frontend", "react", "components", "framework"],
+      "longDescription": "Framework-specific patterns for building React components. Covers component composition, hooks, performance optimization, and testing patterns.",
+      "whatItDoes": [
+        "Creates typed functional components",
+        "Implements custom hooks patterns",
+        "Uses context for state sharing",
+        "Optimizes with memo and useMemo",
+        "Provides testing patterns with Testing Library"
+      ],
+      "whenToUse": "When building React applications or component libraries.",
+      "techStack": ["React", "TypeScript"],
+      "skillLevel": "intermediate",
+      "relatedModules": ["frontend-engineer"]
+    },
+    {
+      "id": "nextjs-patterns",
+      "name": "Next.js Patterns",
+      "description": "Next.js App Router patterns and best practices",
+      "file": "frontend-frameworks/nextjs-patterns.md",
+      "tags": ["frontend", "nextjs", "fullstack", "framework"],
+      "longDescription": "Framework-specific patterns for Next.js App Router. Covers Server Components, Client Components, Server Actions, route handlers, and data fetching.",
+      "whatItDoes": [
+        "Creates Server and Client Components",
+        "Implements Server Actions for mutations",
+        "Uses route handlers for APIs",
+        "Handles loading and error states",
+        "Manages caching and revalidation"
+      ],
+      "whenToUse": "When building full-stack applications with Next.js App Router.",
+      "techStack": ["Next.js", "React", "TypeScript"],
+      "skillLevel": "advanced",
+      "relatedModules": ["frontend-engineer"]
+    },
+    {
+      "id": "astro-patterns",
+      "name": "Astro Patterns",
+      "description": "Astro framework patterns and best practices",
+      "file": "frontend-frameworks/astro-patterns.md",
+      "tags": ["frontend", "astro", "ssg", "framework"],
+      "longDescription": "Framework-specific patterns for Astro. Covers pages, layouts, islands architecture, content collections, and API routes.",
+      "whatItDoes": [
+        "Creates pages and layouts in Astro",
+        "Implements islands architecture (client:*)",
+        "Uses content collections for structured content",
+        "Creates API routes for server functionality",
+        "Configures integrations and SSR"
+      ],
+      "whenToUse": "When building content-focused websites with Astro.",
+      "techStack": ["Astro", "TypeScript", "MDX"],
+      "skillLevel": "intermediate",
+      "relatedModules": ["frontend-engineer"]
+    },
+    {
+      "id": "tanstack-start-patterns",
+      "name": "TanStack Start Patterns",
+      "description": "TanStack Start framework patterns and best practices",
+      "file": "frontend-frameworks/tanstack-start-patterns.md",
+      "tags": ["frontend", "tanstack", "fullstack", "framework"],
+      "longDescription": "Framework-specific patterns for TanStack Start. Covers file-based routing, loaders, server functions, search params, and error handling.",
+      "whatItDoes": [
+        "Creates routes with TanStack Router",
+        "Implements loaders for data fetching",
+        "Uses server functions for mutations",
+        "Validates search params with Zod",
+        "Handles errors and not-found states"
+      ],
+      "whenToUse": "When building full-stack applications with TanStack Start.",
+      "techStack": ["TanStack Start", "TanStack Router", "React", "TypeScript"],
+      "skillLevel": "advanced",
+      "relatedModules": ["frontend-engineer"]
+    },
+    {
       "id": "tdd-methodology",
       "name": "TDD Methodology",
       "description": "Test-Driven Development methodology and practices",
@@ -17,7 +226,105 @@
       ],
       "whenToUse": "Essential for any project following TDD practices. Use when writing new features or fixing bugs.",
       "skillLevel": "intermediate",
+      "alternativeTo": ["bdd-methodology", "atdd-methodology"],
       "relatedModules": ["qa-engineer", "web-app-testing", "api-app-testing"]
+    },
+    {
+      "id": "bdd-methodology",
+      "name": "BDD Methodology",
+      "description": "Behavior-Driven Development with Gherkin syntax and collaborative specifications",
+      "file": "patterns/bdd-methodology.md",
+      "tags": ["testing", "bdd", "methodology", "gherkin"],
+      "longDescription": "Comprehensive guide to Behavior-Driven Development (BDD) using Gherkin syntax. Covers collaborative specification, Given-When-Then scenarios, and living documentation.",
+      "whatItDoes": [
+        "Defines BDD cycle: Discovery → Formulation → Automation",
+        "Creates Gherkin feature files with scenarios",
+        "Implements step definitions for test automation",
+        "Facilitates Three Amigos collaboration sessions",
+        "Generates living documentation from tests"
+      ],
+      "whenToUse": "When business stakeholders need to understand tests, for complex business rules, and when creating living documentation.",
+      "skillLevel": "intermediate",
+      "alternativeTo": ["tdd-methodology", "atdd-methodology"],
+      "techStack": ["Cucumber", "Playwright BDD", "Vitest-cucumber"],
+      "relatedModules": ["qa-engineer", "web-app-testing"]
+    },
+    {
+      "id": "atdd-methodology",
+      "name": "ATDD Methodology",
+      "description": "Acceptance Test-Driven Development focusing on user acceptance criteria",
+      "file": "patterns/atdd-methodology.md",
+      "tags": ["testing", "atdd", "methodology", "acceptance"],
+      "longDescription": "Comprehensive guide to Acceptance Test-Driven Development (ATDD). Covers writing acceptance tests before implementation based on user stories and business requirements.",
+      "whatItDoes": [
+        "Defines ATDD cycle: Discuss → Distill → Develop → Demo",
+        "Creates acceptance tests from user stories",
+        "Validates features meet business requirements",
+        "Facilitates stakeholder collaboration and sign-off",
+        "Ensures acceptance criteria are fully covered"
+      ],
+      "whenToUse": "When acceptance criteria must be verified, stakeholder sign-off is required, or for complex business workflows.",
+      "skillLevel": "intermediate",
+      "alternativeTo": ["tdd-methodology", "bdd-methodology"],
+      "techStack": ["Playwright", "Cypress", "TestCafe"],
+      "relatedModules": ["qa-engineer", "web-app-testing"]
+    },
+    {
+      "id": "clean-architecture",
+      "name": "Clean Architecture",
+      "description": "Clean Architecture with concentric layers and dependency inversion",
+      "file": "patterns/clean-architecture.md",
+      "tags": ["architecture", "patterns", "methodology", "layers"],
+      "longDescription": "Clean Architecture organizing code in concentric layers where dependencies point inward. The core business logic remains independent of external concerns like databases, UI, or frameworks.",
+      "whatItDoes": [
+        "Defines concentric layer structure (Entities → Use Cases → Interfaces → Frameworks)",
+        "Implements dependency inversion principle",
+        "Creates framework-independent business logic",
+        "Separates concerns for high testability",
+        "Uses dependency injection for all external services"
+      ],
+      "whenToUse": "For large applications with complex business logic, when high testability is required, or when framework independence is important.",
+      "skillLevel": "advanced",
+      "alternativeTo": ["hexagonal-architecture"],
+      "relatedModules": ["tech-lead", "api-engineer"]
+    },
+    {
+      "id": "hexagonal-architecture",
+      "name": "Hexagonal Architecture",
+      "description": "Hexagonal Architecture (Ports and Adapters) for loosely coupled applications",
+      "file": "patterns/hexagonal-architecture.md",
+      "tags": ["architecture", "patterns", "methodology", "ports-adapters"],
+      "longDescription": "Hexagonal Architecture (Ports and Adapters) creating loosely coupled components connected to their environment via ports and adapters. The application core is isolated from external concerns.",
+      "whatItDoes": [
+        "Defines driving (primary) and driven (secondary) ports",
+        "Creates adapters for each external technology",
+        "Implements core domain with clean boundaries",
+        "Enables easy swapping of infrastructure components",
+        "Supports multiple entry points (REST, CLI, GraphQL)"
+      ],
+      "whenToUse": "For integration-heavy applications, microservices, or when easy adapter swapping is needed.",
+      "skillLevel": "advanced",
+      "alternativeTo": ["clean-architecture"],
+      "relatedModules": ["tech-lead", "api-engineer"]
+    },
+    {
+      "id": "vertical-slice-architecture",
+      "name": "Vertical Slice Architecture",
+      "description": "Vertical Slice Architecture organizing code by feature instead of layers",
+      "file": "patterns/vertical-slice-architecture.md",
+      "tags": ["architecture", "patterns", "methodology", "feature-based"],
+      "longDescription": "Vertical Slice Architecture organizing code by feature (vertical slices) rather than technical layers (horizontal slices). Each feature contains everything it needs: handlers, validators, DTOs, and data access.",
+      "whatItDoes": [
+        "Organizes code by feature instead of technical layer",
+        "Creates self-contained feature slices",
+        "Minimizes cross-cutting changes for new features",
+        "Favors explicit duplication over wrong abstraction",
+        "Enables independent feature development and testing"
+      ],
+      "whenToUse": "For feature-rich applications, when teams work on separate features, or when preparing for microservices decomposition.",
+      "skillLevel": "intermediate",
+      "alternativeTo": ["clean-architecture", "hexagonal-architecture"],
+      "relatedModules": ["tech-lead", "api-engineer"]
     },
     {
       "id": "web-app-testing",
@@ -36,7 +343,7 @@
       "whenToUse": "When building web applications that need E2E testing. Works with React, Vue, Astro, and other frameworks.",
       "techStack": ["Playwright", "Testing Library", "Vitest", "MSW"],
       "skillLevel": "intermediate",
-      "relatedModules": ["react-senior-dev", "astro-engineer", "qa-engineer"]
+      "relatedModules": ["frontend-engineer", "qa-engineer"]
     },
     {
       "id": "api-app-testing",
@@ -55,7 +362,7 @@
       "whenToUse": "When building backend APIs with Hono, Express, Fastify, or other Node.js frameworks.",
       "techStack": ["Vitest", "Supertest", "MSW", "Zod"],
       "skillLevel": "intermediate",
-      "relatedModules": ["hono-engineer", "qa-engineer", "db-drizzle-engineer"]
+      "relatedModules": ["api-engineer", "qa-engineer", "database-engineer"]
     },
     {
       "id": "performance-testing",
@@ -74,7 +381,7 @@
       "whenToUse": "When you need to ensure your application can handle expected load and meets performance requirements.",
       "techStack": ["k6", "Lighthouse", "Web Vitals"],
       "skillLevel": "advanced",
-      "relatedModules": ["performance-audit", "react-senior-dev"]
+      "relatedModules": ["performance-audit", "frontend-engineer"]
     },
     {
       "id": "security-testing",
@@ -147,7 +454,7 @@
       "whenToUse": "When application feels slow, before major launches, or during performance optimization sprints.",
       "techStack": ["Lighthouse", "webpack-bundle-analyzer", "Chrome DevTools"],
       "skillLevel": "intermediate",
-      "relatedModules": ["performance-testing", "react-senior-dev"]
+      "relatedModules": ["performance-testing", "frontend-engineer"]
     },
     {
       "id": "accessibility-audit",
@@ -166,7 +473,7 @@
       "whenToUse": "Essential for public-facing applications. Use during development and before releases.",
       "techStack": ["axe-core", "Lighthouse", "NVDA", "VoiceOver"],
       "skillLevel": "intermediate",
-      "relatedModules": ["ux-ui-designer", "react-senior-dev"]
+      "relatedModules": ["ux-ui-designer", "frontend-engineer"]
     },
     {
       "id": "error-handling-patterns",
@@ -185,7 +492,7 @@
       "whenToUse": "When setting up error handling architecture or improving existing error handling.",
       "techStack": ["TypeScript", "React", "Zod"],
       "skillLevel": "intermediate",
-      "relatedModules": ["node-typescript-engineer", "react-senior-dev"]
+      "relatedModules": ["node-typescript-engineer", "frontend-engineer"]
     },
     {
       "id": "nextauth-patterns",
@@ -204,7 +511,7 @@
       "whenToUse": "When building Next.js applications that need authentication. Supports OAuth providers (GitHub, Google, etc.) and custom credentials.",
       "techStack": ["NextAuth.js", "Auth.js", "Next.js", "Prisma"],
       "skillLevel": "intermediate",
-      "relatedModules": ["nextjs-engineer", "prisma-engineer"]
+      "relatedModules": ["frontend-engineer", "database-engineer"]
     },
     {
       "id": "i18n-patterns",
@@ -223,7 +530,7 @@
       "whenToUse": "When building applications that need to support multiple languages or locales.",
       "techStack": ["next-intl", "react-i18next", "Next.js", "React"],
       "skillLevel": "intermediate",
-      "relatedModules": ["nextjs-engineer", "react-senior-dev", "i18n-specialist"]
+      "relatedModules": ["frontend-engineer", "i18n-specialist"]
     },
     {
       "id": "zustand-patterns",
@@ -243,7 +550,7 @@
       "techStack": ["Zustand", "React", "TypeScript", "Immer"],
       "skillLevel": "intermediate",
       "alternativeTo": ["redux-toolkit-patterns"],
-      "relatedModules": ["react-senior-dev", "tanstack-query-patterns"]
+      "relatedModules": ["frontend-engineer", "tanstack-query-patterns"]
     },
     {
       "id": "redux-toolkit-patterns",
@@ -263,7 +570,7 @@
       "techStack": ["Redux Toolkit", "RTK Query", "React", "TypeScript"],
       "skillLevel": "intermediate",
       "alternativeTo": ["zustand-patterns"],
-      "relatedModules": ["react-senior-dev", "tanstack-query-patterns"]
+      "relatedModules": ["frontend-engineer", "tanstack-query-patterns"]
     },
     {
       "id": "tanstack-query-patterns",
@@ -282,7 +589,7 @@
       "whenToUse": "Essential for any React application fetching data from APIs. Handles caching, background updates, and server state.",
       "techStack": ["TanStack Query", "React", "TypeScript"],
       "skillLevel": "intermediate",
-      "relatedModules": ["react-senior-dev", "hono-engineer", "nextjs-engineer"]
+      "relatedModules": ["frontend-engineer", "api-engineer"]
     },
     {
       "id": "react-hook-form-patterns",
@@ -301,7 +608,7 @@
       "whenToUse": "When building forms in React applications. Provides performant form handling with minimal re-renders and great TypeScript support.",
       "techStack": ["React Hook Form", "Zod", "React", "TypeScript"],
       "skillLevel": "intermediate",
-      "relatedModules": ["react-senior-dev", "shadcn-specialist", "nextjs-engineer"]
+      "relatedModules": ["frontend-engineer", "shadcn-specialist"]
     },
     {
       "id": "git-commit-helper",
@@ -393,7 +700,7 @@
       "whenToUse": "When importing data, validating API responses, or auditing database records.",
       "techStack": ["Zod", "TypeScript"],
       "skillLevel": "intermediate",
-      "relatedModules": ["node-typescript-engineer", "db-drizzle-engineer"]
+      "relatedModules": ["node-typescript-engineer", "database-engineer"]
     },
     {
       "id": "brand-guidelines",
@@ -411,7 +718,7 @@
       ],
       "whenToUse": "When starting a new project or establishing design consistency across an application.",
       "skillLevel": "beginner",
-      "relatedModules": ["ux-ui-designer", "react-senior-dev"]
+      "relatedModules": ["ux-ui-designer", "frontend-engineer"]
     },
     {
       "id": "vercel-specialist",
@@ -430,7 +737,7 @@
       "whenToUse": "When deploying applications to Vercel or using Vercel-specific features.",
       "techStack": ["Vercel", "Edge Functions", "Serverless"],
       "skillLevel": "intermediate",
-      "relatedModules": ["astro-engineer", "tanstack-start-engineer"]
+      "relatedModules": ["frontend-engineer"]
     },
     {
       "id": "shadcn-specialist",
@@ -449,7 +756,7 @@
       "whenToUse": "When building React applications with Shadcn UI component library.",
       "techStack": ["Shadcn UI", "Radix UI", "Tailwind CSS", "React"],
       "skillLevel": "intermediate",
-      "relatedModules": ["react-senior-dev", "ux-ui-designer"]
+      "relatedModules": ["frontend-engineer", "ux-ui-designer"]
     },
     {
       "id": "mermaid-diagram-specialist",

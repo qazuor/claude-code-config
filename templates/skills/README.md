@@ -2,52 +2,62 @@
 
 This directory contains **reusable skill modules** that provide specialized knowledge and workflows. Skills can be used by multiple agents and are invoked when specific expertise is needed.
 
-## ⚙️ Configuration Required
+## Architecture
+
+Skills provide **framework-specific patterns** that complement **generic agents**:
+
+```text
+Skills (specific patterns)         Used By
+──────────────────────────        ────────────────────
+api-frameworks/
+├── hono-patterns          ──────> api-engineer
+├── express-patterns       ──────> api-engineer
+├── fastify-patterns       ──────> api-engineer
+└── nestjs-patterns        ──────> api-engineer
+
+database/
+├── drizzle-patterns       ──────> database-engineer
+├── prisma-patterns        ──────> database-engineer
+└── mongoose-patterns      ──────> database-engineer
+
+frontend-frameworks/
+├── react-patterns         ──────> frontend-engineer
+├── nextjs-patterns        ──────> frontend-engineer
+├── astro-patterns         ──────> frontend-engineer
+└── tanstack-start-patterns ─────> frontend-engineer
+```
+
+## Configuration Required
 
 All skills include a `config_required` section in their YAML frontmatter. Configure the required settings in your project before using a skill.
 
-**Example skill frontmatter:**
-```yaml
----
-name: skill-name
-category: testing|audit|patterns|tech|utils
-description: Brief description
-usage: When to use this skill
-input: What the skill needs
-output: What the skill produces
-config_required:
-  - setting_name: "Description of what to configure"
----
-```
-
 ## Skill Categories
 
-### Testing Skills (6 skills)
+### API Framework Skills (4 skills)
 
 | Skill | Description | When to Use |
 |-------|-------------|-------------|
-| [api-app-testing](testing/api-app-testing.md) | API endpoint testing workflow | Testing APIs during development |
-| [performance-testing](testing/performance-testing.md) | Performance benchmarks and load testing | Validating performance requirements |
-| [security-testing](testing/security-testing.md) | Security testing patterns | Testing security during development |
-| [web-app-testing](qa/web-app-testing.md) | E2E web application testing | Testing web UI flows |
-| [qa-criteria-validator](qa/qa-criteria-validator.md) | Validate against PDR acceptance criteria | Before feature completion |
-| [tdd-methodology](patterns/tdd-methodology.md) | Test-Driven Development workflow | During implementation |
+| [hono-patterns](api-frameworks/hono-patterns.md) | Hono framework patterns | Building APIs with Hono |
+| [express-patterns](api-frameworks/express-patterns.md) | Express.js patterns | Building APIs with Express |
+| [fastify-patterns](api-frameworks/fastify-patterns.md) | Fastify patterns | Building APIs with Fastify |
+| [nestjs-patterns](api-frameworks/nestjs-patterns.md) | NestJS patterns | Building APIs with NestJS |
 
-### Audit Skills (3 skills)
+### Database Skills (3 skills)
 
 | Skill | Description | When to Use |
 |-------|-------------|-------------|
-| [security-audit](audit/security-audit.md) | OWASP compliance and penetration testing | Pre-deployment, quarterly reviews |
-| [performance-audit](audit/performance-audit.md) | Core Web Vitals and optimization | Pre-deployment, after major features |
-| [accessibility-audit](audit/accessibility-audit.md) | WCAG 2.1 Level AA compliance | Pre-deployment, after UI changes |
+| [drizzle-patterns](database/drizzle-patterns.md) | Drizzle ORM patterns | Using Drizzle for database |
+| [prisma-patterns](database/prisma-patterns.md) | Prisma ORM patterns | Using Prisma for database |
+| [mongoose-patterns](database/mongoose-patterns.md) | Mongoose ODM patterns | Using MongoDB with Mongoose |
 
-### Pattern Skills (3 skills)
+### Frontend Framework Skills (4 skills)
 
 | Skill | Description | When to Use |
 |-------|-------------|-------------|
-| [error-handling-patterns](patterns/error-handling-patterns.md) | Error class hierarchy and handling | Implementing error handling |
-| [auth-patterns](auth/nextauth-patterns.md) | Authentication patterns | Implementing auth flows |
-| [i18n-patterns](i18n/i18n-patterns.md) | Internationalization patterns | Adding multi-language support |
+| [react-patterns](frontend-frameworks/react-patterns.md) | React component patterns | Building React components |
+| [nextjs-patterns](frontend-frameworks/nextjs-patterns.md) | Next.js App Router patterns | Building Next.js apps |
+| [astro-patterns](frontend-frameworks/astro-patterns.md) | Astro patterns | Building Astro sites |
+| [tanstack-start-patterns](frontend-frameworks/tanstack-start-patterns.md) | TanStack Start patterns | Building TanStack Start apps |
 
 ### State Management Skills (3 skills)
 
@@ -57,87 +67,72 @@ config_required:
 | [tanstack-query-patterns](state/tanstack-query-patterns.md) | TanStack Query patterns | Server state management |
 | [zustand-patterns](state/zustand-patterns.md) | Zustand patterns | Simple client state |
 
-### React Skills (1 skill)
+### Testing Skills (4 skills)
 
 | Skill | Description | When to Use |
 |-------|-------------|-------------|
-| [react-hook-form-patterns](react/react-hook-form-patterns.md) | Form handling with React Hook Form | Building forms |
+| [api-app-testing](testing/api-app-testing.md) | API endpoint testing | Testing APIs |
+| [performance-testing](testing/performance-testing.md) | Performance benchmarks | Validating performance |
+| [security-testing](testing/security-testing.md) | Security testing patterns | Testing security |
+| [web-app-testing](qa/web-app-testing.md) | E2E web application testing | Testing web UI flows |
 
-### Tech Skills (3 skills)
-
-| Skill | Description | When to Use |
-|-------|-------------|-------------|
-| [mermaid-diagram-specialist](tech/mermaid-diagram-specialist.md) | Creating Mermaid diagrams | Documentation, architecture |
-| [component-library-specialist](tech/shadcn-specialist.md) | Component library integration | UI implementation |
-| [deployment-platform-specialist](tech/vercel-specialist.md) | Deployment configuration | Deploying applications |
-
-### Utility Skills (3 skills)
+### Audit Skills (3 skills)
 
 | Skill | Description | When to Use |
 |-------|-------------|-------------|
-| [add-memory](utils/add-memory.md) | Capture learnings and knowledge | After discovering patterns/issues |
-| [json-data-auditor](utils/json-data-auditor.md) | JSON validation and transformation | Working with JSON data |
-| [pdf-generator](utils/pdf-creator-editor.md) | PDF generation | Creating reports, invoices |
+| [security-audit](audit/security-audit.md) | OWASP compliance | Pre-deployment |
+| [performance-audit](audit/performance-audit.md) | Core Web Vitals | Pre-deployment |
+| [accessibility-audit](audit/accessibility-audit.md) | WCAG 2.1 Level AA | Pre-deployment |
 
-### Git Skills (1 skill)
-
-| Skill | Description | When to Use |
-|-------|-------------|-------------|
-| [git-commit-helper](git/git-commit-helper.md) | Conventional commit messages | Creating commits |
-
-### Documentation Skills (1 skill)
+### Pattern Skills (3 skills)
 
 | Skill | Description | When to Use |
 |-------|-------------|-------------|
-| [markdown-formatter](documentation/markdown-formatter.md) | Markdown formatting standards | Formatting documentation |
+| [error-handling-patterns](patterns/error-handling-patterns.md) | Error handling | Implementing error handling |
+| [tdd-methodology](patterns/tdd-methodology.md) | Test-Driven Development | During implementation |
+| [auth-patterns](auth/nextauth-patterns.md) | Authentication patterns | Implementing auth |
 
-### Design Skills (1 skill)
+### Other Skills
 
-| Skill | Description | When to Use |
-|-------|-------------|-------------|
-| [brand-guidelines](brand-guidelines.md) | Brand consistency in UI | Creating UI components |
-
-## Testing vs Audit Skills
-
-| Aspect | Testing Skills | Audit Skills |
-|--------|----------------|--------------|
-| **When** | During development (Phase 2) | Before deployment (Phase 3-4) |
-| **Frequency** | Continuous (every commit) | Periodic (quarterly, pre-deploy) |
-| **Duration** | Minutes | 60-90 minutes |
-| **Output** | Pass/Fail + Coverage % | Comprehensive report |
-| **Focus** | Does code work? | Meets standards/compliance? |
+| Category | Skill | Description |
+|----------|-------|-------------|
+| React | [react-hook-form-patterns](react/react-hook-form-patterns.md) | Form handling |
+| i18n | [i18n-patterns](i18n/i18n-patterns.md) | Internationalization |
+| QA | [qa-criteria-validator](qa/qa-criteria-validator.md) | PDR validation |
+| Tech | [mermaid-diagram-specialist](tech/mermaid-diagram-specialist.md) | Mermaid diagrams |
+| Tech | [component-library-specialist](tech/shadcn-specialist.md) | Component libraries |
+| Tech | [deployment-platform-specialist](tech/vercel-specialist.md) | Deployment config |
+| Git | [git-commit-helper](git/git-commit-helper.md) | Commit messages |
+| Docs | [markdown-formatter](documentation/markdown-formatter.md) | Markdown formatting |
+| Design | [brand-guidelines](brand-guidelines.md) | Brand consistency |
+| Utils | [add-memory](utils/add-memory.md) | Capture learnings |
+| Utils | [json-data-auditor](utils/json-data-auditor.md) | JSON validation |
+| Utils | [pdf-generator](utils/pdf-creator-editor.md) | PDF generation |
 
 ## Usage
 
 Skills are invoked within agent workflows or directly:
 
 ```text
-"Apply the security-testing skill to validate input handling"
-"Use git-commit-helper to generate commit message"
-"Run qa-criteria-validator against the PDR"
+"Apply the hono-patterns skill for API implementation"
+"Use drizzle-patterns for database schema"
+"Reference nextjs-patterns for the page component"
 ```
 
 ## Skill File Format
 
 Each skill file includes:
 
-1. **YAML Frontmatter**
-   - `name`: Unique identifier
-   - `category`: Skill category
-   - `description`: Brief description
-   - `usage`: When to use
-   - `input`/`output`: What skill needs and produces
-   - `config_required`: Configuration directives
+1. **Header**
+   - Skill name and overview
+   - When to use
 
-2. **Configuration Section**
-   - Table of required settings
-
-3. **Skill Content**
-   - Purpose
-   - Capabilities
-   - Workflow steps
+2. **Content**
+   - Framework-specific code examples
+   - Common patterns
    - Best practices
-   - Deliverables
+   - Testing examples
+   - Project structure
 
 ## Directory Structure
 
@@ -145,6 +140,20 @@ Each skill file includes:
 skills/
 ├── README.md
 ├── brand-guidelines.md
+├── api-frameworks/           # NEW: API framework patterns
+│   ├── hono-patterns.md
+│   ├── express-patterns.md
+│   ├── fastify-patterns.md
+│   └── nestjs-patterns.md
+├── database/                 # NEW: Database ORM patterns
+│   ├── drizzle-patterns.md
+│   ├── prisma-patterns.md
+│   └── mongoose-patterns.md
+├── frontend-frameworks/      # NEW: Frontend framework patterns
+│   ├── react-patterns.md
+│   ├── nextjs-patterns.md
+│   ├── astro-patterns.md
+│   └── tanstack-start-patterns.md
 ├── audit/
 │   ├── security-audit.md
 │   ├── performance-audit.md
@@ -186,12 +195,12 @@ skills/
 ## Adding New Skills
 
 1. Create `.md` file in appropriate category folder
-2. Include YAML frontmatter with `config_required`
-3. Add `⚙️ Configuration` section with settings table
-4. Keep content concise (150-300 lines target)
+2. Include framework-specific code examples
+3. Keep content focused on one framework/library
+4. Include testing examples
 5. Update this README
 
 ## Related
 
-- [Agents](../agents/README.md)
+- [Agents](../agents/README.md) - Generic role-based agents
 - [Commands](../commands/README.md)
