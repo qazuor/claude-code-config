@@ -65,6 +65,71 @@ export async function promptMcpConfig(options?: McpPromptOptions): Promise<McpCo
   const userInstalledSet = new Set(installedServers.user);
   const projectInstalledSet = new Set(installedServers.project);
 
+  // Check how many servers are available to install (not already installed)
+  const availableServers = MCP_SERVERS.filter(
+    (s) => !userInstalledSet.has(s.id) && !projectInstalledSet.has(s.id)
+  );
+
+  // If all servers are already installed, skip the selection and go to custom server
+  if (availableServers.length === 0) {
+    logger.newline();
+    logger.success('All MCP servers are already installed!');
+
+    const parts: string[] = [];
+    if (userInstalledSet.size > 0) {
+      parts.push(`${userInstalledSet.size} at user level`);
+    }
+    if (projectInstalledSet.size > 0) {
+      parts.push(`${projectInstalledSet.size} at project level`);
+    }
+    logger.info(colors.muted(`  (${parts.join(', ')})`));
+    logger.newline();
+
+    // Still ask about custom server
+    const wantCustom = await confirm({
+      message: 'Do you want to add a custom MCP server?',
+      default: false,
+    });
+
+    if (wantCustom) {
+      const level = await select({
+        message: 'Where should the custom server be configured?',
+        choices: [
+          {
+            name: 'Project level (.claude/settings.local.json)',
+            value: 'project' as const,
+            description: 'Specific to this project',
+          },
+          {
+            name: 'User level (~/.claude/settings.json)',
+            value: 'user' as const,
+            description: 'Available in all projects',
+          },
+        ],
+        default: options?.defaults?.level || 'project',
+      });
+
+      const customInstallation = await promptCustomServer(level);
+      if (customInstallation) {
+        return {
+          config: {
+            level,
+            servers: [customInstallation],
+          },
+          skippedConfigs: [],
+        };
+      }
+    }
+
+    return {
+      config: {
+        level: 'project',
+        servers: [],
+      },
+      skippedConfigs: [],
+    };
+  }
+
   // Select installation level
   const level = await select({
     message: 'Where should MCP servers be configured?',
@@ -83,7 +148,7 @@ export async function promptMcpConfig(options?: McpPromptOptions): Promise<McpCo
     default: options?.defaults?.level || 'project',
   });
 
-  // Group servers by category for display
+  // Group available servers by category (only servers not already installed)
   const serversByCategory = groupServersByCategory();
   const selectedServerIds: string[] = [];
 
@@ -104,49 +169,25 @@ export async function promptMcpConfig(options?: McpPromptOptions): Promise<McpCo
   }
   logger.newline();
 
-  // Show grouped selection
+  // Show grouped selection - only categories with available servers
   for (const [category, servers] of Object.entries(serversByCategory)) {
-    const choices = servers.map((s) => {
-      const isInstalledAtUserLevel = userInstalledSet.has(s.id);
-      const isInstalledAtProjectLevel = projectInstalledSet.has(s.id);
+    // Filter to only available (not installed) servers in this category
+    const availableInCategory = servers.filter(
+      (s) => !userInstalledSet.has(s.id) && !projectInstalledSet.has(s.id)
+    );
 
-      // If already installed at user level, disable it
-      if (isInstalledAtUserLevel) {
-        return {
-          name: `${s.name} - ${s.description} ${colors.muted('(already installed at user level)')}`,
-          value: s.id,
-          checked: false,
-          disabled: 'already installed at user level',
-        };
-      }
-
-      // If already installed at project level, disable it
-      if (isInstalledAtProjectLevel) {
-        return {
-          name: `${s.name} - ${s.description} ${colors.muted('(already installed at project level)')}`,
-          value: s.id,
-          checked: false,
-          disabled: 'already installed at project level',
-        };
-      }
-
-      return {
-        name: `${s.name} - ${s.description}`,
-        value: s.id,
-        checked: options?.defaults?.servers?.some((i) => i.serverId === s.id) ?? false,
-      };
-    });
-
-    // Check if there are any enabled (selectable) choices
-    const hasEnabledChoices = choices.some((choice) => !choice.disabled);
-
-    const categoryLabel = formatCategory(category);
-
-    if (!hasEnabledChoices) {
-      // All servers in this category are already installed, skip the checkbox
-      logger.info(colors.muted(`${categoryLabel}: All servers already installed`));
+    // Skip category if all servers are already installed
+    if (availableInCategory.length === 0) {
       continue;
     }
+
+    const choices = availableInCategory.map((s) => ({
+      name: `${s.name} - ${s.description}`,
+      value: s.id,
+      checked: options?.defaults?.servers?.some((i) => i.serverId === s.id) ?? false,
+    }));
+
+    const categoryLabel = formatCategory(category);
 
     const selected = await checkbox({
       message: `${categoryLabel}:`,
