@@ -1,16 +1,17 @@
 /**
  * CLAUDE.md generator - creates the main Claude instructions file in project root
+ *
+ * This generator builds the content directly instead of using template regex processing
+ * for more reliable output.
  */
 
 import type { ClaudeConfig, ProjectInfo } from '../../types/config.js';
-import type { StandardsConfig } from '../../types/standards.js';
 import type {
   TemplateConfig,
   TemplateConfigCommands,
   TemplateConfigTechStack,
 } from '../../types/template-config.js';
-import { joinPath, pathExists, readFile, writeFile } from '../utils/fs.js';
-import { getTemplatesPath } from '../utils/paths.js';
+import { joinPath, pathExists, writeFile } from '../utils/fs.js';
 import { withSpinner } from '../utils/spinner.js';
 
 export interface ClaudeMdOptions {
@@ -56,22 +57,15 @@ export async function generateClaudeMd(
   }
 
   try {
-    // Get template content
-    let template: string;
-    if (options?.customTemplate) {
-      template = options.customTemplate;
-    } else {
-      const templatePath = joinPath(getTemplatesPath(), 'CLAUDE.md.template');
-      if (await pathExists(templatePath)) {
-        template = await readFile(templatePath);
-      } else {
-        // Fallback to minimal template
-        template = getMinimalTemplate();
-      }
-    }
+    let content: string;
 
-    // Process template with all available data
-    const content = processTemplate(template, projectInfo, options);
+    // If custom template provided, use it with basic placeholder replacement
+    if (options?.customTemplate) {
+      content = processCustomTemplate(options.customTemplate, projectInfo);
+    } else {
+      // Generate content directly (more reliable than regex templates)
+      content = generateClaudeMdContent(projectInfo, options);
+    }
 
     // Write file
     await writeFile(claudeMdPath, content);
@@ -109,95 +103,230 @@ export async function generateClaudeMdWithSpinner(
 }
 
 /**
- * Process template with all available data
+ * Process a custom template with basic placeholder replacement
+ * Only handles simple {{PLACEHOLDER}} patterns, no conditionals
  */
-function processTemplate(
-  template: string,
-  projectInfo: ProjectInfo,
-  options?: ClaudeMdOptions
-): string {
-  let content = template;
-  const techStack = options?.templateConfig?.techStack;
-  const commands = options?.templateConfig?.commands;
-  const targets = options?.templateConfig?.targets;
-  const preferences = options?.claudeConfig?.preferences;
-  const standards = options?.claudeConfig?.extras?.standards;
-
-  // Basic project info replacements
-  content = content
+function processCustomTemplate(template: string, projectInfo: ProjectInfo): string {
+  return template
     .replace(/\{\{PROJECT_NAME\}\}/g, projectInfo.name)
     .replace(/\{\{PROJECT_DESCRIPTION\}\}/g, projectInfo.description)
     .replace(/\{\{ORG\}\}/g, projectInfo.org)
     .replace(/\{\{REPO\}\}/g, projectInfo.repo)
     .replace(/\{\{ENTITY_TYPE\}\}/g, projectInfo.entityType)
     .replace(/\{\{ENTITY_TYPE_PLURAL\}\}/g, projectInfo.entityTypePlural)
+    .replace(/\{\{DOMAIN\}\}/g, projectInfo.domain || '')
     .replace(/\{\{LOCATION\}\}/g, projectInfo.location || '');
+}
 
-  // Package manager
+/**
+ * Generate CLAUDE.md content directly (no regex template processing)
+ */
+function generateClaudeMdContent(projectInfo: ProjectInfo, options?: ClaudeMdOptions): string {
+  const techStack = options?.templateConfig?.techStack;
+  const commands = options?.templateConfig?.commands;
+  const targets = options?.templateConfig?.targets;
+  const preferences = options?.claudeConfig?.preferences;
+  const standards = options?.claudeConfig?.extras?.standards;
+
   const packageManager = preferences?.packageManager || 'pnpm';
-  content = content.replace(/\{\{PACKAGE_MANAGER\}\}/g, packageManager);
+  const lines: string[] = [];
 
-  // Coverage target - from standards or targets
-  const coverageTarget = standards?.testing?.coverageTarget
-    ? String(standards.testing.coverageTarget)
-    : targets && 'coverage' in targets
-      ? String(targets.coverage)
-      : '90';
-  content = content.replace(/\{\{COVERAGE_TARGET\}\}/g, coverageTarget);
+  // Header
+  lines.push('# CLAUDE.md');
+  lines.push('');
 
-  // Process standards-based placeholders
-  content = processStandardsPlaceholders(content, standards, preferences);
+  // Project Overview
+  lines.push('## Project Overview');
+  lines.push('');
+  lines.push(`**${projectInfo.name}** - ${projectInfo.description}`);
+  lines.push('');
 
-  // Domain handling with conditional
+  // Repository
+  lines.push('## Repository');
+  lines.push('');
+  lines.push(`- **Organization:** ${projectInfo.org}`);
+  lines.push(`- **Repository:** ${projectInfo.repo}`);
+  lines.push(`- **GitHub:** https://github.com/${projectInfo.org}/${projectInfo.repo}`);
   if (projectInfo.domain) {
-    content = content
-      .replace(/\{\{#if DOMAIN\}\}/g, '')
-      .replace(/\{\{\/if\}\}/g, '')
-      .replace(/\{\{DOMAIN\}\}/g, projectInfo.domain);
-  } else {
-    // Remove domain section if not provided
-    content = content.replace(/\{\{#if DOMAIN\}\}[\s\S]*?\{\{\/if\}\}/g, '');
+    lines.push(`- **Domain:** ${projectInfo.domain}`);
   }
+  lines.push('');
 
-  // Generate tech stack section
-  if (techStack && Object.keys(techStack).length > 0) {
-    const techStackContent = generateTechStackSection(techStack);
-    content = content
-      .replace(/\{\{#if TECH_STACK\}\}/g, '')
-      .replace(/\{\{TECH_STACK\}\}\n\{\{else\}\}[\s\S]*?\{\{\/if\}\}/g, techStackContent);
-  } else {
-    // Use default tech stack section
-    content = content
-      .replace(/\{\{#if TECH_STACK\}\}[\s\S]*?\{\{else\}\}/g, '')
-      .replace(/\{\{\/if\}\}/g, '');
+  // Tech Stack
+  lines.push('## Tech Stack');
+  lines.push('');
+  lines.push(generateTechStackSection(techStack));
+
+  // Project Structure
+  lines.push('## Project Structure');
+  lines.push('');
+  lines.push('```text');
+  lines.push(`${projectInfo.name}/`);
+  lines.push('├── src/              # Source code');
+  lines.push('├── tests/            # Test files');
+  lines.push('├── docs/             # Documentation');
+  lines.push('└── .claude/          # Claude configuration');
+  lines.push('    ├── agents/       # AI agent definitions');
+  lines.push('    ├── commands/     # Custom slash commands');
+  lines.push('    ├── skills/       # Specialized skills');
+  lines.push('    └── docs/         # AI-specific documentation');
+  lines.push('```');
+  lines.push('');
+
+  // Quick Commands
+  lines.push('## Quick Commands');
+  lines.push('');
+  lines.push(generateCommandsSection(commands, packageManager));
+
+  // Development Guidelines
+  lines.push('## Development Guidelines');
+  lines.push('');
+
+  // Code Standards
+  lines.push('### Code Standards');
+  lines.push('');
+  lines.push('- Primary language: TypeScript');
+  lines.push('- Follow TypeScript best practices');
+  if (standards?.code?.namedExportsOnly) {
+    lines.push('- Use named exports only (no default exports)');
   }
-
-  // Generate commands section
-  if (commands && Object.keys(commands).length > 0) {
-    const commandsContent = generateCommandsSection(commands, packageManager);
-    content = content
-      .replace(/\{\{#if COMMANDS\}\}/g, '')
-      .replace(/\{\{COMMANDS\}\}\n\{\{else\}\}[\s\S]*?\{\{\/if\}\}/g, commandsContent);
-  } else {
-    // Use default commands section
-    content = content
-      .replace(/\{\{#if COMMANDS\}\}[\s\S]*?\{\{else\}\}/g, '')
-      .replace(/\{\{\/if\}\}/g, '');
+  const maxLines = standards?.code?.maxFileLines || 500;
+  lines.push(`- Maximum ${maxLines} lines per file`);
+  if (standards?.code?.jsDocRequired) {
+    lines.push('- Document all exports with JSDoc');
   }
+  if (standards?.code?.roroPattern) {
+    lines.push('- Use RO-RO pattern (Receive Object, Return Object)');
+  }
+  lines.push('');
 
-  // Handle project structure conditional (use default for now)
-  content = content
-    .replace(/\{\{#if PROJECT_STRUCTURE\}\}[\s\S]*?\{\{else\}\}/g, '')
-    .replace(/\{\{\/if\}\}/g, '');
+  // Testing
+  lines.push('### Testing');
+  lines.push('');
+  if (standards?.testing?.tddRequired) {
+    lines.push('- Methodology: TDD (Test-Driven Development)');
+    lines.push('- Write tests first: Red -> Green -> Refactor');
+  } else {
+    lines.push('- Write comprehensive tests for all features');
+  }
+  const coverageTarget =
+    standards?.testing?.coverageTarget ||
+    (targets && 'coverage' in targets ? targets.coverage : 90);
+  lines.push(`- Maintain ${coverageTarget}%+ code coverage`);
+  const testPattern =
+    standards?.testing?.testPattern === 'gwt'
+      ? 'GWT (Given-When-Then)'
+      : 'AAA (Arrange, Act, Assert)';
+  lines.push(`- Test pattern: ${testPattern}`);
+  if (standards?.testing?.testLocation) {
+    const testLocationText =
+      standards.testing.testLocation === 'colocated'
+        ? 'Co-located with source'
+        : 'Separate test directory';
+    lines.push(`- Test location: ${testLocationText}`);
+  }
+  lines.push('');
 
-  return content;
+  // Git Workflow
+  lines.push('### Git Workflow');
+  lines.push('');
+  lines.push('- Use conventional commits: `type(scope): description`');
+  lines.push('- Types: feat, fix, docs, style, refactor, test, chore');
+  lines.push('- Keep commits atomic and focused');
+  if (preferences?.includeCoAuthor) {
+    lines.push('');
+    lines.push('#### Commit Attribution');
+    lines.push('');
+    lines.push('Include the following in commit messages:');
+    lines.push('```');
+    lines.push('🤖 Generated with [Claude Code](https://claude.com/claude-code)');
+    lines.push('');
+    lines.push('Co-Authored-By: Claude <noreply@anthropic.com>');
+    lines.push('```');
+  }
+  lines.push('');
+
+  // Claude Behavior Guidelines
+  lines.push('## Claude Behavior Guidelines');
+  lines.push('');
+
+  // Critical Thinking
+  lines.push('### Critical Thinking');
+  lines.push('');
+  lines.push('- You are an expert who double-checks things, you are skeptical and do research');
+  lines.push('- Neither the user nor you are always right, but both strive for accuracy');
+  lines.push('- When the user asks something, reason with these questions:');
+  lines.push('  - "Why might the user be wrong?"');
+  lines.push('  - "What arguments exist against what the user thinks?"');
+  lines.push('  - "Act as devil\'s advocate - why might this proposal fail?"');
+  lines.push('  - "Imagine you\'re in a debate - how would you refute this?"');
+  lines.push(
+    '- Always ask to better understand the context of the requested change before implementing'
+  );
+  lines.push('');
+
+  // Communication Style
+  lines.push('### Communication Style');
+  lines.push('');
+  if (preferences?.responseLanguage) {
+    const langDisplay =
+      preferences.responseLanguage === 'es'
+        ? 'Spanish'
+        : preferences.responseLanguage === 'en'
+          ? 'English'
+          : preferences.responseLanguage;
+    lines.push(`- Respond in ${langDisplay}`);
+  }
+  lines.push('- Code and comments should always be in English');
+  lines.push('- Be direct and concise');
+  lines.push('- Explain the "why" behind decisions when relevant');
+  lines.push('');
+
+  // Writing Style
+  lines.push('### Writing Style');
+  lines.push('');
+  lines.push(
+    '- Systematically replace em-dashes ("—") with a period (".") to start a new sentence, or a comma (",") to continue the sentence'
+  );
+  lines.push('- Avoid unnecessary filler words');
+  lines.push('- Use clear, technical language');
+  lines.push('');
+
+  // Claude Configuration
+  lines.push('## Claude Configuration');
+  lines.push('');
+  lines.push('This project uses `@qazuor/claude-code-config` for AI-assisted development.');
+  lines.push('');
+  lines.push('### Available Commands');
+  lines.push('');
+  lines.push('Run `/help` in Claude to see all available commands.');
+  lines.push('');
+  lines.push('### Documentation');
+  lines.push('');
+  lines.push('- Quick Start: `.claude/docs/quick-start.md`');
+  lines.push('- Workflows: `.claude/docs/workflows/README.md`');
+  lines.push('- Standards: `.claude/docs/standards/`');
+  lines.push('');
+  lines.push('---');
+  lines.push('');
+  lines.push(
+    '*Generated by [@qazuor/claude-code-config](https://github.com/qazuor/claude-code-config)*'
+  );
+  lines.push('');
+
+  return lines.join('\n');
 }
 
 /**
  * Generate tech stack section content
  */
-function generateTechStackSection(techStack: TemplateConfigTechStack): string {
+function generateTechStackSection(techStack?: TemplateConfigTechStack): string {
+  if (!techStack) {
+    return getDefaultTechStack();
+  }
+
   const lines: string[] = [];
+  let hasContent = false;
 
   // Frontend
   if (techStack.frontendFramework && techStack.frontendFramework !== 'None') {
@@ -207,6 +336,7 @@ function generateTechStackSection(techStack: TemplateConfigTechStack): string {
       lines.push(`- State: ${techStack.stateManagement}`);
     }
     lines.push('');
+    hasContent = true;
   }
 
   // Backend
@@ -217,6 +347,7 @@ function generateTechStackSection(techStack: TemplateConfigTechStack): string {
       lines.push(`- Validation: ${techStack.validationLibrary}`);
     }
     lines.push('');
+    hasContent = true;
   }
 
   // Database
@@ -224,6 +355,7 @@ function generateTechStackSection(techStack: TemplateConfigTechStack): string {
     lines.push('**Database:**');
     lines.push(`- ORM: ${techStack.databaseOrm}`);
     lines.push('');
+    hasContent = true;
   }
 
   // Auth
@@ -231,6 +363,7 @@ function generateTechStackSection(techStack: TemplateConfigTechStack): string {
     lines.push('**Authentication:**');
     lines.push(`- Provider: ${techStack.authPattern}`);
     lines.push('');
+    hasContent = true;
   }
 
   // Testing
@@ -238,6 +371,7 @@ function generateTechStackSection(techStack: TemplateConfigTechStack): string {
     lines.push('**Testing:**');
     lines.push(`- Framework: ${techStack.testFramework}`);
     lines.push('');
+    hasContent = true;
   }
 
   // Bundler
@@ -245,15 +379,42 @@ function generateTechStackSection(techStack: TemplateConfigTechStack): string {
     lines.push('**Build:**');
     lines.push(`- Bundler: ${techStack.bundler}`);
     lines.push('');
+    hasContent = true;
+  }
+
+  if (!hasContent) {
+    return getDefaultTechStack();
   }
 
   return lines.join('\n');
 }
 
 /**
+ * Get default tech stack when nothing is configured
+ */
+function getDefaultTechStack(): string {
+  return `**Frontend:**
+- Framework: Not configured
+
+**Backend:**
+- API: Not configured
+
+**Database:**
+- ORM: Not configured
+
+**Testing:**
+- Framework: Not configured
+
+`;
+}
+
+/**
  * Generate commands section content
  */
-function generateCommandsSection(commands: TemplateConfigCommands, packageManager: string): string {
+function generateCommandsSection(
+  commands?: TemplateConfigCommands,
+  packageManager = 'pnpm'
+): string {
   const lines: string[] = ['```bash'];
 
   // Development commands
@@ -263,12 +424,12 @@ function generateCommandsSection(commands: TemplateConfigCommands, packageManage
 
   // Testing commands
   lines.push('# Testing');
-  if (commands.test) {
+  if (commands?.test) {
     lines.push(`${commands.test}           # Run tests`);
   } else {
     lines.push(`${packageManager} test             # Run tests`);
   }
-  if (commands.coverage) {
+  if (commands?.coverage) {
     lines.push(`${commands.coverage}  # Run tests with coverage`);
   } else {
     lines.push(`${packageManager} test:coverage    # Run tests with coverage`);
@@ -277,157 +438,26 @@ function generateCommandsSection(commands: TemplateConfigCommands, packageManage
 
   // Quality commands
   lines.push('# Quality');
-  if (commands.lint) {
+  if (commands?.lint) {
     lines.push(`${commands.lint}           # Run linter`);
   } else {
     lines.push(`${packageManager} lint             # Run linter`);
   }
-  if (commands.typecheck) {
+  if (commands?.typecheck) {
     lines.push(`${commands.typecheck}      # Type checking`);
   } else {
     lines.push(`${packageManager} typecheck        # Type checking`);
   }
 
   // Build command
-  if (commands.build) {
+  if (commands?.build) {
     lines.push('');
     lines.push('# Build');
     lines.push(`${commands.build}          # Build for production`);
   }
 
   lines.push('```');
+  lines.push('');
 
   return lines.join('\n');
-}
-
-/**
- * Process standards-based placeholders
- */
-function processStandardsPlaceholders(
-  content: string,
-  standards?: StandardsConfig,
-  preferences?: { language?: string; responseLanguage?: string; includeCoAuthor?: boolean }
-): string {
-  let result = content;
-
-  // Primary language (default to TypeScript)
-  const primaryLanguage = 'TypeScript'; // Could be extended to detect from project
-  result = result.replace(/\{\{PRIMARY_LANGUAGE\}\}/g, primaryLanguage);
-
-  // Max file lines
-  const maxFileLines = standards?.code?.maxFileLines?.toString() || '500';
-  result = result.replace(/\{\{MAX_FILE_LINES\}\}/g, maxFileLines);
-
-  // Test pattern
-  const testPattern =
-    standards?.testing?.testPattern === 'gwt'
-      ? 'GWT (Given-When-Then)'
-      : 'AAA (Arrange, Act, Assert)';
-  result = result.replace(/\{\{TEST_PATTERN\}\}/g, testPattern);
-
-  // Response language
-  const responseLanguage =
-    preferences?.responseLanguage === 'es'
-      ? 'Spanish'
-      : preferences?.responseLanguage === 'en'
-        ? 'English'
-        : 'Spanish';
-  result = result.replace(/\{\{RESPONSE_LANGUAGE\}\}/g, responseLanguage);
-
-  // Boolean conditionals
-  // NAMED_EXPORTS_ONLY
-  if (standards?.code?.namedExportsOnly) {
-    result = result.replace(/\{\{#if NAMED_EXPORTS_ONLY\}\}/g, '').replace(/\{\{\/if\}\}/g, '');
-  } else {
-    result = result.replace(/\{\{#if NAMED_EXPORTS_ONLY\}\}[\s\S]*?\{\{\/if\}\}/g, '');
-  }
-
-  // JSDOC_REQUIRED
-  if (standards?.code?.jsDocRequired) {
-    result = result.replace(/\{\{#if JSDOC_REQUIRED\}\}/g, '').replace(/\{\{\/if\}\}/g, '');
-  } else {
-    result = result.replace(/\{\{#if JSDOC_REQUIRED\}\}[\s\S]*?\{\{\/if\}\}/g, '');
-  }
-
-  // RORO_PATTERN
-  if (standards?.code?.roroPattern) {
-    result = result.replace(/\{\{#if RORO_PATTERN\}\}/g, '').replace(/\{\{\/if\}\}/g, '');
-  } else {
-    result = result.replace(/\{\{#if RORO_PATTERN\}\}[\s\S]*?\{\{\/if\}\}/g, '');
-  }
-
-  // TDD_REQUIRED
-  if (standards?.testing?.tddRequired) {
-    result = result
-      .replace(/\{\{#if TDD_REQUIRED\}\}/g, '')
-      .replace(/\{\{else\}\}[\s\S]*?\{\{\/if\}\}/g, '');
-  } else {
-    result = result
-      .replace(/\{\{#if TDD_REQUIRED\}\}[\s\S]*?\{\{else\}\}/g, '')
-      .replace(/\{\{\/if\}\}/g, '');
-  }
-
-  // TEST_LOCATION
-  const testLocation = standards?.testing?.testLocation;
-  if (testLocation) {
-    const testLocationText =
-      testLocation === 'colocated' ? 'Co-located with source' : 'Separate test directory';
-    result = result
-      .replace(/\{\{#if TEST_LOCATION\}\}/g, '')
-      .replace(/\{\{\/if\}\}/g, '')
-      .replace(/\{\{TEST_LOCATION\}\}/g, testLocationText);
-  } else {
-    result = result.replace(/\{\{#if TEST_LOCATION\}\}[\s\S]*?\{\{\/if\}\}/g, '');
-  }
-
-  // INCLUDE_CO_AUTHOR
-  if (preferences?.includeCoAuthor) {
-    result = result.replace(/\{\{#if INCLUDE_CO_AUTHOR\}\}/g, '').replace(/\{\{\/if\}\}/g, '');
-  } else {
-    result = result.replace(/\{\{#if INCLUDE_CO_AUTHOR\}\}[\s\S]*?\{\{\/if\}\}/g, '');
-  }
-
-  // RESPONSE_LANGUAGE conditional
-  if (preferences?.responseLanguage) {
-    result = result.replace(/\{\{#if RESPONSE_LANGUAGE\}\}/g, '').replace(/\{\{\/if\}\}/g, '');
-  } else {
-    result = result.replace(/\{\{#if RESPONSE_LANGUAGE\}\}[\s\S]*?\{\{\/if\}\}/g, '');
-  }
-
-  return result;
-}
-
-/**
- * Get minimal fallback template
- */
-function getMinimalTemplate(): string {
-  return `# CLAUDE.md
-
-## Project Overview
-
-**{{PROJECT_NAME}}** - {{PROJECT_DESCRIPTION}}
-
-## Repository
-
-- **GitHub:** https://github.com/{{ORG}}/{{REPO}}
-
-## Quick Commands
-
-\`\`\`bash
-{{PACKAGE_MANAGER}} dev        # Start development
-{{PACKAGE_MANAGER}} test       # Run tests
-{{PACKAGE_MANAGER}} lint       # Run linter
-{{PACKAGE_MANAGER}} build      # Build project
-\`\`\`
-
-## Claude Configuration
-
-This project uses \`@qazuor/claude-code-config\` for AI-assisted development.
-
-See \`.claude/docs/quick-start.md\` for getting started.
-
----
-
-*Generated by [@qazuor/claude-code-config](https://github.com/qazuor/claude-code-config)*
-`;
 }

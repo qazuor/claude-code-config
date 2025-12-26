@@ -8,9 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.6.2] - 2025-12-26
 
-### Improved
+### Fixed
 
-- **MCP wizard UX**: Skip MCP selection step entirely when all servers are already installed. Only show categories with available servers, hiding fully installed categories. Shows success message with count of installed servers.
+- **CLAUDE.md generator**: Rewrote generator to use direct content generation instead of fragile regex template processing. Now correctly includes tech stack configuration and all conditional sections.
+- **MCP wizard UX**: Skip MCP selection step entirely when all servers are already installed. Only show categories with available servers, hiding fully installed categories.
 
 ## [0.6.1] - 2025-12-26
 
