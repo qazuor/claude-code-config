@@ -30,6 +30,15 @@ import {
 describe('git utilities', () => {
   let testDir: string;
 
+  /**
+   * Helper to configure git user in a repo (required for commits in CI)
+   */
+  async function configureGitUser(dir: string) {
+    const git = createGit(dir);
+    await git.addConfig('user.email', 'test@example.com');
+    await git.addConfig('user.name', 'Test User');
+  }
+
   beforeEach(async () => {
     testDir = path.join(
       os.tmpdir(),
@@ -85,6 +94,7 @@ describe('git utilities', () => {
   describe('getCurrentBranch', () => {
     it('should get current branch name', async () => {
       await initRepo(testDir);
+      await configureGitUser(testDir);
       // Create initial commit so HEAD exists
       const git = createGit(testDir);
       const testFile = path.join(testDir, 'test.txt');
@@ -118,6 +128,7 @@ describe('git utilities', () => {
   describe('getLatestCommit', () => {
     it('should get latest commit hash', async () => {
       await initRepo(testDir);
+      await configureGitUser(testDir);
       const git = createGit(testDir);
       const testFile = path.join(testDir, 'test.txt');
       await fse.writeFile(testFile, 'test');
@@ -145,6 +156,7 @@ describe('git utilities', () => {
   describe('getChangedFiles', () => {
     it('should return empty array for clean repo', async () => {
       await initRepo(testDir);
+      await configureGitUser(testDir);
       const git = createGit(testDir);
       const testFile = path.join(testDir, 'test.txt');
       await fse.writeFile(testFile, 'test');
@@ -157,6 +169,7 @@ describe('git utilities', () => {
 
     it('should return modified files', async () => {
       await initRepo(testDir);
+      await configureGitUser(testDir);
       const git = createGit(testDir);
       const testFile = path.join(testDir, 'test.txt');
       await fse.writeFile(testFile, 'test');
@@ -172,6 +185,7 @@ describe('git utilities', () => {
 
     it('should return created files', async () => {
       await initRepo(testDir);
+      await configureGitUser(testDir);
       const git = createGit(testDir);
       const testFile = path.join(testDir, 'test.txt');
       await fse.writeFile(testFile, 'test');
@@ -190,6 +204,7 @@ describe('git utilities', () => {
   describe('hasUncommittedChanges', () => {
     it('should return false for clean repo', async () => {
       await initRepo(testDir);
+      await configureGitUser(testDir);
       const git = createGit(testDir);
       const testFile = path.join(testDir, 'test.txt');
       await fse.writeFile(testFile, 'test');
@@ -202,6 +217,7 @@ describe('git utilities', () => {
 
     it('should return true for modified files', async () => {
       await initRepo(testDir);
+      await configureGitUser(testDir);
       const git = createGit(testDir);
       const testFile = path.join(testDir, 'test.txt');
       await fse.writeFile(testFile, 'test');
@@ -261,6 +277,7 @@ describe('git utilities', () => {
 
     it('should return repo info for git directory', async () => {
       await initRepo(testDir);
+      await configureGitUser(testDir);
       const git = createGit(testDir);
       const testFile = path.join(testDir, 'test.txt');
       await fse.writeFile(testFile, 'test');
@@ -275,6 +292,7 @@ describe('git utilities', () => {
 
     it('should include owner and repo when remote is set', async () => {
       await initRepo(testDir);
+      await configureGitUser(testDir);
       const git = createGit(testDir);
       await git.addRemote('origin', 'https://github.com/myorg/myrepo.git');
       const testFile = path.join(testDir, 'test.txt');
@@ -299,6 +317,7 @@ describe('git utilities', () => {
   describe('getRemoteBranches', () => {
     it('should return empty array for repo without remote', async () => {
       await initRepo(testDir);
+      await configureGitUser(testDir);
       const git = createGit(testDir);
       const testFile = path.join(testDir, 'test.txt');
       await fse.writeFile(testFile, 'test');
@@ -314,6 +333,7 @@ describe('git utilities', () => {
   describe('getTags', () => {
     it('should return empty array for repo without tags', async () => {
       await initRepo(testDir);
+      await configureGitUser(testDir);
       const git = createGit(testDir);
       const testFile = path.join(testDir, 'test.txt');
       await fse.writeFile(testFile, 'test');
@@ -327,6 +347,7 @@ describe('git utilities', () => {
 
     it('should return tags when present', async () => {
       await initRepo(testDir);
+      await configureGitUser(testDir);
       const git = createGit(testDir);
       const testFile = path.join(testDir, 'test.txt');
       await fse.writeFile(testFile, 'test');
@@ -342,6 +363,7 @@ describe('git utilities', () => {
   describe('fetch', () => {
     it('should not throw for repo without remote', async () => {
       await initRepo(testDir);
+      await configureGitUser(testDir);
       const git = createGit(testDir);
       const testFile = path.join(testDir, 'test.txt');
       await fse.writeFile(testFile, 'test');
@@ -359,6 +381,7 @@ describe('git utilities', () => {
 
     it('should support tags option', async () => {
       await initRepo(testDir);
+      await configureGitUser(testDir);
       const git = createGit(testDir);
       const testFile = path.join(testDir, 'test.txt');
       await fse.writeFile(testFile, 'test');
@@ -378,6 +401,7 @@ describe('git utilities', () => {
   describe('checkout', () => {
     it('should checkout a branch', async () => {
       await initRepo(testDir);
+      await configureGitUser(testDir);
       const git = createGit(testDir);
       const testFile = path.join(testDir, 'test.txt');
       await fse.writeFile(testFile, 'test');
@@ -426,6 +450,7 @@ describe('git utilities', () => {
       const existingRepo = path.join(testDir, 'existing-repo');
       await fse.ensureDir(existingRepo);
       await initRepo(existingRepo);
+      await configureGitUser(existingRepo);
       const git = createGit(existingRepo);
       const testFile = path.join(existingRepo, 'test.txt');
       await fse.writeFile(testFile, 'test');
@@ -442,6 +467,7 @@ describe('git utilities', () => {
       const existingRepo = path.join(testDir, 'update-repo');
       await fse.ensureDir(existingRepo);
       await initRepo(existingRepo);
+      await configureGitUser(existingRepo);
       const git = createGit(existingRepo);
       const testFile = path.join(existingRepo, 'test.txt');
       await fse.writeFile(testFile, 'test');

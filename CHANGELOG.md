@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.6.4] - 2025-12-26
+
+### Fixed
+
+- **Git tests CI failure**: Added git user configuration (`user.name` and `user.email`) to all tests that make commits, fixing CI failures in environments without global git config.
+
 ## [0.6.3] - 2025-12-26
 
 ### Fixed
