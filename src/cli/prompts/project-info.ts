@@ -22,8 +22,8 @@ export async function promptProjectInfo(options?: ProjectInfoOptions): Promise<P
     default: options?.defaults?.name,
     validate: (value) => {
       if (!value.trim()) return 'Project name is required';
-      if (!/^[a-zA-Z0-9-_\s]+$/.test(value)) {
-        return 'Project name can only contain letters, numbers, dashes, underscores, and spaces';
+      if (!/^[a-zA-Z0-9-_.\s]+$/.test(value)) {
+        return 'Project name can only contain letters, numbers, dashes, underscores, dots, and spaces';
       }
       return true;
     },
@@ -55,8 +55,8 @@ export async function promptProjectInfo(options?: ProjectInfoOptions): Promise<P
     default: options?.defaults?.repo || name.toLowerCase().replace(/\s+/g, '-'),
     validate: (value) => {
       if (!value.trim()) return 'Repository name is required';
-      if (!/^[a-zA-Z0-9-_]+$/.test(value)) {
-        return 'Repository name can only contain letters, numbers, dashes, and underscores';
+      if (!/^[a-zA-Z0-9-_.]+$/.test(value)) {
+        return 'Repository name can only contain letters, numbers, dashes, underscores, and dots';
       }
       return true;
     },
