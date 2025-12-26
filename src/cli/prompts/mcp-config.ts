@@ -137,7 +137,17 @@ export async function promptMcpConfig(options?: McpPromptOptions): Promise<McpCo
       };
     });
 
+    // Check if there are any enabled (selectable) choices
+    const hasEnabledChoices = choices.some((choice) => !choice.disabled);
+
     const categoryLabel = formatCategory(category);
+
+    if (!hasEnabledChoices) {
+      // All servers in this category are already installed, skip the checkbox
+      logger.info(colors.muted(`${categoryLabel}: All servers already installed`));
+      continue;
+    }
+
     const selected = await checkbox({
       message: `${categoryLabel}:`,
       choices,
