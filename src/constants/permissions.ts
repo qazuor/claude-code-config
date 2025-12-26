@@ -156,6 +156,7 @@ export const PERMISSION_PRESETS: Record<
 
 /**
  * Default deny rules (always applied)
+ * Note: Use ":*" for prefix matching, not just "*"
  */
 export const DEFAULT_DENY_RULES: string[] = [
   // Directories
@@ -175,12 +176,13 @@ export const DEFAULT_DENY_RULES: string[] = [
   'Write(/var/**)',
   'Write(/tmp/**)',
 
-  // Dangerous commands
+  // Dangerous commands - use exact matches or :* prefix
   'Bash(rm -rf /)',
-  'Bash(sudo *)',
-  'Bash(chmod 777 *)',
-  'Bash(curl * | bash)',
-  'Bash(wget * | bash)',
+  'Bash(sudo:*)',
+  'Bash(chmod 777:*)',
+  // Note: Can't deny "curl * | bash" pattern - use specific denies instead
+  'Bash(curl:*)',
+  'Bash(wget:*)',
 
   // Sensitive files
   'Write(.env)',
@@ -261,69 +263,74 @@ export function generateAllowRules(config: PermissionsConfig): string[] {
     rules.push('Edit(**/*)', 'MultiEdit(**/*)', 'NotebookEdit(**/*)', 'TodoWrite');
   }
 
-  // Git permissions
+  // Git permissions - use :* for prefix matching
   if (config.git.readOnly) {
     rules.push(
-      'Bash(git status*)',
-      'Bash(git diff*)',
-      'Bash(git log*)',
-      'Bash(git show*)',
-      'Bash(git branch*)'
+      'Bash(git status:*)',
+      'Bash(git diff:*)',
+      'Bash(git log:*)',
+      'Bash(git show:*)',
+      'Bash(git branch:*)'
     );
   }
   if (config.git.staging) {
-    rules.push('Bash(git add*)');
+    rules.push('Bash(git add:*)');
   }
   if (config.git.commit) {
-    rules.push('Bash(git commit*)');
+    rules.push('Bash(git commit:*)');
   }
   if (config.git.push) {
-    rules.push('Bash(git push*)');
+    rules.push('Bash(git push:*)');
   }
   if (config.git.branching) {
-    rules.push('Bash(git checkout*)', 'Bash(git branch*)', 'Bash(git merge*)', 'Bash(git rebase*)');
+    rules.push(
+      'Bash(git checkout:*)',
+      'Bash(git branch:*)',
+      'Bash(git merge:*)',
+      'Bash(git rebase:*)'
+    );
   }
 
-  // Bash permissions
+  // Bash permissions - use :* for prefix matching
   if (config.bash.packageManager) {
     rules.push(
-      'Bash(pnpm *)',
-      'Bash(npm *)',
-      'Bash(yarn *)',
-      'Bash(bun *)',
-      'Bash(npx *)',
-      'Bash(bunx *)'
+      'Bash(pnpm:*)',
+      'Bash(npm:*)',
+      'Bash(yarn:*)',
+      'Bash(bun:*)',
+      'Bash(npx:*)',
+      'Bash(bunx:*)'
     );
   }
   if (config.bash.testing) {
     rules.push(
-      'Bash(vitest*)',
-      'Bash(jest*)',
-      'Bash(playwright*)',
-      'Bash(cypress*)',
-      'Bash(pnpm test*)',
-      'Bash(npm test*)',
-      'Bash(pnpm run test*)',
-      'Bash(npm run test*)'
+      'Bash(vitest:*)',
+      'Bash(jest:*)',
+      'Bash(playwright:*)',
+      'Bash(cypress:*)',
+      'Bash(pnpm test:*)',
+      'Bash(npm test:*)',
+      'Bash(pnpm run test:*)',
+      'Bash(npm run test:*)'
     );
   }
   if (config.bash.building) {
     rules.push(
-      'Bash(pnpm build*)',
-      'Bash(npm run build*)',
-      'Bash(pnpm run build*)',
-      'Bash(tsc*)',
-      'Bash(tsup*)',
-      'Bash(vite build*)',
-      'Bash(next build*)',
-      'Bash(astro build*)'
+      'Bash(pnpm build:*)',
+      'Bash(npm run build:*)',
+      'Bash(pnpm run build:*)',
+      'Bash(tsc:*)',
+      'Bash(tsup:*)',
+      'Bash(vite build:*)',
+      'Bash(next build:*)',
+      'Bash(astro build:*)'
     );
   }
   if (config.bash.docker) {
-    rules.push('Bash(docker *)', 'Bash(docker-compose *)');
+    rules.push('Bash(docker:*)', 'Bash(docker-compose:*)');
   }
   if (config.bash.arbitrary) {
-    rules.push('Bash(*)');
+    rules.push('Bash');
   }
 
   // Web permissions
